@@ -108,7 +108,8 @@ select:focus-visible {
 .menu a:hover,
 .menu a [aria-current="page"] {
   padding: 16px 18px;
-  background-color: rgba(232, 90, 13, 0.175);
+  background-color: var(--laranja);
+  color: #fff;
   border-radius: 10px;
 }
 
