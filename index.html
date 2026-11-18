@@ -13,11 +13,13 @@
 </head>
 
 <body>
-  <!--navbar-->
+  <!--NAVBAR-->
   <header class="topo">
     <a class="logo" href="#inicio" aria-label="VelozLog – página inicial">
       <span class="logo-icone" aria-hidden="true">
-        <img src="/img/logo-svg.svg" alt="Logo VelozLog">
+        <svg>
+          <use href="/img/logo-svg.svg">
+        </svg>
       </span>
     </a>
     <nav class="Principal">
@@ -40,6 +42,258 @@
     </div>
   </header>
 
+  <!--COMEÇO DA HERO-->
+  <main>
+    <section id="inicio" class="hero">
+      <div class="hero-texto">
+        <p class="selo">Líder em entregas expressas no Brasil</p>
+        <h1>Sua carga entregue com <span>segurança</span>, rapidez e rastreamento total.</h1>
+        <p>Transporte rodoviário fracionado e lotação para todo o território nacional com garantia inegociável de prazo e monitoramento satelital ininterrupto.</p>
+        <ul class="hero-selos">
+          <li>Cotação B2B Expressa</li>
+          <li>Suporte Dedicado 24H</li>
+          <li>Cargas 100% Asseguradas</li>
+        </ul>
+        <div class="hero-rodape">
+          <ul class="avatares" aria-hidden="true">
+            <li>SP</li>
+            <li>PR</li>
+            <li>MG</li>
+            <li>+24</li>
+          </ul>
+          <p class="hero-cobertura">Interligação diária entre mais de <strong>3.200 municípios</strong> brasileiros.</p>
+        </div>
+      </div>
+
+      <div id="rastreamento" class="card-rastreio">
+        <div role="tablist" class="abas">
+          <button role="tab" aria-selected="true" type="button">Rastrear Pedido</button>
+          <button role="tab" aria-selected="false" type="button">Simular Frete</button>
+        </div>
+        <label for="codigo">Código de rastreamento / NF / CPF ou CNPJ</label>
+        <div class="campo-busca">
+          <input type="codigo" type="text" value="VLZ-849102-SP">
+          <button type="button">Rastrear</button>
+        </div>
+
+        <article class="pedido">
+          <header>
+            <h2>VLZ-849102-SP</h2>
+            <span class="status">Em Trânsito</span>
+            <span class="segurada">Carga Segurada</span>
+          </header>
+          <div class="trajeto">
+            <p><small>Origem</small> São Paulo (HUB-01)</p>
+            <div>
+              <p>Prazo: Hoje até 18:30</p>
+              <progress value="75" max="100"></progress>
+              <p>75% do trajeto concluído</p>
+            </div>
+            <p><small>Destino</small> Curitiba (PR)</p>
+          </div>
+          <footer>
+            <p>elemetria em tempo real • BR-116 KM 84</p>
+            <a href="#">Ver Ocorrências</a>
+          </footer>
+        </article>
+      </div>
+    </section>
+
+    <!--INDICADORES-->
+    <section class="indicadores" aria-label="Números da VelozLog">
+      <ul>
+        <li><span class="icone" aria-hidden="true"><svg>
+              <use href="/img/ic-caminhao.svg">
+            </svg></li>
+        <li><span class="icone" aria-hidden="true"><svg>
+              <use href="/img/ic-timer.svg">
+            </svg></li>
+        <li><span class="icone" aria-hidden="true"><svg>
+              <use href="/img/ic-mapa.svg">
+            </svg></li>
+        <li><span class="icone" aria-hidden="true"><svg>
+              <use href="/img/ic-escudo-ok.svg">
+            </svg></li>
+      </ul>
+    </section>
+
+    <!--SERVIÇOS: grade de 4 cards-->
+    <section id="servicos" class="servicos">
+      <header class="secao-cabecalho">
+        <p class="eyebrow">Soluções logísticas</p>
+        <h2>Serviços estruturados para o seu ritmo operacional</h2>
+        <p>Do fracionado diário à frota industrial exclusiva com contratos corporativos de SLA inflexível.</p>
+      </header>
+      <div class="grade-4">
+        <article class="card">
+          <div class="card-topo">
+            <span class="icone" aria-hidden="true">
+              <svg>
+                <use href="/img/ic-caixa.svg">
+              </svg>
+            </span>
+            <span class="tag">Saídas Diárias</span>
+          </div>
+          <h3>Carga Fracionada</h3>
+          <p>Pague apenas pelo espaço cúbico que sua mercadoria ocupa. Ideal para pequenas e médias empresas e e-commerces com alto volume diário de remessas.</p>
+          <a href="#cotacao">Simular Frete</a>
+        </article>
+        <article class="card">
+          <div class="card-topo">
+            <span class="icone" aria-hidden="true">
+              <svg>
+                <use href="/img/ic-caminhao.svg">
+              </svg>
+            </span>
+            <span class="tag">Frota Dedicada</span>
+          </div>
+          <h3>Carga Fechada (Lotação)</h3>
+          <p>Veículos exclusivos para sua indústria ou atacado. Rota direta ponto-a-ponto, sem paradas intermediárias e com lacre inviolável monitorado via satélite.</p>
+          <a href="#cotacao">Contratar Lotação</a>
+        </article>
+        <article class="card">
+          <div class="card-topo">
+            <span class="icone" aria-hidden="true">
+              <svg>
+                <use href="/img/ic-raio.svg">
+              </svg>
+            </span>
+            <span class="tag">SLA Garantido</span>
+          </div>
+          <h3>Express (Same / Next-Day)</h3>
+          <p>Entregas relâmpago no mesmo dia ou no dia útil seguinte em regiões metropolitanas e corredores industriais estratégicos com protocolo digital assinado.</p>
+          <a href="#cotacao">Ver Cidades Cobertas</a>
+        </article>
+        <article class="card">
+          <div class="card-topo">
+            <span class="icone" aria-hidden="true">
+              <svg>
+                <use href="/img/ic-repetir.svg">
+              </svg>
+            </span>
+            <span class="tag">Coleta Domiciliar</span>
+          </div>
+          <h3>Logística Reversa</h3>
+          <p>Coleta no endereço do cliente ou postos credenciados, conferência criteriosa de avarias, laudo fotográfico imediato e rápida reintrodução ao estoque.</p>
+          <a href="#cotacao">Integrar com API</a>
+        </article>
+      </div>
+    </section>
+
+    <!--SERVIÇOS: grade de 4 cards-->
+    <section id="sobre" class="seguranca">
+      <header class="secao-cabecalho">
+        <p class="eyebrow">Segurança &amp; padrão técnico</p>
+        <h2>Por que os maiores embarcadores do país confiam na VelozLog?</h2>
+        <p class="auditoria"><strong>Auditoria SASSMAQ &amp; ISO</strong>100% de conformidade técnica</p>
+      </header>
+      <div class="grade-4">
+        <article class="card">
+          <span class="icone" aria-hidden="true"><svg>
+              <use href="/img/ic-radar.svg">
+            </svg></span>
+          <h3>Rastreamento Satelital 24H</h3>
+          <p>Telemetria em tempo real com leitura de velocidade, temperatura controlada, sensores de desengate, travas de quinta-roda e cerca eletrônica dinâmica.</p>
+        </article>
+        <article class="card">
+          <span class="icone" aria-hidden="true"><svg>
+              <use href="/img/ic-caminhao-v2.svg">
+            </svg></span>
+          <h3>Frota Própria &amp; Renovada</h3>
+          <p>Idade média de veículos abaixo de 3 anos (VUC, Toco, Truck e Carreta). Manutenção preventiva telemetrizada garantindo que seu frete nunca pare na estrada.</p>
+        </article>
+        <article class="card">
+          <span class="icone" aria-hidden="true"><svg>
+              <use href="/img/ic-atendente.svg">
+            </svg></span>
+          <h3>Suporte Dedicado sem Robôs</h3>
+          <p>Gerente de conta direto com celular e WhatsApp próprio. Torre de controle ativa para solucionar imprevistos de tráfego sem que você precise abrir tickets lentos.</p>
+        </article>
+      </div>
+    </section>
+
+    <!--COTAÇÃO: texto à esquerda, formulário à direita-->
+    <section id="cotacao" class="cotacao">
+      <div class="cotacao-texto">
+        <p class="eyebrow">Cotação Instantânea</p>
+        <h2>Simule o frete da sua empresa em segundos</h2>
+        <p>arifas competitivas com tabela decrescente para volumes recorrentes, cálculo imediato de cubagem e sem surpresas na fatura.</p>
+        <ul class="beneficios">
+          <li>Integração nativa via API para ERPs (SAP, TOTVS, Bling, Tiny)</li>
+          <li>Faturamento corporativo quinzenal ou mensal com DDA bancário</li>
+          <li>Coleta agendada com equipe treinada para carga frágil</li>
+        </ul>
+        <anside class="grandes-volumes">
+          <strong>Precisa de cotação para grandes volumes?</strong>
+          <span>Contate diretamente nossa mesa B2B corporativa</span>
+        </anside>
+      </div>
+
+      <form class="form-cotacao">
+        <h3>Preencha os dados do envio</h3>
+        <div class="campos">
+          <label>CEP de Origem (Remetente)
+            <input type="text" placeholder="01001-000 (São Paulo - SP)">
+          </label>
+          <label>CEP de Destino (Destinatário)
+            <input type="text" placeholder="80010-000 (Curitiba - PR)">
+          </label>
+          <label>Peso Bruto Total (kg)
+            <input type="number" placeholder="Ex: 45 Kg">
+          </label>
+          <label>Quantidade de Volumes / Caixas
+            <input type="number" placeholder="Ex: 4">
+          </label>
+          <label>Tipo de Mercadoria
+            <select>
+              <option>Carga Geral Seca / Manufaturados</option>
+            </select>
+          </label>
+          <label>Valor da Carga na NF (R$)
+            <input type="text" placeholder="R$ 15.000,00">
+          </label>
+        </div>
+        <p class="aviso">Cálculo com GRIS e seguro obrigatório inclusos</p>
+        <button type="submit">Calcular Frete em 1 Minuto</button>
+      </form>
+    </section>
+
+    <!--EPOIMENTOS: 2 cards-->
+    <section class="depoimentos">
+      <header class="secao-cabecalho">
+        <p class="eyebrow">Confiança comprovada</p>
+        <h2>Depoimentos de quem transporta conosco diariamente</h2>
+      </header>
+      <div class="grade-2">
+        <figure class="card">
+          <blockquote>Reduzimos nosso índice de extravio e atraso a zero nos envios de São Paulo para o Sul do país. A visibilidade do rastreio em tempo real transmite total tranquilidade aos nossos compradores corporativos.</blockquote>
+          <figcaption><span class="iniciais">RA</span> <strong>Rodrigo Alcantara</strong> Diretor de Logística, OmniVarejo Brasil</figcaption>
+        </figure>
+        <figure class="card">
+          <blockquote>O suporte dedicado no WhatsApp nos atende em segundos sempre que precisamos de uma saída urgente de carga lotação. Uma parceria sólida e sem a burocracia desnecessária das transportadoras antigas.</blockquote>
+          <figcaption><span class="iniciais">CF</span> <strong>Camila Ferreira</strong> Gerente de Operações, EletroForte Indústria</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!--CTA CORPORATIVO (fundo escuro)-->
+    <section id="contato" class="cta">
+      <div>
+        <p class="eyebrow">Atendimento corporativo VIP</p>
+        <h2>Precisa de uma operação sob medida para sua empresa?</h2>
+        <p>onecte-se com nossos consultores seniores de logística rodoviária e receba uma tabela de tarifas diferenciada com faturamento quinzenal ou mensal.</p>
+        <ul class="selos-confianca">
+          <li>Registro ANTT Ativo</li>
+          <li>ISO 9001:2015</li>
+          <li>Dados Protegidos SSL</li>
+        </ul>
+      </div>
+      <div class="cta-botoes">
+        <a class="btn-primario" href="#">Falar no WhatsApp com Especialista</a>
+        <a class="btn-secundario" href="#">Baixar Tabela de Preços Referencial</a>
+      </div>
+    </section>
+  </main>
 </body>
 
 </html>
