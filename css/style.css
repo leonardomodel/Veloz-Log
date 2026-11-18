@@ -730,15 +730,14 @@ progress::-moz-progress-bar {
 }
 
 /* ---------- SEGURANÇA ---------- */
-/* ---------- SEGURANÇA ---------- */
 .seguranca {
   background: #eef3ff;
   padding: 96px 32px;
 }
 
 .seguranca-container {
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
 }
 
 .seguranca-header {
