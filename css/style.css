@@ -963,3 +963,142 @@ progress::-moz-progress-bar {
   background: none;
   box-shadow: none;
 }
+
+/* ---------- SERVIÇOS ---------- */
+.servicos {
+  background: #f6f8ff;
+}
+
+.servicos .secao-cabecalho {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: 28px;
+}
+
+.servicos .eyebrow {
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--laranja-escuro);
+}
+
+.servicos .secao-cabecalho h2 {
+  max-width: 520px;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--cor-texto);
+}
+
+.servicos .secao-cabecalho > p {
+  max-width: 300px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--cor-texto-suave);
+}
+
+.servicos .grade-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.servicos .card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px;
+  border: 0;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(21, 27, 54, 0.05);
+}
+
+.servicos .card-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.servicos .icone {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 8px;
+  background: #e8eeff;
+}
+
+.servicos .icone img {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
+.servicos .tag {
+  align-self: auto;
+  padding: 3px 10px;
+  border-radius: 99px;
+  background: #e8eeff;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--cor-texto);
+}
+
+.servicos .tag-destaque {
+  background: #ffdbcb;
+  color: var(--laranja-escuro);
+}
+
+.servicos .card h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+.servicos .card p {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--cor-texto-suave);
+}
+
+.servicos .card a {
+  margin-top: auto;
+  padding-top: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--laranja-escuro);
+}
+
+.servicos .card a::after {
+  content: " →";
+}
+
+.servicos .card a:hover,
+.servicos .card a:focus-visible {
+  color: var(--laranja);
+  outline: none;
+}
+
+@media (max-width: 1000px) {
+  .servicos .grade-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .servicos .secao-cabecalho {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .servicos .grade-4 {
+    grid-template-columns: 1fr;
+  }
+}
