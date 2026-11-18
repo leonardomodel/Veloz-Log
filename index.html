@@ -122,16 +122,21 @@
     <!--SERVIÇOS: grade de 4 cards-->
     <section id="servicos" class="servicos">
       <header class="secao-cabecalho">
-        <p class="eyebrow">Soluções logísticas</p>
-        <h2>Serviços estruturados para o seu ritmo operacional</h2>
+        <div>
+          <p class="eyebrow">Soluções logísticas</p>
+          <h2>Serviços estruturados para o seu ritmo operacional</h2>
+        </div>
         <p>Do fracionado diário à frota industrial exclusiva com contratos corporativos de SLA inflexível.</p>
       </header>
+
       <div class="grade-4">
         <article class="card">
           <div class="card-topo">
             <span class="icone" aria-hidden="true">
-              <svg>
-                <use href="/img/ic-caixa.svg">
+              <svg viewBox="0 0 24 24">
+                <rect width="20" height="5" x="2" y="3" rx="1" />
+                <path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8" />
+                <path d="M10 12h4" />
               </svg>
             </span>
             <span class="tag">Saídas Diárias</span>
@@ -143,8 +148,12 @@
         <article class="card">
           <div class="card-topo">
             <span class="icone" aria-hidden="true">
-              <svg>
-                <use href="/img/ic-caminhao.svg">
+              <svg viewBox="0 0 24 24">
+                <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" />
+                <path d="M15 18H9" />
+                <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14" />
+                <circle cx="17" cy="18" r="2" />
+                <circle cx="7" cy="18" r="2" />
               </svg>
             </span>
             <span class="tag">Frota Dedicada</span>
@@ -156,11 +165,11 @@
         <article class="card">
           <div class="card-topo">
             <span class="icone" aria-hidden="true">
-              <svg>
-                <use href="/img/ic-raio.svg">
+              <svg viewBox="0 0 24 24">
+                <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" />
               </svg>
             </span>
-            <span class="tag">SLA Garantido</span>
+            <span class="tag tag-destaque">SLA Garantido</span>
           </div>
           <h3>Express (Same / Next-Day)</h3>
           <p>Entregas relâmpago no mesmo dia ou no dia útil seguinte em regiões metropolitanas e corredores industriais estratégicos com protocolo digital assinado.</p>
@@ -169,11 +178,14 @@
         <article class="card">
           <div class="card-topo">
             <span class="icone" aria-hidden="true">
-              <svg>
-                <use href="/img/ic-repetir.svg">
+              <svg viewBox="0 0 24 24">
+                <path d="m17 2 4 4-4 4" />
+                <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+                <path d="m7 22-4-4 4-4" />
+                <path d="M21 13v1a4 4 0 0 1-4 4H3" />
               </svg>
             </span>
-            <span class="tag">Coleta Domiciliar</span>
+            <span class="tag tag-destaque">Coleta Domiciliar</span>
           </div>
           <h3>Logística Reversa</h3>
           <p>Coleta no endereço do cliente ou postos credenciados, conferência criteriosa de avarias, laudo fotográfico imediato e rápida reintrodução ao estoque.</p>
@@ -185,29 +197,21 @@
     <!--SERVIÇOS: grade de 4 cards-->
     <section id="sobre" class="seguranca">
       <header class="secao-cabecalho">
+        <span class="icone" aria-hidden="true" style="--icone: url('/img/ic-caixa.svg')"></span>
         <p class="eyebrow">Segurança &amp; padrão técnico</p>
         <h2>Por que os maiores embarcadores do país confiam na VelozLog?</h2>
         <p class="auditoria"><strong>Auditoria SASSMAQ &amp; ISO</strong>100% de conformidade técnica</p>
       </header>
       <div class="grade-4">
         <article class="card">
-          <span class="icone" aria-hidden="true"><svg>
-              <use href="/img/ic-radar.svg">
-            </svg></span>
           <h3>Rastreamento Satelital 24H</h3>
           <p>Telemetria em tempo real com leitura de velocidade, temperatura controlada, sensores de desengate, travas de quinta-roda e cerca eletrônica dinâmica.</p>
         </article>
         <article class="card">
-          <span class="icone" aria-hidden="true"><svg>
-              <use href="/img/ic-caminhao-v2.svg">
-            </svg></span>
           <h3>Frota Própria &amp; Renovada</h3>
           <p>Idade média de veículos abaixo de 3 anos (VUC, Toco, Truck e Carreta). Manutenção preventiva telemetrizada garantindo que seu frete nunca pare na estrada.</p>
         </article>
         <article class="card">
-          <span class="icone" aria-hidden="true"><svg>
-              <use href="/img/ic-atendente.svg">
-            </svg></span>
           <h3>Suporte Dedicado sem Robôs</h3>
           <p>Gerente de conta direto com celular e WhatsApp próprio. Torre de controle ativa para solucionar imprevistos de tráfego sem que você precise abrir tickets lentos.</p>
         </article>
