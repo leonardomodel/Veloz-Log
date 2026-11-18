@@ -82,7 +82,7 @@ select:focus-visible {
 .menu {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 4px;
   margin: 0;
   padding: 0;
 }
@@ -90,27 +90,37 @@ select:focus-visible {
 .menu li {
   margin: 0;
   padding: 0;
+  align-self: center;
 }
 
-.menu ul {
+.menu a {
   display: block;
-  padding: 6px 0;
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: 10px;
   font-size: 13px;
   font-weight: 500;
   line-height: 1.2;
   color: var(--cor-texto);
   white-space: nowrap;
   transition:
-    color 0.15s,
-    border-color 0.15s;
+    background-color 0.15s,
+    color 0.15s;
 }
 
+/**hover laranja e branco ao dar tab ou selecionar**/
 .menu a:hover,
-.menu a [aria-current="page"] {
-  padding: 16px 18px;
+.menu a:focus-visible {
   background-color: var(--laranja);
   color: #fff;
-  border-radius: 10px;
+  outline: none;
+}
+
+.btn-area:focus-visible {
+  background-color: #fff;
+  color: var(--laranja);
+  outline: none;
+  border-color: var(--laranja);
 }
 
 .acoes {
