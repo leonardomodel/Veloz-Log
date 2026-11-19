@@ -139,11 +139,11 @@
                 <path d="M10 12h4" />
               </svg>
             </span>
-            <span class="tag">Saídas Diárias</span>
+            <span class="tag">Frota Dedicada</span>
           </div>
-          <h3>Carga Fracionada</h3>
-          <p>Pague apenas pelo espaço cúbico que sua mercadoria ocupa. Ideal para pequenas e médias empresas e e-commerces com alto volume diário de remessas.</p>
-          <a href="#cotacao">Simular Frete</a>
+          <h3>Carga Fechada (Lotação)</h3>
+          <p>Veículos exclusivos para sua indústria ou atacado. Rota direta ponto-a-ponto, sem paradas intermediárias e com lacre inviolável monitorado via satélite.</p>
+          <a href="#cotacao">Contratar Lotação</a>
         </article>
         <article class="card">
           <div class="card-topo">
@@ -194,27 +194,57 @@
       </div>
     </section>
 
-    <!--SERVIÇOS: grade de 4 cards-->
-    <section id="sobre" class="seguranca">
-      <header class="secao-cabecalho">
-        <span class="icone" aria-hidden="true" style="--icone: url('/img/ic-caixa.svg')"></span>
-        <p class="eyebrow">Segurança &amp; padrão técnico</p>
-        <h2>Por que os maiores embarcadores do país confiam na VelozLog?</h2>
-        <p class="auditoria"><strong>Auditoria SASSMAQ &amp; ISO</strong>100% de conformidade técnica</p>
-      </header>
-      <div class="grade-4">
-        <article class="card">
-          <h3>Rastreamento Satelital 24H</h3>
-          <p>Telemetria em tempo real com leitura de velocidade, temperatura controlada, sensores de desengate, travas de quinta-roda e cerca eletrônica dinâmica.</p>
-        </article>
-        <article class="card">
-          <h3>Frota Própria &amp; Renovada</h3>
-          <p>Idade média de veículos abaixo de 3 anos (VUC, Toco, Truck e Carreta). Manutenção preventiva telemetrizada garantindo que seu frete nunca pare na estrada.</p>
-        </article>
-        <article class="card">
-          <h3>Suporte Dedicado sem Robôs</h3>
-          <p>Gerente de conta direto com celular e WhatsApp próprio. Torre de controle ativa para solucionar imprevistos de tráfego sem que você precise abrir tickets lentos.</p>
-        </article>
+    <!--SEGURANÇA & PADRÃO TÉCNICO: grade de 4 cards-->
+    <section id="seguranca" class="seguranca">
+      <div class="seguranca-container">
+        <header class="seguranca-header">
+          <div class="seguranca-titulo">
+            <span class="seguranca-rotulo">Segurança &amp; Padrão Técnico</span>
+            <h2>Por que os maiores embarcadores do país confiam na VelozLog?</h2>
+          </div>
+
+          <div class="seguranca-selo">
+            <img src="/img/ic.selo.svg" alt="" width="36" height="36">
+            <div>
+              <strong>Auditoria SASSMAQ &amp; ISO</strong>
+              <span>100% de conformidade técnica</span>
+            </div>
+          </div>
+        </header>
+
+        <div class="seguranca-grade">
+          <article class="seguranca-card">
+            <div class="seguranca-icone">
+              <span class="icone-mask" style="--icone: url('/img/ic.satelite.svg')"></span>
+            </div>
+            <h3>Rastreamento Satelital 24/7</h3>
+            <p>Telemetria em tempo real com leitura de velocidade, temperatura controlada, sensores de desengate, travas de quinta-roda e cerca eletrônica dinâmica.</p>
+          </article>
+
+          <article class="seguranca-card">
+            <div class="seguranca-icone">
+              <span class="icone-mask" style="--icone: url('/img/ic.seguro.svg')"></span>
+            </div>
+            <h3>Seguro Integral RCTR-C / RCF&#8209;DC</h3>
+            <p>Apólices de primeira linha emitidas por seguradoras de grau de investimento. Cobertura completa contra acidentes, roubos, avarias e extravios totais.</p>
+          </article>
+
+          <article class="seguranca-card">
+            <div class="seguranca-icone">
+              <span class="icone-mask" style="--icone: url('/img/ic-caminhao-v2.svg')"></span>
+            </div>
+            <h3>Frota Própria &amp; Renovada</h3>
+            <p>Idade média de veículos abaixo de 3 anos (VUC, Toco, Truck e Carreta). Manutenção preventiva telemetrizada garantindo que seu frete nunca pare na estrada.</p>
+          </article>
+
+          <article class="seguranca-card">
+            <div class="seguranca-icone">
+              <span class="icone-mask" style="--icone: url('/img/ic-atendente.svg')"></span>
+            </div>
+            <h3>Suporte Dedicado sem Robôs</h3>
+            <p>Gerente de conta direto com celular e WhatsApp próprio. Torre de controle ativa para solucionar imprevistos de tráfego sem que você precise abrir tickets lentos.</p>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -264,7 +294,7 @@
       </form>
     </section>
 
-    <!--EPOIMENTOS: 2 cards-->
+    <!--DFEPOIMENTOS: 2 cards-->
     <section class="depoimentos">
       <header class="secao-cabecalho">
         <p class="eyebrow">Confiança comprovada</p>
