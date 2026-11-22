@@ -900,3 +900,332 @@ progress::-moz-progress-bar {
   line-height: 1.6;
   color: var(--cor-texto-suave);
 }
+
+/* ---------- COTAÇÃO ---------- */
+.cotacao {
+  padding: 96px 32px;
+  background: #f8f9ff;
+}
+
+.cotacao-container {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 653px);
+  gap: 23px;
+  align-items: center;
+  width: 100%;
+  background: #e5edff;
+  border-radius: 24px;
+  box-shadow: var(--sombra);
+  padding-right: 40px;
+}
+
+.cotacao-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  margin: 46px 24px 46px 40px;
+}
+
+.cotacao-form {
+  width: 100%;
+  width: 464px;
+  min-height: 424px;
+  padding: 24px 40px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(21, 27, 54, 0.08);
+  margin: 10px 0;
+}
+
+/* ---- Coluna esquerda ---- */
+.cotacao-eyebrow {
+  display: block;
+  margin-bottom: 16px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--laranja-escuro);
+}
+
+.cotacao-titulo {
+  margin-bottom: 16px;
+  font-size: clamp(28px, 3.2vw, 40px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--cor-texto);
+}
+
+.cotacao-texto {
+  margin-bottom: 24px;
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--cor-texto-suave);
+}
+
+.cotacao-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 16px;
+}
+
+.cotacao-lista li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  color: var(--cor-texto);
+}
+
+.cotacao-icone {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: var(--laranja);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Caixa B2B */
+.cotacao-b2b {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(21, 27, 54, 0.05);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.cotacao-b2b:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(21, 27, 54, 0.1);
+}
+
+.cotacao-b2b-icone {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 50px;
+  height: 50px;
+  background: #ffeadd;
+  border-radius: 12px;
+}
+
+.cotacao-b2b-icone svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: var(--laranja);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cotacao-b2b-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cotacao-b2b-texto strong {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+.cotacao-b2b-texto small {
+  font-size: 13px;
+  color: var(--cor-texto-suave);
+}
+
+/* ---- Formulário ---- */
+.cotacao-form {
+  width: 100%;
+  padding: 24px 40px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(21, 27, 54, 0.08);
+}
+
+.cotacao-form-titulo {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--cor-texto);
+  margin-bottom: 16px;
+}
+
+.cotacao-grade {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  width: 100%;
+}
+
+.cotacao-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.cotacao-campo label {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--cor-texto);
+}
+
+.cotacao-campo input,
+.cotacao-campo select {
+  width: 100%;
+  height: 50px;
+  padding: 0 16px;
+  font-size: 18px;
+  color: var(--cor-texto);
+  background: #f4f6fb;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.cotacao-campo input::placeholder {
+  color: #9aa3b5;
+}
+
+.cotacao-campo input:focus,
+.cotacao-campo select:focus {
+  background: #fff;
+  border-color: var(--laranja);
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
+  outline: none;
+}
+
+.cotacao-campo select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 40px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2345464a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}
+
+.cotacao-campo input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.cotacao-campo input[type="number"]::-webkit-outer-spin-button,
+.cotacao-campo input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Rodapé do formulário */
+.cotacao-rodape {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 0;
+}
+
+.cotacao-nota {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  line-height: 1.35;
+  color: var(--cor-texto-suave);
+}
+
+.cotacao-nota svg {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  fill: none;
+  stroke: var(--laranja);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cotacao-botao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-height: 50px;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  background: var(--laranja);
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.cotacao-botao:hover {
+  background: var(--laranja-escuro);
+  transform: translateY(-1px);
+}
+
+.cotacao-botao svg {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 992px) {
+  .cotacao-container {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding: 36px 28px;
+  }
+
+  .cotacao-info {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 576px) {
+  .cotacao-container {
+    padding: 28px 18px;
+    border-radius: 18px;
+  }
+
+  .cotacao-form {
+    padding: 24px 18px;
+  }
+
+  .cotacao-grade,
+  .cotacao-rodape {
+    grid-template-columns: 1fr;
+  }
+
+  .cotacao-texto {
+    font-size: 16px;
+  }
+}

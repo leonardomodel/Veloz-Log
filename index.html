@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="shortcut icon" href="/img/favicon-svg.svg" type="image/x-icon">
+  <link rel="icon" href="img/icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 
@@ -17,7 +17,7 @@
   <header class="topo">
     <a class="logo" href="#inicio" aria-label="VelozLog – página inicial">
       <span class="logo-icone" aria-hidden="true">
-        <img src="/img/logo-svg.svg" alt="Logo VelozLog">
+        <img src="/img/logo.svg" alt="Logo VelozLog">
       </span>
     </a>
     <nav class="Principal">
@@ -249,49 +249,118 @@
     </section>
 
     <!--COTAÇÃO: texto à esquerda, formulário à direita-->
-    <section id="cotacao" class="cotacao">
-      <div class="cotacao-texto">
-        <p class="eyebrow">Cotação Instantânea</p>
-        <h2>Simule o frete da sua empresa em segundos</h2>
-        <p>arifas competitivas com tabela decrescente para volumes recorrentes, cálculo imediato de cubagem e sem surpresas na fatura.</p>
-        <ul class="beneficios">
-          <li>Integração nativa via API para ERPs (SAP, TOTVS, Bling, Tiny)</li>
-          <li>Faturamento corporativo quinzenal ou mensal com DDA bancário</li>
-          <li>Coleta agendada com equipe treinada para carga frágil</li>
-        </ul>
-        <anside class="grandes-volumes">
-          <strong>Precisa de cotação para grandes volumes?</strong>
-          <span>Contate diretamente nossa mesa B2B corporativa</span>
-        </anside>
-      </div>
+    <section class="cotacao" id="cotacao">
+      <div class="cotacao-container">
 
-      <form class="form-cotacao">
-        <h3>Preencha os dados do envio</h3>
-        <div class="campos">
-          <label>CEP de Origem (Remetente)
-            <input type="text" placeholder="01001-000 (São Paulo - SP)">
-          </label>
-          <label>CEP de Destino (Destinatário)
-            <input type="text" placeholder="80010-000 (Curitiba - PR)">
-          </label>
-          <label>Peso Bruto Total (kg)
-            <input type="number" placeholder="Ex: 45 Kg">
-          </label>
-          <label>Quantidade de Volumes / Caixas
-            <input type="number" placeholder="Ex: 4">
-          </label>
-          <label>Tipo de Mercadoria
-            <select>
-              <option>Carga Geral Seca / Manufaturados</option>
-            </select>
-          </label>
-          <label>Valor da Carga na NF (R$)
-            <input type="text" placeholder="R$ 15.000,00">
-          </label>
+        <!-- Coluna esquerda -->
+        <div class="cotacao-info">
+          <span class="cotacao-eyebrow">Cotação Instantânea</span>
+          <h2 class="cotacao-titulo">Simule o frete da sua empresa em segundos</h2>
+          <p class="cotacao-texto">
+            Tarifas competitivas com tabela decrescente para volumes recorrentes,
+            cálculo imediato de cubagem e sem surpresas na fatura.
+          </p>
+
+          <ul class="cotacao-lista">
+            <li>
+              <svg class="cotacao-icone" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M8 12.5l2.8 2.8L16.5 9.5"></path>
+              </svg>
+              Integração nativa via API para ERPs (SAP, TOTVS, Bling, Tiny)
+            </li>
+            <li>
+              <svg class="cotacao-icone" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M8 12.5l2.8 2.8L16.5 9.5"></path>
+              </svg>
+              Faturamento corporativo quinzenal ou mensal com DDA bancário
+            </li>
+            <li>
+              <svg class="cotacao-icone" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M8 12.5l2.8 2.8L16.5 9.5"></path>
+              </svg>
+              Coleta agendada com equipe treinada para carga frágil
+            </li>
+          </ul>
+
+          <a class="cotacao-b2b" href="#contato">
+            <span class="cotacao-b2b-icone">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path>
+                <path d="M14 3v5h5"></path>
+                <path d="M9 13h6M9 17h6"></path>
+              </svg>
+            </span>
+            <span class="cotacao-b2b-texto">
+              <strong>Precisa de cotação para grandes volumes?</strong>
+              <small>Contate diretamente nossa mesa B2B corporativa</small>
+            </span>
+          </a>
         </div>
-        <p class="aviso">Cálculo com GRIS e seguro obrigatório inclusos</p>
-        <button type="submit">Calcular Frete em 1 Minuto</button>
-      </form>
+
+        <!-- Coluna direita: formulário -->
+        <form class="cotacao-form" action="#" method="post">
+          <h3 class="cotacao-form-titulo">Preencha os dados do envio</h3>
+
+          <div class="cotacao-grade">
+            <div class="cotacao-campo">
+              <label for="cep-origem">CEP de Origem (Remetente)</label>
+              <input type="text" name="cep-origem" id="cep-origem" placeholder="01001-000 (São Paulo - SP)" inputmode="numeric" maxlength="9">
+            </div>
+
+            <div class="cotacao-campo">
+              <label for="cep-destino">CEP de Destino (Destinatário)</label>
+              <input type="text" name="cep-destino" id="cep-destino" placeholder="80010-000 (Curitiba - PR)" inputmode="numeric" maxlength="9">
+            </div>
+
+            <div class="cotacao-campo">
+              <label for="peso">Peso Bruto Total (kg)</label>
+              <input type="number" id="peso" name="peso" placeholder="Ex: 45" min="0" step="0.01">
+            </div>
+
+            <div class="cotacao-campo">
+              <label for="volumes">Quantidade de Volumes / Caixas</label>
+              <input type="number" id="volumes" name="volumes" placeholder="Ex: 4" min="1" step="1">
+            </div>
+
+            <div class="cotacao-campo">
+              <label for="mercadoria">Tipo de Mercadoria</label>
+              <select name="mercadoria" id="mercadoria">
+                <option value="geral">Carga Geral Seca / Manufaturados</option>
+                <option value="fragil">Carga Frágil</option>
+                <option value="perecivel">Perecíveis</option>
+                <option value="eletronicos">Eletrônicos</option>
+              </select>
+            </div>
+
+            <div class="cotacao-campo">
+              <label for="valor-nf">Valor da Carga na NF (R$)</label>
+              <input type="text" id="valor-nf" name="valor-nf" placeholder="R$ 15.000,00" inputmode="decimal">
+            </div>
+          </div>
+
+          <div class="cotacao-rodape">
+            <p class="cotacao-nota">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2l2.4 1.8 3-.2 1.2 2.8 2.6 1.6-.8 2.9.8 2.9-2.6 1.6-1.2 2.8-3-.2L12 20l-2.4-1.8-3 .2-1.2-2.8L2.8 14l.8-2.9-.8-2.9 2.6-1.6 1.2-2.8 3 .2z"></path>
+                <path d="M8.5 12l2.5 2.5 4.5-4.5"></path>
+              </svg>
+              Cálculo com GRIS e seguro obrigatório inclusos
+            </p>
+
+            <button type="submit" class="cotacao-botao">
+              Calcular Frete em 1 Minuto
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="4" y="3" width="16" height="18" rx="2"></rect>
+                <path d="M8 7h8M8 12h2M14 12h2M8 16h2M14 16h2"></path>
+              </svg>
+            </button>
+          </div>
+        </form>
+
+      </div>
     </section>
 
     <!--DFEPOIMENTOS: 2 cards-->
