@@ -1123,7 +1123,7 @@ progress::-moz-progress-bar {
 }
 
 .cotacao-campo input[type="number"] {
-  -moz-appearance: textfield;
+  --moz-appearance: textfield;
 }
 
 .cotacao-campo input[type="number"]::-webkit-outer-spin-button,
