@@ -14,7 +14,7 @@
   --borda: #e6e8f2;
   --navy: #151b36;
   /* Fundo ocupa a tela toda; o conteúdo fica limitado a 1280px e centralizado.
-  Em telas menores que 1280px, sobra uma margem mínima de 32px. */
+  Em telas menores que 1344px, sobra uma margem mínima de 32px de cada lado. */
   --largura-max: 1280px;
   --lateral: max(32px, calc((100% - var(--largura-max)) / 2));
   --lavanda: #f3f5ff;
@@ -174,7 +174,7 @@ select:focus-visible {
   grid-template-columns: 1.1fr 0.9fr;
   gap: 48px;
   align-items: center;
-  padding: 96px 32px;
+  padding: 96px var(--lateral);
   background: linear-gradient(180deg, #f8f9ff 0%, #fff 100%);
 }
 
@@ -536,6 +536,16 @@ progress::-moz-progress-bar {
   justify-content: space-between;
 }
 
+/* o desenho do ícone: o arquivo SVG vira um "molde" e a cor vem do CSS */
+.icone-mask {
+  width: 44px;
+  height: 44px;
+  background-color: var(--cor-texto);
+  -webkit-mask: var(--icone) center / contain no-repeat;
+  mask: var(--icone) center / contain no-repeat;
+  transition: background-color 0.15s;
+}
+
 /* ---------- INDICADORES ---------- */
 .indicadores {
   --esp: 18px; /* mesmo espaço em todo o card */
@@ -595,9 +605,8 @@ progress::-moz-progress-bar {
 
 /* ---------- SERVIÇOS ---------- */
 .servicos {
-  padding: 96px 0;
+  padding: 96px var(--lateral);
   background: #f6f8ff;
-  padding: 96px 32px;
 }
 
 /* Cabeçalho: bloco à esquerda, parágrafo à direita */
@@ -652,6 +661,7 @@ progress::-moz-progress-bar {
   border-radius: 12px;
   background: #fff;
   box-shadow: 0 2px 10px rgba(21, 27, 54, 0.05);
+  transition: border-color 0.15s;
 }
 
 .servicos .card-topo {
@@ -667,16 +677,9 @@ progress::-moz-progress-bar {
   margin-bottom: 28px;
   background: #dbe7ff;
   border-radius: 10px;
-  transition: background-color 0.15s;
-}
-
-.icone-mask {
-  width: 44px;
-  height: 44px;
-  background-color: var(--cor-texto);
-  -webkit-mask: var(--icone) center / contain no-repeat;
-  mask: var(--icone) center / contain no-repeat;
-  transition: background-color 0.15s;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
 }
 
 .servicos .icone img {
@@ -732,17 +735,6 @@ progress::-moz-progress-bar {
 }
 
 /* ---------- HOVER DO CARD ---------- */
-.servicos .card {
-  border: 2px solid transparent;
-  transition: border-color 0.15s;
-}
-
-.servicos .icone {
-  transition:
-    background-color 0.15s,
-    color 0.15s;
-}
-
 .servicos .card:hover,
 .servicos .card:focus-within {
   border-color: var(--laranja);
@@ -757,7 +749,7 @@ progress::-moz-progress-bar {
 /* ---------- SEGURANÇA ---------- */
 .seguranca {
   background: #eef3ff;
-  padding: 96px 32px;
+  padding: 96px var(--lateral);
 }
 
 .seguranca-container {
@@ -847,27 +839,17 @@ progress::-moz-progress-bar {
   transition: background-color 0.15s;
 }
 
-/* o desenho do ícone: o arquivo SVG vira um "molde" e a cor vem do CSS */
-.icone-mask {
-  width: 44px;
-  height: 44px;
-  background-color: var(--cor-texto);
-  -webkit-mask: var(--icone) center / contain no-repeat;
-  mask: var(--icone) center / contain no-repeat;
-  transition: background-color 0.15s;
-}
-
 .seguranca-card h3 {
-  margin-bottom: 16px;
-  font-size: 18px;
+  margin-bottom: 12px;
+  font-size: 16px;
   font-weight: 600;
-  line-height: 1.35;
+  line-height: 1.3;
   color: var(--cor-texto);
 }
 
 .seguranca-card p {
-  font-size: 14px;
-  line-height: 1.7;
+  font-size: 13px;
+  line-height: 1.6;
   color: var(--cor-texto-suave);
 }
 
@@ -887,23 +869,9 @@ progress::-moz-progress-bar {
   background-color: #fff;
 }
 
-.seguranca-card h3 {
-  margin-bottom: 12px;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 1.3;
-  color: var(--cor-texto);
-}
-
-.seguranca-card p {
-  font-size: 13px;
-  line-height: 1.6;
-  color: var(--cor-texto-suave);
-}
-
 /* ---------- COTAÇÃO ---------- */
 .cotacao {
-  padding: 96px 32px;
+  padding: 96px var(--lateral);
   background: #f8f9ff;
 }
 
@@ -925,17 +893,6 @@ progress::-moz-progress-bar {
   justify-content: center;
   min-width: 0;
   margin: 46px 24px 46px 40px;
-}
-
-.cotacao-form {
-  width: 100%;
-  width: 464px;
-  min-height: 424px;
-  padding: 24px 40px;
-  background: #fff;
-  border-radius: 20px;
-  box-shadow: 0 8px 24px rgba(21, 27, 54, 0.08);
-  margin: 10px 0;
 }
 
 /* ---- Coluna esquerda ---- */
@@ -1051,6 +1008,8 @@ progress::-moz-progress-bar {
 /* ---- Formulário ---- */
 .cotacao-form {
   width: 100%;
+  min-height: 424px;
+  margin: 10px 0;
   padding: 24px 40px;
   background: #fff;
   border-radius: 20px;
@@ -1123,7 +1082,8 @@ progress::-moz-progress-bar {
 }
 
 .cotacao-campo input[type="number"] {
-  --moz-appearance: textfield;
+  -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 .cotacao-campo input[type="number"]::-webkit-outer-spin-button,
@@ -1199,6 +1159,42 @@ progress::-moz-progress-bar {
 
 /* ---------- Responsivo ---------- */
 @media (max-width: 992px) {
+  .topo {
+    gap: 12px;
+    padding: 12px 20px;
+  }
+
+  .menu {
+    gap: 0;
+  }
+
+  .menu a {
+    padding: 10px 10px;
+  }
+
+  /* esconde "Início" (1º) e "contato" (6º) */
+  .menu li:nth-child(1),
+  .menu li:nth-child(6) {
+    display: none;
+  }
+
+  .acoes {
+    gap: 8px;
+  }
+
+  .btn-area,
+  .btn-cotacao {
+    white-space: nowrap;
+  }
+
+  .card-rastreio {
+    display: none;
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
   .cotacao-container {
     grid-template-columns: 1fr;
     gap: 32px;
@@ -1207,6 +1203,7 @@ progress::-moz-progress-bar {
 
   .cotacao-info {
     min-height: 0;
+    margin: 0;
   }
 }
 
