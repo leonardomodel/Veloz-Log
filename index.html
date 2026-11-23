@@ -366,39 +366,97 @@
     </div>
   </section>
 
-  <!--DFEPOIMENTOS: 2 cards-->
-  <section class="depoimentos">
-    <header class="secao-cabecalho">
-      <p class="eyebrow">Confiança comprovada</p>
-      <h2>Depoimentos de quem transporta conosco diariamente</h2>
+  <!-- DEPOIMENTOS -->
+  <section class="depoimentos" aria-labelledby="depoimentos-titulo">
+    <header class="depoimentos-cabecalho">
+      <span class="depoimentos-eyebrow">Confiança comprovada</span>
+      <h2 id="depoimentos-titulo" class="depoimentos-titulo">
+        Depoimentos de quem transporta conosco diariamente
+      </h2>
     </header>
-    <div class="grade-2">
-      <figure class="card">
-        <blockquote>Reduzimos nosso índice de extravio e atraso a zero nos envios de São Paulo para o Sul do país. A visibilidade do rastreio em tempo real transmite total tranquilidade aos nossos compradores corporativos.</blockquote>
-        <figcaption><span class="iniciais">RA</span> <strong>Rodrigo Alcantara</strong> Diretor de Logística, OmniVarejo Brasil</figcaption>
+
+    <div class="depoimentos-grade">
+      <figure class="depoimento-card">
+        <div class="depoimento-estrelas" role="img" aria-label="5 de 5 estrelas">★★★★★</div>
+        <blockquote class="depoimento-texto">
+          "Reduzimos nosso índice de extravio e atraso a zero nos envios de São Paulo para o Sul do país. A visibilidade do rastreio em tempo real transmite total tranquilidade aos nossos compradores corporativos."
+        </blockquote>
+        <figcaption class="depoimento-autor">
+          <span class="depoimento-avatar" aria-hidden="true">RA</span>
+          <div>
+            <strong>Rodrigo Alcantara</strong>
+            <small>Diretor de Logística, OmniVarejo Brasil</small>
+          </div>
+        </figcaption>
       </figure>
-      <figure class="card">
-        <blockquote>O suporte dedicado no WhatsApp nos atende em segundos sempre que precisamos de uma saída urgente de carga lotação. Uma parceria sólida e sem a burocracia desnecessária das transportadoras antigas.</blockquote>
-        <figcaption><span class="iniciais">CF</span> <strong>Camila Ferreira</strong> Gerente de Operações, EletroForte Indústria</figcaption>
+
+      <figure class="depoimento-card">
+        <div class="depoimento-estrelas" role="img" aria-label="5 de 5 estrelas">★★★★★</div>
+        <blockquote class="depoimento-texto">
+          "O suporte dedicado no WhatsApp nos atende em segundos sempre que precisamos de uma saída urgente de carga lotação. Uma parceria sólida e sem a burocracia desnecessária das transportadoras antigas."
+        </blockquote>
+        <figcaption class="depoimento-autor">
+          <span class="depoimento-avatar" aria-hidden="true">CF</span>
+          <div>
+            <strong>Camila Ferreira</strong>
+            <small>Gerente de Operações, EletroForte Indústria</small>
+          </div>
+        </figcaption>
       </figure>
     </div>
   </section>
 
-  <!--CTA CORPORATIVO (fundo escuro)-->
-  <section id="contato" class="cta">
-    <div>
-      <p class="eyebrow">Atendimento corporativo VIP</p>
-      <h2>Precisa de uma operação sob medida para sua empresa?</h2>
-      <p>onecte-se com nossos consultores seniores de logística rodoviária e receba uma tabela de tarifas diferenciada com faturamento quinzenal ou mensal.</p>
-      <ul class="selos-confianca">
-        <li>Registro ANTT Ativo</li>
-        <li>ISO 9001:2015</li>
-        <li>Dados Protegidos SSL</li>
-      </ul>
-    </div>
-    <div class="cta-botoes">
-      <a class="btn-primario" href="#">Falar no WhatsApp com Especialista</a>
-      <a class="btn-secundario" href="#">Baixar Tabela de Preços Referencial</a>
+  <!-- CONTATO (CTA) -->
+  <section id="contato" class="contato">
+    <div class="contato-container">
+      <div class="contato-info">
+        <span class="contato-eyebrow">Atendimento corporativo VIP</span>
+        <h2 class="contato-titulo">Precisa de uma operação sob medida para sua empresa?</h2>
+        <p class="contato-texto">
+          Conecte-se com nossos consultores seniores de logística rodoviária e receba uma tabela de tarifas diferenciada com faturamento quinzenal ou mensal.
+        </p>
+        <ul class="contato-selos">
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M8 12l3 3 5-6" />
+            </svg>
+            Registro ANTT Ativo
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="9" r="6" />
+              <path d="M8.5 14.5L7 22l5-3 5 3-1.5-7.5" />
+            </svg>
+            ISO 9001:2015
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="4" y="11" width="16" height="10" rx="2" />
+              <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+            </svg>
+            Dados Protegidos SSL
+          </li>
+        </ul>
+      </div>
+
+      <div class="contato-acoes">
+        <a href="#" class="contato-botao">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            <path d="M8 9h8M8 13h5" />
+          </svg>
+          Falar no WhatsApp com Especialista
+        </a>
+        <a href="#" class="contato-botao contato-botao-claro">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <path d="M7 10l5 5 5-5" />
+            <path d="M12 15V3" />
+          </svg>
+          Baixar Tabela de Preços Referencial
+        </a>
+      </div>
     </div>
   </section>
   </main>
