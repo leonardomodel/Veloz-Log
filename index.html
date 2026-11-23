@@ -14,110 +14,113 @@
 
 <body>
   <!--NAVBAR-->
-  <header class="topo">
-    <a class="logo" href="#inicio" aria-label="VelozLog – página inicial">
-      <span class="logo-icone" aria-hidden="true">
-        <img src="/img/logo.svg" alt="Logo VelozLog">
-      </span>
-    </a>
-    <nav class="Principal">
-      <ul class="menu">
-        <li><a href="#servicos">Serviços</a></li>
-        <li><a href="#rastreamento">Rastreamento</a></li>
-        <li><a href="#cotacao">Cotação de Frete</a></li>
-        <li><a href="#sobre">Sobre</a></li>
-        <li><a href="#contato">contato</a></li>
-      </ul>
-    </nav>
-
-    <div class="acoes">
-      <a class="btn-area" href="#area-cliente">Área do Cliente</a>
-      <a class="btn-cotacao" href="#cotacao">Cotação Rápida</a>
-      <div class="avatar">
-        <span class="icone-mask" style="--icone: url('/img/user.svg')"></span>
-      </div>
-    </div>
-  </header>
-
-  <!--COMEÇO DA HERO-->
-  <main>
-    <section id="inicio" class="hero">
-      <div class="hero-texto">
-        <p class="selo">Líder em entregas expressas no Brasil</p>
-        <h1>Sua carga entregue com <span>segurança</span>, rapidez e rastreamento total.</h1>
-        <p>Transporte rodoviário fracionado e lotação para todo o território nacional com garantia inegociável de prazo e monitoramento satelital ininterrupto.</p>
-        <ul class="hero-selos">
-          <li><img src="/img/ic-cotacao.svg" alt="">Cotação B2B Expressa</li>
-          <li><img src="/img/ic-suporte.svg">Suporte Dedicado 24/7</li>
-          <li><img src="/img/ic-carga.svg" alt="">Cargas 100% Asseguradas</li>
+  <div class="primeira-tela">
+    <header class="topo">
+      <a class="logo" href="#inicio" aria-label="VelozLog – página inicial">
+        <span class="logo-icone" aria-hidden="true">
+          <img src="/img/logo.svg" alt="Logo VelozLog">
+        </span>
+      </a>
+      <nav class="Principal">
+        <ul class="menu">
+          <li><a href="#servicos">Serviços</a></li>
+          <li><a href="#rastreamento">Rastreamento</a></li>
+          <li><a href="#cotacao">Cotação de Frete</a></li>
+          <li><a href="#sobre">Sobre</a></li>
+          <li><a href="#contato">contato</a></li>
         </ul>
-        <div class="hero-rodape">
-          <ul class="avatares" aria-hidden="true">
-            <li>SP</li>
-            <li>PR</li>
-            <li>MG</li>
-            <li>+24</li>
+      </nav>
+
+      <div class="acoes">
+        <a class="btn-area" href="#area-cliente">Área do Cliente</a>
+        <a class="btn-cotacao" href="#cotacao">Cotação Rápida</a>
+        <div class="avatar">
+          <span class="icone-mask" style="--icone: url('/img/user.svg')"></span>
+        </div>
+      </div>
+    </header>
+    <!--COMEÇO DA HERO-->
+    <main>
+      <section id="inicio" class="hero">
+        <div class="hero-texto">
+          <p class="selo">Líder em entregas expressas no Brasil</p>
+          <h1>Sua carga entregue com <span>segurança</span>, rapidez e rastreamento total.</h1>
+          <p>Transporte rodoviário fracionado e lotação para todo o território nacional com garantia inegociável de prazo e monitoramento satelital ininterrupto.</p>
+          <ul class="hero-selos">
+            <li><img src="/img/ic-cotacao.svg" alt="">Cotação B2B Expressa</li>
+            <li><img src="/img/ic-suporte.svg">Suporte Dedicado 24/7</li>
+            <li><img src="/img/ic-carga.svg" alt="">Cargas 100% Asseguradas</li>
           </ul>
-          <p class="hero-cobertura">Interligação diária entre mais de <strong>3.200 municípios</strong> brasileiros.</p>
-        </div>
-      </div>
-
-      <div id="rastreamento" class="card-rastreio">
-        <div role="tablist" class="abas">
-          <button role="tab" aria-selected="true" type="button">Rastrear Pedido</button>
-          <button role="tab" aria-selected="false" type="button">Simular Frete</button>
-        </div>
-        <label for="codigo">Código de rastreamento / NF / CPF ou CNPJ</label>
-        <div class="campo-busca">
-          <input type="codigo" type="text" value="VLZ-849102-SP">
-          <button type="button">Rastrear</button>
-        </div>
-
-        <article class="pedido">
-          <header>
-            <h2>VLZ-849102-SP</h2>
-            <span class="status">Em Trânsito</span>
-            <span class="segurada">Carga Segurada</span>
-          </header>
-          <div class="trajeto">
-            <p><small>Origem</small> São Paulo (HUB-01)</p>
-            <div>
-              <p>Prazo: Hoje até 18:30</p>
-              <progress value="75" max="100"></progress>
-              <p>75% do trajeto concluído</p>
-            </div>
-            <p><small>Destino</small> Curitiba (PR)</p>
+          <div class="hero-rodape">
+            <ul class="avatares" aria-hidden="true">
+              <li>SP</li>
+              <li>PR</li>
+              <li>MG</li>
+              <li>+24</li>
+            </ul>
+            <p class="hero-cobertura">Interligação diária entre mais de <strong>3.200 municípios</strong> brasileiros.</p>
           </div>
-          <footer>
-            <p>Telemetria em tempo real • BR-116 KM 84</p>
-            <a href="#">Ver Ocorrências</a>
-          </footer>
-        </article>
-      </div>
-    </section>
+        </div>
 
-    <!--INDICADORES-->
-    <section class="indicadores" aria-label="Números da VelozLog">
-      <ul>
-        <li>
-          <span class="icone" aria-hidden="true"><img src="/img/ic-caminhao.svg" alt=""></span>
-          <div><strong>+2.4M</strong> Entregas Concluídas</div>
-        </li>
-        <li>
-          <span class="icone" aria-hidden="true"><img src="/img/ic-timer.svg" alt=""></span>
-          <div><strong>99.4%</strong> Índice no Prazo (OTD)</div>
-        </li>
-        <li>
-          <span class="icone" aria-hidden="true"><img src="/img/ic-mapa.svg" alt=""></span>
-          <div><strong>100%</strong> Cobertura Nacional</div>
-        </li>
-        <li>
-          <span class="icone" aria-hidden="true"><img src="/img/ic-escudo-ok.svg" alt=""></span>
-          <div><strong>R$ 50M+</strong> Apólices RCTR-C / RCF-DC</div>
-        </li>
-      </ul>
-    </section>
+        <div id="rastreamento" class="card-rastreio">
+          <div role="tablist" class="abas">
+            <button role="tab" aria-selected="true" type="button">Rastrear Pedido</button>
+            <button role="tab" aria-selected="false" type="button">Simular Frete</button>
+          </div>
+          <label for="codigo">Código de rastreamento / NF / CPF ou CNPJ</label>
+          <div class="campo-busca">
+            <input type="codigo" type="text" value="VLZ-849102-SP">
+            <button type="button">Rastrear</button>
+          </div>
 
+          <article class="pedido">
+            <header>
+              <h2>VLZ-849102-SP</h2>
+              <span class="status">Em Trânsito</span>
+              <span class="segurada">Carga Segurada</span>
+            </header>
+            <div class="trajeto">
+              <p><small>Origem</small> São Paulo (HUB-01)</p>
+              <div>
+                <p>Prazo: Hoje até 18:30</p>
+                <progress value="75" max="100"></progress>
+                <p>75% do trajeto concluído</p>
+              </div>
+              <p><small>Destino</small> Curitiba (PR)</p>
+            </div>
+            <footer>
+              <p>Telemetria em tempo real • BR-116 KM 84</p>
+              <a href="#">Ver Ocorrências</a>
+            </footer>
+          </article>
+        </div>
+      </section>
+
+      <!--INDICADORES-->
+      <section class="indicadores" aria-label="Números da VelozLog">
+        <ul>
+          <li>
+            <span class="icone" aria-hidden="true"><img src="/img/ic-caminhao.svg" alt=""></span>
+            <div><strong>+2.4M</strong> Entregas Concluídas</div>
+          </li>
+          <li>
+            <span class="icone" aria-hidden="true"><img src="/img/ic-timer.svg" alt=""></span>
+            <div><strong>99.4%</strong> Índice no Prazo (OTD)</div>
+          </li>
+          <li>
+            <span class="icone" aria-hidden="true"><img src="/img/ic-mapa.svg" alt=""></span>
+            <div><strong>100%</strong> Cobertura Nacional</div>
+          </li>
+          <li>
+            <span class="icone" aria-hidden="true"><img src="/img/ic-escudo-ok.svg" alt=""></span>
+            <div><strong>R$ 50M+</strong> Apólices RCTR-C / RCF-DC</div>
+          </li>
+        </ul>
+      </section>
+    </main>
+  </div>
+
+  <div class="segunda-tela">
     <!--SOLUÇÕES LOGÍSTICAS: grade de 4 cards-->
     <section id="servicos" class="servicos">
       <header class="secao-cabecalho">
@@ -246,157 +249,158 @@
         </div>
       </div>
     </section>
+  </div>
 
-    <!--COTAÇÃO: texto à esquerda, formulário à direita-->
-    <section class="cotacao" id="cotacao">
-      <div class="cotacao-container">
+  <!--COTAÇÃO: texto à esquerda, formulário à direita-->
+  <section class="cotacao" id="cotacao">
+    <div class="cotacao-container">
 
-        <!-- Coluna esquerda -->
-        <div class="cotacao-info">
-          <span class="cotacao-eyebrow">Cotação Instantânea</span>
-          <h2 class="cotacao-titulo">Simule o frete da sua empresa em segundos</h2>
-          <p class="cotacao-texto">
-            Tarifas competitivas com tabela decrescente para volumes recorrentes,
-            cálculo imediato de cubagem e sem surpresas na fatura.
-          </p>
+      <!-- Coluna esquerda -->
+      <div class="cotacao-info">
+        <span class="cotacao-eyebrow">Cotação Instantânea</span>
+        <h2 class="cotacao-titulo">Simule o frete da sua empresa em segundos</h2>
+        <p class="cotacao-texto">
+          Tarifas competitivas com tabela decrescente para volumes recorrentes,
+          cálculo imediato de cubagem e sem surpresas na fatura.
+        </p>
 
-          <ul class="cotacao-lista">
-            <li>
-              <svg class="cotacao-icone" viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M8 12.5l2.8 2.8L16.5 9.5"></path>
-              </svg>
-              Integração nativa via API para ERPs (SAP, TOTVS, Bling, Tiny)
-            </li>
-            <li>
-              <svg class="cotacao-icone" viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M8 12.5l2.8 2.8L16.5 9.5"></path>
-              </svg>
-              Faturamento corporativo quinzenal ou mensal com DDA bancário
-            </li>
-            <li>
-              <svg class="cotacao-icone" viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M8 12.5l2.8 2.8L16.5 9.5"></path>
-              </svg>
-              Coleta agendada com equipe treinada para carga frágil
-            </li>
-          </ul>
+        <ul class="cotacao-lista">
+          <li>
+            <svg class="cotacao-icone" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M8 12.5l2.8 2.8L16.5 9.5"></path>
+            </svg>
+            Integração nativa via API para ERPs (SAP, TOTVS, Bling, Tiny)
+          </li>
+          <li>
+            <svg class="cotacao-icone" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M8 12.5l2.8 2.8L16.5 9.5"></path>
+            </svg>
+            Faturamento corporativo quinzenal ou mensal com DDA bancário
+          </li>
+          <li>
+            <svg class="cotacao-icone" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M8 12.5l2.8 2.8L16.5 9.5"></path>
+            </svg>
+            Coleta agendada com equipe treinada para carga frágil
+          </li>
+        </ul>
 
-          <a class="cotacao-b2b" href="#contato">
-            <span class="cotacao-b2b-icone">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path>
-                <path d="M14 3v5h5"></path>
-                <path d="M9 13h6M9 17h6"></path>
-              </svg>
-            </span>
-            <span class="cotacao-b2b-texto">
-              <strong>Precisa de cotação para grandes volumes?</strong>
-              <small>Contate diretamente nossa mesa B2B corporativa</small>
-            </span>
-          </a>
+        <a class="cotacao-b2b" href="#contato">
+          <span class="cotacao-b2b-icone">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path>
+              <path d="M14 3v5h5"></path>
+              <path d="M9 13h6M9 17h6"></path>
+            </svg>
+          </span>
+          <span class="cotacao-b2b-texto">
+            <strong>Precisa de cotação para grandes volumes?</strong>
+            <small>Contate diretamente nossa mesa B2B corporativa</small>
+          </span>
+        </a>
+      </div>
+
+      <!-- Coluna direita: formulário -->
+      <form class="cotacao-form" action="#" method="post">
+        <h3 class="cotacao-form-titulo">Preencha os dados do envio</h3>
+
+        <div class="cotacao-grade">
+          <div class="cotacao-campo">
+            <label for="cep-origem">CEP de Origem (Remetente)</label>
+            <input type="text" name="cep-origem" id="cep-origem" placeholder="01001-000 (São Paulo - SP)" inputmode="numeric" maxlength="9">
+          </div>
+
+          <div class="cotacao-campo">
+            <label for="cep-destino">CEP de Destino (Destinatário)</label>
+            <input type="text" name="cep-destino" id="cep-destino" placeholder="80010-000 (Curitiba - PR)" inputmode="numeric" maxlength="9">
+          </div>
+
+          <div class="cotacao-campo">
+            <label for="peso">Peso Bruto Total (kg)</label>
+            <input type="number" id="peso" name="peso" placeholder="Ex: 45" min="0" step="0.01">
+          </div>
+
+          <div class="cotacao-campo">
+            <label for="volumes">Quantidade de Volumes / Caixas</label>
+            <input type="number" id="volumes" name="volumes" placeholder="Ex: 4" min="1" step="1">
+          </div>
+
+          <div class="cotacao-campo">
+            <label for="mercadoria">Tipo de Mercadoria</label>
+            <select name="mercadoria" id="mercadoria">
+              <option value="geral">Carga Seca / Manufaturados</option>
+              <option value="fragil">Carga Frágil</option>
+              <option value="perecivel">Perecíveis</option>
+              <option value="eletronicos">Eletrônicos</option>
+            </select>
+          </div>
+
+          <div class="cotacao-campo">
+            <label for="valor-nf">Valor da Carga na NF (R$)</label>
+            <input type="text" id="valor-nf" name="valor-nf" placeholder="R$ 15.000,00" inputmode="decimal">
+          </div>
         </div>
 
-        <!-- Coluna direita: formulário -->
-        <form class="cotacao-form" action="#" method="post">
-          <h3 class="cotacao-form-titulo">Preencha os dados do envio</h3>
+        <div class="cotacao-rodape">
+          <p class="cotacao-nota">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 2l2.4 1.8 3-.2 1.2 2.8 2.6 1.6-.8 2.9.8 2.9-2.6 1.6-1.2 2.8-3-.2L12 20l-2.4-1.8-3 .2-1.2-2.8L2.8 14l.8-2.9-.8-2.9 2.6-1.6 1.2-2.8 3 .2z"></path>
+              <path d="M8.5 12l2.5 2.5 4.5-4.5"></path>
+            </svg>
+            Cálculo com GRIS e seguro obrigatório inclusos
+          </p>
 
-          <div class="cotacao-grade">
-            <div class="cotacao-campo">
-              <label for="cep-origem">CEP de Origem (Remetente)</label>
-              <input type="text" name="cep-origem" id="cep-origem" placeholder="01001-000 (São Paulo - SP)" inputmode="numeric" maxlength="9">
-            </div>
+          <button type="submit" class="cotacao-botao">
+            Calcular Frete em 1 Minuto
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="4" y="3" width="16" height="18" rx="2"></rect>
+              <path d="M8 7h8M8 12h2M14 12h2M8 16h2M14 16h2"></path>
+            </svg>
+          </button>
+        </div>
+      </form>
 
-            <div class="cotacao-campo">
-              <label for="cep-destino">CEP de Destino (Destinatário)</label>
-              <input type="text" name="cep-destino" id="cep-destino" placeholder="80010-000 (Curitiba - PR)" inputmode="numeric" maxlength="9">
-            </div>
+    </div>
+  </section>
 
-            <div class="cotacao-campo">
-              <label for="peso">Peso Bruto Total (kg)</label>
-              <input type="number" id="peso" name="peso" placeholder="Ex: 45" min="0" step="0.01">
-            </div>
+  <!--DFEPOIMENTOS: 2 cards-->
+  <section class="depoimentos">
+    <header class="secao-cabecalho">
+      <p class="eyebrow">Confiança comprovada</p>
+      <h2>Depoimentos de quem transporta conosco diariamente</h2>
+    </header>
+    <div class="grade-2">
+      <figure class="card">
+        <blockquote>Reduzimos nosso índice de extravio e atraso a zero nos envios de São Paulo para o Sul do país. A visibilidade do rastreio em tempo real transmite total tranquilidade aos nossos compradores corporativos.</blockquote>
+        <figcaption><span class="iniciais">RA</span> <strong>Rodrigo Alcantara</strong> Diretor de Logística, OmniVarejo Brasil</figcaption>
+      </figure>
+      <figure class="card">
+        <blockquote>O suporte dedicado no WhatsApp nos atende em segundos sempre que precisamos de uma saída urgente de carga lotação. Uma parceria sólida e sem a burocracia desnecessária das transportadoras antigas.</blockquote>
+        <figcaption><span class="iniciais">CF</span> <strong>Camila Ferreira</strong> Gerente de Operações, EletroForte Indústria</figcaption>
+      </figure>
+    </div>
+  </section>
 
-            <div class="cotacao-campo">
-              <label for="volumes">Quantidade de Volumes / Caixas</label>
-              <input type="number" id="volumes" name="volumes" placeholder="Ex: 4" min="1" step="1">
-            </div>
-
-            <div class="cotacao-campo">
-              <label for="mercadoria">Tipo de Mercadoria</label>
-              <select name="mercadoria" id="mercadoria">
-                <option value="geral">Carga Seca / Manufaturados</option>
-                <option value="fragil">Carga Frágil</option>
-                <option value="perecivel">Perecíveis</option>
-                <option value="eletronicos">Eletrônicos</option>
-              </select>
-            </div>
-
-            <div class="cotacao-campo">
-              <label for="valor-nf">Valor da Carga na NF (R$)</label>
-              <input type="text" id="valor-nf" name="valor-nf" placeholder="R$ 15.000,00" inputmode="decimal">
-            </div>
-          </div>
-
-          <div class="cotacao-rodape">
-            <p class="cotacao-nota">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 2l2.4 1.8 3-.2 1.2 2.8 2.6 1.6-.8 2.9.8 2.9-2.6 1.6-1.2 2.8-3-.2L12 20l-2.4-1.8-3 .2-1.2-2.8L2.8 14l.8-2.9-.8-2.9 2.6-1.6 1.2-2.8 3 .2z"></path>
-                <path d="M8.5 12l2.5 2.5 4.5-4.5"></path>
-              </svg>
-              Cálculo com GRIS e seguro obrigatório inclusos
-            </p>
-
-            <button type="submit" class="cotacao-botao">
-              Calcular Frete em 1 Minuto
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <rect x="4" y="3" width="16" height="18" rx="2"></rect>
-                <path d="M8 7h8M8 12h2M14 12h2M8 16h2M14 16h2"></path>
-              </svg>
-            </button>
-          </div>
-        </form>
-
-      </div>
-    </section>
-
-    <!--DFEPOIMENTOS: 2 cards-->
-    <section class="depoimentos">
-      <header class="secao-cabecalho">
-        <p class="eyebrow">Confiança comprovada</p>
-        <h2>Depoimentos de quem transporta conosco diariamente</h2>
-      </header>
-      <div class="grade-2">
-        <figure class="card">
-          <blockquote>Reduzimos nosso índice de extravio e atraso a zero nos envios de São Paulo para o Sul do país. A visibilidade do rastreio em tempo real transmite total tranquilidade aos nossos compradores corporativos.</blockquote>
-          <figcaption><span class="iniciais">RA</span> <strong>Rodrigo Alcantara</strong> Diretor de Logística, OmniVarejo Brasil</figcaption>
-        </figure>
-        <figure class="card">
-          <blockquote>O suporte dedicado no WhatsApp nos atende em segundos sempre que precisamos de uma saída urgente de carga lotação. Uma parceria sólida e sem a burocracia desnecessária das transportadoras antigas.</blockquote>
-          <figcaption><span class="iniciais">CF</span> <strong>Camila Ferreira</strong> Gerente de Operações, EletroForte Indústria</figcaption>
-        </figure>
-      </div>
-    </section>
-
-    <!--CTA CORPORATIVO (fundo escuro)-->
-    <section id="contato" class="cta">
-      <div>
-        <p class="eyebrow">Atendimento corporativo VIP</p>
-        <h2>Precisa de uma operação sob medida para sua empresa?</h2>
-        <p>onecte-se com nossos consultores seniores de logística rodoviária e receba uma tabela de tarifas diferenciada com faturamento quinzenal ou mensal.</p>
-        <ul class="selos-confianca">
-          <li>Registro ANTT Ativo</li>
-          <li>ISO 9001:2015</li>
-          <li>Dados Protegidos SSL</li>
-        </ul>
-      </div>
-      <div class="cta-botoes">
-        <a class="btn-primario" href="#">Falar no WhatsApp com Especialista</a>
-        <a class="btn-secundario" href="#">Baixar Tabela de Preços Referencial</a>
-      </div>
-    </section>
+  <!--CTA CORPORATIVO (fundo escuro)-->
+  <section id="contato" class="cta">
+    <div>
+      <p class="eyebrow">Atendimento corporativo VIP</p>
+      <h2>Precisa de uma operação sob medida para sua empresa?</h2>
+      <p>onecte-se com nossos consultores seniores de logística rodoviária e receba uma tabela de tarifas diferenciada com faturamento quinzenal ou mensal.</p>
+      <ul class="selos-confianca">
+        <li>Registro ANTT Ativo</li>
+        <li>ISO 9001:2015</li>
+        <li>Dados Protegidos SSL</li>
+      </ul>
+    </div>
+    <div class="cta-botoes">
+      <a class="btn-primario" href="#">Falar no WhatsApp com Especialista</a>
+      <a class="btn-secundario" href="#">Baixar Tabela de Preços Referencial</a>
+    </div>
+  </section>
   </main>
 </body>
 
