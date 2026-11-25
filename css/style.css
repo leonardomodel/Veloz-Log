@@ -1475,6 +1475,166 @@ progress::-moz-progress-bar {
   stroke-linejoin: round;
 }
 
+/* ---------- RODAPÉ ---------- */
+/* ---------- RODAPÉ ---------- */
+.rodape {
+  padding: 40px var(--lateral);
+  background: var(--lavanda-forte);
+}
+
+.rodape-topo {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 24px;
+}
+
+/* logo: ícone + texto */
+.rodape-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--cor-texto);
+}
+
+.rodape-logo img {
+  display: block;
+  width: 38px;
+  height: 38px;
+}
+
+.rodape-logo-log {
+  color: var(--laranja-escuro);
+}
+
+.rodape-marca p {
+  max-width: 400px;
+  margin: 16px 0 20px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--cor-texto-suave);
+}
+
+.rodape-selos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rodape-selos li {
+  padding: 5px 14px;
+  border-radius: 99px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--cor-texto);
+}
+
+.rodape-selos li:hover {
+  background-color: var(--laranja);
+  color: #fff;
+}
+
+.rodape-coluna h3 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--cor-texto);
+}
+
+.rodape-coluna li {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--cor-texto-suave);
+}
+
+.rodape-coluna address {
+  font-style: normal;
+}
+
+.rodape-coluna address p {
+  margin-bottom: 10px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--cor-texto-suave);
+}
+
+.rodape-coluna a {
+  transition: color 0.15s;
+}
+
+.rodape-coluna a:hover,
+.rodape-coluna a:focus-visible {
+  color: var(--laranja);
+  outline: none;
+}
+
+.rodape .rodape-cnpj {
+  margin-bottom: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+/* linha de baixo: copyright | assinatura | links */
+.rodape-base {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px 40px;
+  margin-top: 72px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--cor-texto-suave);
+}
+
+.rodape-base p {
+  margin: 0;
+}
+
+.rodape-legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.rodape-legal li {
+  font-size: 12px;
+}
+
+.rodape-legal a:hover,
+.rodape-legal a:focus-visible {
+  color: var(--laranja);
+  outline: none;
+}
+
+/* assinatura: LMTECH colado, só a cor muda */
+.rodape-assinatura {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lmtech {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.lmtech-lm {
+  color: var(--laranja);
+}
+
+.lmtech-tech,
+.lmtech-devweb {
+  color: var(--navy);
+}
+
 /* ---------- Responsivo ---------- */
 @media (max-width: 1100px) {
   /* com 5 links + 3 botões não cabe mais: esconde só "contato" */
@@ -1578,6 +1738,14 @@ progress::-moz-progress-bar {
   .btn-area,
   .btn-cotacao {
     white-space: nowrap;
+  }
+  .rodape-topo {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  .rodape-marca {
+    grid-column: 1 / -1;
   }
 }
 
