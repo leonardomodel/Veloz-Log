@@ -1245,21 +1245,32 @@ progress::-moz-progress-bar {
   stroke-linejoin: round;
 }
 
+/* ---------- TERCEIRA TELA: depoimentos + contato em uma tela inteira ---------- */
+.terceira-tela {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: #f8f9ff;
+  scroll-snap-align: start;
+}
+
 /* ---------- DEPOIMENTOS ---------- */
 .depoimentos {
-  padding: 80px var(--lateral) 40px;
+  padding: 40px var(--lateral) 0;
   background: #f8f9ff;
 }
 
 .depoimentos-cabecalho {
-  margin-bottom: 28px;
+  margin-bottom: 40px;
   text-align: center;
 }
 
 .depoimentos-eyebrow {
   display: block;
   margin-bottom: 6px;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -1277,26 +1288,26 @@ progress::-moz-progress-bar {
 .depoimentos-grade {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  gap: 24px;
 }
 
 .depoimento-card {
-  padding: 28px 30px;
+  padding: 40px;
   border-radius: 12px;
   background: #fff;
   box-shadow: 0 1px 3px rgba(15, 31, 61, 0.06);
 }
 
 .depoimento-estrelas {
-  margin-bottom: 14px;
-  font-size: 16px;
-  letter-spacing: 2px;
+  margin-bottom: 16px;
+  font-size: 20px;
+  letter-spacing: 3px;
   color: var(--laranja);
 }
 
 .depoimento-texto {
-  margin-bottom: 24px;
-  font-size: 13px;
+  margin-bottom: 28px;
+  font-size: 14px;
   font-style: italic;
   line-height: 1.7;
   color: var(--cor-texto);
@@ -1312,18 +1323,18 @@ progress::-moz-progress-bar {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  width: 36px;
-  height: 36px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: #dbe7ff;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--cor-texto);
 }
 
 .depoimento-autor strong {
   display: block;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   line-height: 1.3;
   color: var(--cor-texto);
@@ -1331,13 +1342,13 @@ progress::-moz-progress-bar {
 
 .depoimento-autor small {
   display: block;
-  font-size: 10px;
+  font-size: 11px;
   color: var(--cor-texto-suave);
 }
 
 /* ---------- CONTATO (CTA) ---------- */
 .contato {
-  padding: 40px var(--lateral) 80px;
+  padding: 80px var(--lateral) 40px;
   background: #f8f9ff;
 }
 
@@ -1362,13 +1373,13 @@ progress::-moz-progress-bar {
 
 .contato-info {
   flex: 1 1 420px;
-  max-width: 560px;
+  max-width: 600px;
 }
 
 .contato-eyebrow {
   display: block;
   margin-bottom: 12px;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -1377,15 +1388,16 @@ progress::-moz-progress-bar {
 
 .contato-titulo {
   margin-bottom: 14px;
-  font-size: clamp(26px, 2.8vw, 34px);
+  font-size: clamp(28px, 3.2vw, 40px);
   font-weight: 800;
   line-height: 1.15;
   letter-spacing: -0.02em;
 }
 
 .contato-texto {
+  max-width: 560px;
   margin-bottom: 20px;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.6;
   color: rgba(255, 255, 255, 0.55);
 }
@@ -1400,20 +1412,20 @@ progress::-moz-progress-bar {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 10px;
+  font-size: 13px;
   color: rgba(255, 255, 255, 0.6);
 }
 
 .contato-selos svg {
-  width: 14px;
-  height: 14px;
+  width: 18px;
+  height: 18px;
 }
 
 .contato-acoes {
   display: flex;
   flex: 0 1 380px;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 .contato-botao {
@@ -1421,7 +1433,7 @@ progress::-moz-progress-bar {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 14px 20px;
+  padding: 16px 20px;
   border-radius: 8px;
   background: var(--laranja);
   font-size: 13px;
