@@ -147,8 +147,8 @@ html {
 }
 
 .selo-status {
-  background: #ccffcc;
-  color: #0f4d0f;
+  background: #fff1c2;
+  color: #845a00;
 }
 
 .selo-status::before {
@@ -156,7 +156,7 @@ html {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #0f4d0f;
+  background: #845a00;
 }
 
 .selo-carga {
