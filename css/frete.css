@@ -1282,12 +1282,25 @@ body:has(dialog[open]) {
 
   #proposta-print {
     display: block;
+  }
+}
+
+/* Estilo da proposta: vale na impressão e também quando o JS gera o PDF
+   em arquivo para o WhatsApp (cópia com a classe .pp-arquivo) */
+@media all {
+  #proposta-print,
+  .pp-arquivo {
     font-size: 9pt;
     line-height: 1.35;
     color: var(--fr-texto);
   }
-  #proposta-print * {
+  #proposta-print *,
+  .pp-arquivo * {
     box-sizing: border-box;
+  }
+  .pp-arquivo {
+    width: 186mm; /* largura útil do A4 com as margens do @page */
+    background: #fff;
   }
 
   .pp-topo {

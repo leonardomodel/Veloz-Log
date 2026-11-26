@@ -496,22 +496,269 @@
     pronto.then(() => window.print());
   }
 
+  /* ---------- WhatsApp: mensagem com emojis + proposta em PDF (arquivo) ---------- */
+  const HTML2PDF_URL =
+    "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js";
+  let html2pdfCarregando = null;
+
+  // carrega a biblioteca que transforma a proposta em PDF (só quando precisa)
+  function carregarHtml2pdf() {
+    if (window.html2pdf) return Promise.resolve();
+    if (!html2pdfCarregando) {
+      html2pdfCarregando = new Promise((ok, falha) => {
+        const s = document.createElement("script");
+        s.src = HTML2PDF_URL;
+        s.onload = ok;
+        s.onerror = () => {
+          html2pdfCarregando = null;
+          falha(new Error("Não carregou o html2pdf"));
+        };
+        document.head.appendChild(s);
+      });
+    }
+    return html2pdfCarregando;
+  }
+
+  // texto que vai no WhatsApp (*negrito* e _itálico_ são do próprio WhatsApp)
+  // emojis escritos como código (\u{...}) para não quebrarem por causa da codificação do arquivo
+  const EMOJI = {
+    caminhao: "\u{1F69A}", // 🚚
+    mao: "\u{1F44B}", // 👋
+    origem: "\u{1F4CD}", // 📍
+    chegada: "\u{1F3C1}", // 🏁
+    caixa: "\u{1F4E6}", // 📦
+    nota: "\u{1F9FE}", // 🧾
+    foguete: "\u{1F680}", // 🚀
+    calendario: "\u{1F4C5}", // 📅
+    dinheiro: "\u{1F4B0}", // 💰
+    cartao: "\u{1F4B3}", // 💳
+    escudo: "\u{1F6E1}\u{FE0F}", // 🛡️
+    satelite: "\u{1F4E1}", // 📡
+    ampulheta: "\u{23F3}", // ⏳
+    documento: "\u{1F4C4}", // 📄
+    seta: "\u{1F447}", // 👇
+    check: "\u{2705}", // ✅
+  };
+
+  // texto que vai no WhatsApp (*negrito* e _itálico_ são do próprio WhatsApp)
+  function mensagemWhats() {
+    const d = dadosProposta();
+    const e = d.escolhida;
+    const volumes = `${estado.volumes} ${estado.volumes === 1 ? "volume" : "volumes"}`;
+    const linha = "\u2501".repeat(16); // ━━━━━━━━━━━━━━━━
+    return [
+      `${EMOJI.caminhao} *VelozLog | Cotação de Frete*`,
+      `*${d.numero}*`,
+      linha,
+      `Olá! ${EMOJI.mao} Aqui está a cotação do seu frete:`,
+      "",
+      `${EMOJI.origem} *Origem:* ${local(estado.origem)}`,
+      `${EMOJI.chegada} *Destino:* ${local(estado.destino)}`,
+      `${EMOJI.caixa} *Carga:* ${numero(pesoTributavel(estado))} kg · ${volumes}`,
+      `${EMOJI.nota} *Valor da NF:* ${brl(Math.round(estado.nf * 100))}`,
+      "",
+      `${EMOJI.foguete} *Modalidade:* ${e.nome}`,
+      `${EMOJI.calendario} *Prazo:* ${e.prazo}`,
+      linha,
+      `${EMOJI.dinheiro} *TOTAL: ${brl(e.t.final)}*${e.t.pix ? " _(com desconto PIX)_" : ""}`,
+      `${EMOJI.cartao} *Pagamento:* ${d.pagamento}`,
+      linha,
+      `${EMOJI.escudo} Seguro RCTR-C incluso`,
+      `${EMOJI.satelite} Rastreamento 24h em tempo real`,
+      `${EMOJI.ampulheta} Válida até ${d.validade}`,
+      "",
+      `${EMOJI.documento} Logo abaixo envio a *proposta completa em PDF* ${EMOJI.seta}`,
+      "",
+      `_VelozLog · Segurança e visibilidade em cada quilômetro_ ${EMOJI.check}`,
+    ].join("\n");
+  }
+
+  // gera o PDF da proposta como ARQUIVO (mesmo conteúdo do "Baixar proposta em PDF")
+  async function gerarArquivoPDF() {
+    await carregarHtml2pdf();
+    montarProposta();
+
+    const copia = document.createElement("div");
+    copia.className = "pp-arquivo";
+    copia.innerHTML = $("#proposta-print").innerHTML;
+
+    // espera o logo carregar para ele sair no PDF
+    await new Promise((ok) => {
+      const img = new Image();
+      img.onload = img.onerror = ok;
+      img.src = "/img/logo.svg";
+      setTimeout(ok, 1500);
+    });
+
+    const nome = `Proposta-${dadosProposta().numero.replace("#", "")}-VelozLog.pdf`;
+    const pdf = await window
+      .html2pdf()
+      .set({
+        margin: [10, 12, 14, 12], // mesmas margens do @page
+        filename: nome,
+        image: { type: "jpeg", quality: 0.95 },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        pagebreak: { mode: ["css", "legacy"], avoid: [".pp-secao", "tr"] },
+      })
+      .from(copia)
+      .toPdf()
+      .get("pdf");
+
+    // "Página X de Y" no rodapé, igual à impressão
+    const total = pdf.internal.getNumberOfPages();
+    for (let i = 1; i <= total; i++) {
+      pdf.setPage(i);
+      pdf.setFontSize(8);
+      pdf.setTextColor(100, 116, 139);
+      pdf.text(`Página ${i} de ${total}`, 198, 289, { align: "right" });
+    }
+
+    const blob = pdf.output("blob");
+    return {
+      blob,
+      nome,
+      arquivo: new File([blob], nome, { type: "application/pdf" }),
+    };
+  }
+
+  // o PDF começa a ser preparado quando o modal abre, para o envio sair na hora
+  let pdfPronto = null;
+  function prepararPDF() {
+    pdfPronto = gerarArquivoPDF().catch((erro) => {
+      console.error("frete.js: não gerou o PDF", erro);
+      pdfPronto = null;
+      return null;
+    });
+    return pdfPronto;
+  }
+
+  function baixarBlob(blob, nome) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = nome;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  }
+
+  // WhatsApp em 2 passos:
+  //   1º toque → abre o WhatsApp com a mensagem (emojis) para enviar
+  //   2º toque → envia o PDF da proposta em anexo na mesma conversa
+  let passoWhats = 1;
+
+  function textoBotaoWhats(botao, titulo, legenda) {
+    $("strong", botao).textContent = titulo;
+    $("small", botao).textContent = legenda;
+  }
+
+  function reiniciarWhats() {
+    passoWhats = 1;
+    const botao = $("#comp-whats");
+    if (!botao) return;
+    botao.disabled = false;
+    botao.classList.remove("fr-opcao-destaque");
+    textoBotaoWhats(botao, "Enviar por WhatsApp", "Mensagem + proposta em PDF");
+  }
+
+  async function enviarWhats(botao) {
+    // ---- 1º passo: mensagem com emojis ----
+    if (passoWhats === 1) {
+      const texto = mensagemWhats();
+      // cópia de segurança: se algum emoji vier quebrado, é só apagar e colar (Ctrl+V)
+      if (navigator.clipboard)
+        navigator.clipboard.writeText(texto).catch(() => {});
+      // api.whatsapp.com direto (o wa.me redireciona e às vezes estraga os emojis)
+      window.open(
+        `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`,
+        "_blank",
+        "noopener",
+      );
+      passoWhats = 2;
+      if (!pdfPronto) prepararPDF(); // o PDF vai sendo montado enquanto isso
+      botao.classList.add("fr-opcao-destaque");
+      textoBotaoWhats(
+        botao,
+        "2º passo: enviar o PDF da proposta",
+        "Toque aqui e escolha a mesma conversa",
+      );
+      return;
+    }
+
+    // ---- 2º passo: PDF em anexo ----
+    botao.disabled = true;
+    textoBotaoWhats(botao, "Preparando o PDF…", "Só um instante");
+    const pdf = await (pdfPronto || prepararPDF());
+    botao.disabled = false;
+
+    if (!pdf) {
+      textoBotaoWhats(
+        botao,
+        "Não consegui montar o PDF",
+        "Toque para tentar de novo",
+      );
+      pdfPronto = null;
+      return;
+    }
+
+    // celular (e Windows com WhatsApp instalado): menu de compartilhar só com o PDF
+    if (navigator.canShare && navigator.canShare({ files: [pdf.arquivo] })) {
+      try {
+        await navigator.share({ files: [pdf.arquivo] });
+        textoBotaoWhats(
+          botao,
+          "PDF enviado ✔",
+          "Mensagem e proposta compartilhadas",
+        );
+        setTimeout(reiniciarWhats, 3000);
+      } catch (erro) {
+        if (erro.name === "NotAllowedError") {
+          // o navegador pede um novo toque depois de montar o PDF
+          textoBotaoWhats(
+            botao,
+            "PDF pronto! Toque de novo",
+            "Para enviar na conversa",
+          );
+        } else {
+          // fechou o menu sem escolher: continua no 2º passo
+          textoBotaoWhats(
+            botao,
+            "2º passo: enviar o PDF da proposta",
+            "Toque aqui e escolha a mesma conversa",
+          );
+        }
+      }
+      return;
+    }
+
+    // computador sem menu de compartilhar arquivo: baixa o PDF para anexar
+    baixarBlob(pdf.blob, pdf.nome);
+    textoBotaoWhats(
+      botao,
+      "PDF baixado ✔",
+      "Arraste o arquivo para a conversa do WhatsApp",
+    );
+    setTimeout(reiniciarWhats, 6000);
+  }
+
   const dialogComp = $("#modal-compartilhar");
   const botaoComp = $("#btn-compartilhar");
   if (dialogComp && botaoComp) {
-    botaoComp.addEventListener("click", () => dialogComp.showModal());
+    botaoComp.addEventListener("click", () => {
+      dialogComp.showModal();
+      reiniciarWhats();
+      prepararPDF(); // já vai montando o PDF com os dados atuais
+    });
     dialogComp
       .querySelector("[data-fechar-comp]")
       .addEventListener("click", () => dialogComp.close());
 
     $("#comp-pdf").addEventListener("click", gerarPDF);
-    $("#comp-whats").addEventListener("click", () => {
-      window.open(
-        `https://wa.me/?text=${encodeURIComponent(resumoTexto())}`,
-        "_blank",
-        "noopener",
-      );
-    });
+    $("#comp-whats").addEventListener("click", (e) =>
+      enviarWhats(e.currentTarget),
+    );
     $("#comp-email").addEventListener("click", () => {
       const assunto = `Cotação de frete VelozLog ${dadosProposta().numero}`;
       location.href = `mailto:?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(resumoTexto())}`;
