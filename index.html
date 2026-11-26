@@ -70,30 +70,30 @@
           <label for="codigo">Código de rastreamento / NF / CPF ou CNPJ</label>
           <div class="campo-busca">
             <input type="codigo" type="text" value="VLZ-849102-SP">
-            <button type="button">Rastrear</button>
+            <button type="button" onclick="window.location.href='/rastreio.html'"">Rastrear</button>
           </div>
 
-          <article class="pedido">
-            <header>
-              <h2>VLZ-849102-SP</h2>
-              <span class="status">Em Trânsito</span>
-              <span class="segurada">Carga Segurada</span>
-            </header>
-            <div class="trajeto">
-              <p><small>Origem</small> São Paulo (HUB-01)</p>
-              <div>
-                <p>Prazo: Hoje até 18:30</p>
-                <progress value="75" max="100"></progress>
-                <p>75% do trajeto concluído</p>
+          <article class=" pedido">
+              <header>
+                <h2>VLZ-849102-SP</h2>
+                <span class="status">Em Trânsito</span>
+                <span class="segurada">Carga Segurada</span>
+              </header>
+              <div class="trajeto">
+                <p><small>Origem</small> São Paulo (HUB-01)</p>
+                <div>
+                  <p>Prazo: Hoje até 18:30</p>
+                  <progress value="75" max="100"></progress>
+                  <p>75% do trajeto concluído</p>
+                </div>
+                <p><small>Destino</small> Curitiba (PR)</p>
               </div>
-              <p><small>Destino</small> Curitiba (PR)</p>
-            </div>
-            <footer>
-              <p>Telemetria em tempo real • BR-116 KM 84</p>
-              <a href="#">Ver Ocorrências</a>
-            </footer>
-          </article>
-        </div>
+              <footer>
+                <p>Telemetria em tempo real • BR-116 KM 84</p>
+                <a href="#">Ver Ocorrências</a>
+              </footer>
+              </article>
+          </div>
       </section>
       <!--INDICADORES-->
       <section class="indicadores" aria-label="Números da VelozLog">
