@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acompanhe sua entrega | VelozLog</title>
+  <!-- Mesma fonte do index -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="/img/icon.svg" type="image/svg+xml">
+  <!-- Mesmo CSS do index (nav, footer, variáveis) -->
+  <link rel="stylesheet" href="/css/style.css">
+  <!-- CSS só desta página (prefixo rt-) -->
+  <link rel="stylesheet" href="/css/rastreio.css">
+</head>
+
+<body>
+
+  <!-- NAV (partials/nav.html) -->
+  <div data-include="nav"></div>
+
+  <main class="rt-pagina">
+    <div class="rt-container">
+
+      <!-- Breadcrumb -->
+      <nav class="rt-breadcrumb" aria-label="Caminho">
+        <a href="/index.html">Início</a>
+        <span>/</span>
+        <a href="/index.html#rastreamento">Rastreamento</a>
+        <span>/</span>
+        <span class="rt-breadcrumb-atual" data-rt="codigo">VLZ-849102-SP</span>
+      </nav>
+
+      <!-- Cabeçalho da página -->
+      <div class="rt-cabecalho">
+        <div>
+          <h1 class="rt-titulo">Acompanhe sua entrega</h1>
+          <p class="rt-subtitulo">Cada etapa da sua carga, com a tranquilidade de saber onde ela está.</p>
+        </div>
+        <a href="/index.html#rastreamento" class="rt-btn-voltar">
+          <span aria-hidden="true">←</span> Rastrear outro pedido
+        </a>
+      </div>
+
+      <!-- ===================== CARD RESUMO ===================== -->
+      <section class="rt-resumo">
+        <div class="rt-resumo-topo">
+          <div>
+            <span class="rt-rotulo">Código de rastreamento</span>
+            <strong class="rt-codigo" data-rt="codigo">VLZ-849102-SP</strong>
+          </div>
+          <div class="rt-tags">
+            <span class="rt-tag rt-tag-transito"><i></i> Em Trânsito</span>
+            <span class="rt-tag rt-tag-segura">Carga Segurada</span>
+          </div>
+        </div>
+
+        <div class="rt-rota">
+          <div class="rt-rota-ponto">
+            <span class="rt-rotulo">Origem</span>
+            <strong>São Paulo (HUB-01)</strong>
+            <small>São Paulo • SP</small>
+          </div>
+
+          <span class="rt-rota-seta" aria-hidden="true">→</span>
+
+          <div class="rt-rota-ponto">
+            <span class="rt-rotulo">Destino</span>
+            <strong>Curitiba (PR)</strong>
+            <small>Paraná</small>
+          </div>
+
+          <div class="rt-previsao">
+            <span class="rt-rotulo">Previsão de entrega</span>
+            <strong>Hoje, até 18:30</strong>
+            <small>Acompanhe as próximas atualizações.</small>
+          </div>
+        </div>
+
+        <div class="rt-progresso">
+          <div class="rt-progresso-info">
+            <span>Telemetria em tempo real • BR-116 KM 84</span>
+            <strong><span data-rt="porcentagem">75</span>% do trajeto concluído</strong>
+          </div>
+          <div class="rt-barra">
+            <div class="rt-barra-preenchida" data-progresso="75"></div>
+          </div>
+
+          <ol class="rt-etapas">
+            <li class="rt-etapa rt-feita"><span class="rt-etapa-icone">✓</span> Coleta realizada</li>
+            <li class="rt-etapa rt-feita"><span class="rt-etapa-icone">✓</span> No centro de distribuição</li>
+            <li class="rt-etapa rt-atual"><span class="rt-etapa-icone">03</span> Em trânsito</li>
+            <li class="rt-etapa"><span class="rt-etapa-icone">04</span> Entregue</li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- ===================== GRADE INFERIOR ===================== -->
+      <div class="rt-grade">
+
+        <!-- Histórico de movimentações -->
+        <section class="rt-historico">
+          <div class="rt-historico-topo">
+            <div>
+              <h2>Histórico de movimentações</h2>
+              <p>Da coleta ao destino, acompanhe cada atualização.</p>
+            </div>
+            <span class="rt-selo-cinza">Mais recentes primeiro</span>
+          </div>
+
+          <ul class="rt-linha-tempo">
+            <li class="rt-evento rt-evento-atual">
+              <span class="rt-evento-icone">03</span>
+              <div class="rt-evento-texto">
+                <h3>Carga em trânsito</h3>
+                <span class="rt-evento-local">BR-116 KM 84 • A caminho de Curitiba (PR)</span>
+                <p>Sua carga segue viagem para o destino.</p>
+              </div>
+              <span class="rt-evento-status">Agora</span>
+            </li>
+
+            <li class="rt-evento">
+              <span class="rt-evento-icone">✓</span>
+              <div class="rt-evento-texto">
+                <h3>Saída do centro de distribuição</h3>
+                <span class="rt-evento-local">São Paulo (HUB-01)</span>
+                <p>Carga liberada para transferência rodoviária.</p>
+              </div>
+              <span class="rt-evento-status">Concluído</span>
+            </li>
+
+            <li class="rt-evento">
+              <span class="rt-evento-icone">✓</span>
+              <div class="rt-evento-texto">
+                <h3>Carga recebida no hub</h3>
+                <span class="rt-evento-local">São Paulo (HUB-01)</span>
+                <p>Conferência finalizada no centro de distribuição.</p>
+              </div>
+              <span class="rt-evento-status">Concluído</span>
+            </li>
+
+            <li class="rt-evento">
+              <span class="rt-evento-icone">✓</span>
+              <div class="rt-evento-texto">
+                <h3>Coleta realizada</h3>
+                <span class="rt-evento-local">São Paulo • SP</span>
+                <p>Mercadoria coletada e integrada à operação.</p>
+              </div>
+              <span class="rt-evento-status">Concluído</span>
+            </li>
+          </ul>
+
+          <p class="rt-historico-nota">As movimentações são exibidas conforme o registro em cada etapa da operação.</p>
+        </section>
+
+        <!-- Coluna lateral -->
+        <aside class="rt-lateral">
+          <section class="rt-info">
+            <h2>Informações do transporte</h2>
+            <dl>
+              <div>
+                <dt>Modal</dt>
+                <dd>Rodoviário</dd>
+              </div>
+              <div>
+                <dt>Origem</dt>
+                <dd>São Paulo (HUB-01)</dd>
+              </div>
+              <div>
+                <dt>Destino</dt>
+                <dd>Curitiba (PR)</dd>
+              </div>
+              <div>
+                <dt>Proteção da carga</dt>
+                <dd>Seguro incluso</dd>
+              </div>
+            </dl>
+            <p class="rt-info-nota">Sua carga é monitorada durante toda a viagem.</p>
+          </section>
+
+          <section class="rt-suporte">
+            <span class="rt-suporte-rotulo">Suporte dedicado 24/7</span>
+            <h2>Precisa de ajuda com esta entrega?</h2>
+            <p>Fale com nossa equipe e informe o código <span data-rt="codigo">VLZ-849102-SP</span>.</p>
+            <a href="/index.html#contato" class="rt-suporte-btn">Falar com atendimento →</a>
+          </section>
+        </aside>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ===================== RODAPÉ DA PÁGINA ===================== -->
+  <footer class="rt-rodape">
+    <div class="rt-container rt-rodape-conteudo">
+      <div>
+        <strong class="rt-rodape-marca">Veloz<span>Log</span></strong>
+        <p>Segurança e visibilidade em cada quilômetro.</p>
+      </div>
+      <nav class="rt-rodape-links" aria-label="Links do rodapé">
+        <a href="/index.html#rastreamento">Rastreamento</a>
+        <span aria-hidden="true">•</span>
+        <a href="/index.html#contato">Atendimento</a>
+        <span aria-hidden="true">•</span>
+        <a href="#">Privacidade</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="/js/layout.js"></script>
+  <script src="/js/rastreio.js"></script>
+</body>
+
+</html>

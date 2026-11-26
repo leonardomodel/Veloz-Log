@@ -751,7 +751,7 @@ main > .hero {
   background: #ffe9cc;
   font-size: 12.5px;
   font-weight: 700;
-  color: var(--cor-texto);
+  color: var(--laranja-escuro);
   white-space: nowrap;
 }
 
