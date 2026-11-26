@@ -94,6 +94,54 @@
 })();
 
 /* =========================================================
+   CONTADORES
+   ========================================================= */
+
+(function () {
+  function iniciarContadores() {
+    const contadores = document.querySelectorAll(".contador");
+
+    contadores.forEach((contador) => {
+      const valorFinal = parseFloat(contador.dataset.valor);
+      const tipo = contador.dataset.tipo;
+      const duracao = 3000;
+      const inicio = performance.now();
+
+      function atualizar(tempo) {
+        const progresso = Math.min((tempo - inicio) / duracao, 1);
+        const suavizacao = 1 - Math.pow(1 - progresso, 3);
+
+        const valor = valorFinal * suavizacao;
+
+        if (tipo === "milhao") {
+          contador.textContent = "+" + valor.toFixed(1) + "M";
+        }
+
+        if (tipo === "porcentagem") {
+          contador.textContent = valor.toFixed(1).replace(".", ",") + "%";
+        }
+
+        if (tipo === "milhoes") {
+          contador.textContent = "R$ " + Math.floor(valor) + "M+";
+        }
+
+        if (progresso < 1) {
+          requestAnimationFrame(atualizar);
+        }
+      }
+
+      requestAnimationFrame(atualizar);
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", iniciarContadores);
+  } else {
+    iniciarContadores();
+  }
+})();
+
+/* =========================================================
    CARD DE RASTREAMENTO / SIMULAR FRETE
    ========================================================= */
 (function () {
