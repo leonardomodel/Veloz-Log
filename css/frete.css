@@ -516,21 +516,40 @@ body {
   border-radius: 10px;
   overflow: hidden;
 }
-.fr-mapa-area svg {
+.fr-mapa-area > svg {
   display: block;
   width: 100%;
   height: 100%;
 }
 .fr-mapa-clima {
   position: absolute;
+  top: 10px;
   right: 10px;
-  bottom: 10px;
-  padding: 5px 10px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.92);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  max-width: calc(100% - 80px);
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15);
   font-size: 11px;
   font-weight: 600;
   color: var(--fr-verde);
+}
+.fr-mapa-clima::before {
+  content: "";
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.fr-mapa-clima.nv-atencao {
+  color: #b45309;
+}
+.fr-mapa-clima.nv-critico {
+  color: #dc2626;
 }
 .fr-mapa-legenda {
   display: flex;
@@ -608,6 +627,9 @@ body {
   justify-content: space-between;
   align-items: baseline;
   gap: 12px;
+}
+.fr-desconto[hidden] {
+  display: none;
 }
 .fr-total-linha span {
   font-size: 13px;
@@ -1528,4 +1550,102 @@ body:has(dialog[open]) {
     font-size: 8.5pt;
     color: var(--fr-azul);
   }
+}
+
+/* ================= MAPA GOOGLE ================= */
+.fr-mapa-area {
+  height: clamp(220px, 24vw, 320px);
+}
+.fr-mapa-google {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s;
+}
+.fr-mapa-google.pronto {
+  opacity: 1;
+  pointer-events: auto;
+}
+.fr-mapa-clima {
+  z-index: 2;
+}
+.fr-mapa-area.tem-google > svg {
+  visibility: hidden;
+}
+
+/* pinos de origem e destino */
+.fr-pino {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+.fr-pino i {
+  position: absolute;
+  left: -10px;
+  top: -10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--cor, #f26a1b);
+  border: 3px solid #fff;
+  box-shadow: 0 1px 5px rgba(14, 42, 92, 0.35);
+}
+.fr-pino span {
+  position: absolute;
+  left: 0;
+  top: 14px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0e2a5c;
+  text-shadow:
+    0 0 4px #fff,
+    0 0 4px #fff,
+    0 0 4px #fff;
+}
+
+/* mapa aberto (Leaflet / OpenStreetMap) em tons de cinza */
+.fr-mapa-google .leaflet-container {
+  width: 100%;
+  height: 100%;
+  background: #e5e7ea;
+  font-family: inherit;
+}
+.fr-mapa-google .leaflet-tile-pane {
+  filter: grayscale(1) brightness(1.06) contrast(0.92);
+}
+.fr-mapa-google .leaflet-control-attribution {
+  font-size: 10px;
+  background: rgba(255, 255, 255, 0.8);
+}
+.fr-mapa-google .leaflet-marker-icon {
+  overflow: visible;
+}
+
+/* crédito do OpenStreetMap: obrigatório pela licença, mantido pequeno e discreto */
+.fr-mapa-google .leaflet-control-attribution {
+  padding: 1px 6px;
+  font-size: 9px;
+  line-height: 1.4;
+  color: #64748b;
+  background: rgba(255, 255, 255, 0.7);
+}
+.fr-mapa-google .leaflet-control-attribution a {
+  color: inherit;
+}
+
+/* PIX Instantâneo: seleção em verde (as demais condições continuam em laranja) */
+.fr-pag:has(input[value="pix"]):hover span {
+  border-color: #86d9a3;
+}
+.fr-pag input[value="pix"]:checked + span {
+  border-color: var(--fr-verde);
+  background: var(--fr-verde-claro);
+  color: #15803d;
+}
+.fr-pag:has(input[value="pix"]:focus-visible) {
+  outline-color: rgba(22, 163, 74, 0.45);
 }

@@ -8,6 +8,7 @@
   const GRIS_POR_MIL = 1; // 0,1% do valor da NF
   const SEGURO_POR_MIL = 3; // 0,3% do valor da NF
   const DESCONTO_PERCENTUAL = 5; // desconto corporativo
+  const DESCONTO_PIX_PERCENTUAL = 1.5; // extra para pagamento via PIX (sobre o valor já com desconto corporativo)
 
   // Valores derivados dos números da tela (45 kg, NF R$ 15.000).
   // Quando tiver a tabela real de preços, é só trocar aqui.
@@ -101,6 +102,11 @@
     );
 
   /* ================= CÁLCULOS ================= */
+  function pagamentoAtual() {
+    const marcado = $('input[name="pagamento"]:checked');
+    return marcado ? marcado.value : "faturado";
+  }
+
   function pesoTributavel(e) {
     const [c, a, l] = e.dims;
     const cubado = ((c * a * l * e.volumes) / 1e6) * FATOR_CUBAGEM;
@@ -116,6 +122,10 @@
     const pedagio = Math.round(m.pedagio * 100);
     const total = frete + gris + seguro + pedagio;
     const desconto = Math.floor((total * DESCONTO_PERCENTUAL) / 100);
+    const pix =
+      pagamentoAtual() === "pix"
+        ? Math.floor(((total - desconto) * DESCONTO_PIX_PERCENTUAL) / 100)
+        : 0;
     return {
       peso,
       frete,
@@ -124,7 +134,8 @@
       pedagio,
       total,
       desconto,
-      final: total - desconto,
+      pix,
+      final: total - desconto - pix,
     };
   }
 
@@ -174,6 +185,8 @@
     );
     const sub = $(".fr-mapa-sub");
     if (sub) sub.style.display = padrao ? "" : "none";
+    const legenda = $(".fr-mapa-legenda");
+    if (legenda) legenda.style.display = padrao ? "" : "none";
     if (estado.origem.cidade && estado.destino.cidade) {
       definir(
         ".fr-nota",
@@ -227,6 +240,9 @@
         definir("#v-pedagio", brl(t.pedagio), animar);
         definir("#v-total", brl(t.total), animar);
         definir("#v-desconto", `– ${brl(t.desconto)}`, animar);
+        const linhaPix = $("#linha-pix");
+        if (linhaPix) linhaPix.hidden = t.pix === 0;
+        definir("#v-pix", `– ${brl(t.pix)}`, animar);
         definir("#v-final", brl(t.final), animar);
         definir(".fr-painel-topo .fr-selo", m.nome);
       }
@@ -278,6 +294,11 @@
           : "Não foi possível consultar a cidade";
     });
   }
+
+  // trocar a condição de pagamento recalcula o total faturado
+  const blocoPagamento = $(".fr-pagamento");
+  if (blocoPagamento)
+    blocoPagamento.addEventListener("change", () => renderTarifas(true));
 
   /* ================= COMPARTILHAR / PROPOSTA EM PDF ================= */
   const esc = (t) =>
@@ -353,7 +374,7 @@
       `Carga: ${numero(pesoTributavel(estado))} kg tributáveis, ${estado.volumes} ${estado.volumes === 1 ? "volume" : "volumes"}, NF ${brl(Math.round(estado.nf * 100))}`,
       `Modalidade: ${e.nome}`,
       `Prazo: ${e.prazo}`,
-      `Valor do frete: ${brl(e.t.total)} | Total faturado: ${brl(e.t.final)}`,
+      `Valor do frete: ${brl(e.t.total)} | Total faturado: ${brl(e.t.final)}${e.t.pix ? " (com desconto PIX)" : ""}`,
       `Pagamento: ${d.pagamento}`,
       `Válida até ${d.validade}.`,
     ].join("\n");
@@ -425,6 +446,7 @@
         <div class="pp-totais">
           <div><span>Valor total do frete</span><strong>${brl(e.t.total)}</strong></div>
           <div class="pp-desc"><span>Desconto corporativo (${DESCONTO_PERCENTUAL}%)</span><strong>– ${brl(e.t.desconto)}</strong></div>
+          ${e.t.pix ? `<div class="pp-desc"><span>Desconto PIX (${DESCONTO_PIX_PERCENTUAL.toString().replace(".", ",")}%)</span><strong>– ${brl(e.t.pix)}</strong></div>` : ""}
           <div class="pp-final"><span>Total faturado</span><strong>${brl(e.t.final)}</strong></div>
           <div class="pp-pag"><span>Condição de pagamento</span><strong>${esc(d.pagamento)}</strong></div>
         </div>
@@ -523,6 +545,12 @@
   }
   const botaoPdf = $("#btn-pdf");
   if (botaoPdf) botaoPdf.addEventListener("click", gerarPDF);
+
+  // mapa do Google (js/mapa.js): redesenha a rota com a origem e o destino atuais
+  function atualizarMapa() {
+    if (window.VelozMapa)
+      window.VelozMapa.atualizar(estado.origem, estado.destino);
+  }
 
   /* ================= MODAL ================= */
   const dialog = $("#modal-params");
@@ -690,11 +718,59 @@
 
     dialog.close();
     renderTudo(true);
+    atualizarMapa();
   });
 
   // trocar de modalidade atualiza a composição da tarifa
   const lista = $(".fr-modalidades");
   if (lista) lista.addEventListener("change", () => renderTarifas(false));
 
-  renderTudo(false);
+  /* ===== dados vindos do formulário da página inicial (frete.html?o=...&d=...&p=...&v=...&nf=...&t=...) ===== */
+  function lerParametrosIniciais() {
+    const q = new URLSearchParams(location.search);
+    if (!q.has("o") && !q.has("d")) return null;
+    const cepO = soDigitos(q.get("o") || "");
+    const cepD = soDigitos(q.get("d") || "");
+    const peso = parseFloat(q.get("p"));
+    const volumes = parseInt(q.get("v"), 10);
+    const nf = parseFloat(q.get("nf"));
+    const tipo = q.get("t");
+    return {
+      cepO: cepO.length === 8 ? cepO : null,
+      cepD: cepD.length === 8 ? cepD : null,
+      peso: peso > 0 ? peso : null,
+      volumes: volumes >= 1 ? volumes : null,
+      nf: nf > 0 ? nf : null,
+      tipo: tipo && $(`#p-tipo option[value="${tipo}"]`) ? tipo : null,
+    };
+  }
+
+  async function iniciar() {
+    const ini = lerParametrosIniciais();
+    if (ini) {
+      if (ini.peso) estado.peso = ini.peso;
+      if (ini.volumes) estado.volumes = ini.volumes;
+      if (ini.nf) estado.nf = ini.nf;
+      if (ini.tipo) estado.tipo = ini.tipo;
+      const [infoO, infoD] = await Promise.all([
+        ini.cepO ? buscarCep(ini.cepO) : null,
+        ini.cepD ? buscarCep(ini.cepD) : null,
+      ]);
+      if (ini.cepO && infoO)
+        estado.origem = {
+          cep: formatarCep(ini.cepO),
+          cidade: infoO.cidade || null,
+          uf: infoO.uf || null,
+        };
+      if (ini.cepD && infoD)
+        estado.destino = {
+          cep: formatarCep(ini.cepD),
+          cidade: infoD.cidade || null,
+          uf: infoD.uf || null,
+        };
+    }
+    renderTudo(false);
+    atualizarMapa();
+  }
+  iniciar();
 })();

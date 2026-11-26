@@ -6,11 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>VelozLog | Cotação De Frete</title>
   <link rel="icon" href="/img/icon.svg">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/frete.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="/css/frete.css">
 </head>
 
 <body>
@@ -191,9 +191,9 @@
 
           <div class="fr-mapa-area">
             <svg viewBox="0 0 640 220" preserveAspectRatio="none" role="img" aria-label="Rota entre São Paulo e Curitiba">
-              <rect width="640" height="220" fill="#DDE7DD" />
-              <path d="M0 150 C120 120 200 190 330 150 S560 110 640 140 L640 220 L0 220Z" fill="#CBDCCB" />
-              <path d="M0 60 C140 30 260 90 400 55 S580 20 640 50 L640 0 L0 0Z" fill="#E7EFE7" />
+              <rect width="640" height="220" fill="#e4e6e9" />
+              <path d="M0 150 C120 120 200 190 330 150 S560 110 640 140 L640 220 L0 220Z" fill="#d2d5da" />
+              <path d="M0 60 C140 30 260 90 400 55 S580 20 640 50 L640 0 L0 0Z" fill="#eceef0" />
               <path d="M60 170 C170 140 230 150 300 120 S470 90 580 50" stroke="#fff" stroke-width="9" fill="none" stroke-linecap="round" />
               <path d="M60 170 C170 140 230 150 300 120 S470 90 580 50" stroke="#F26A1B" stroke-width="4" fill="none" stroke-linecap="round" stroke-dasharray="1 9" />
               <circle cx="60" cy="170" r="9" fill="#0E2A5C" stroke="#fff" stroke-width="3" />
@@ -201,6 +201,8 @@
               <text x="76" y="190" font-size="12" font-weight="700" fill="#0E2A5C">São Paulo</text>
               <text x="500" y="38" font-size="12" font-weight="700" fill="#0E2A5C">Curitiba</text>
             </svg>
+            <div class="fr-mapa-google" id="mapa-google" role="img" aria-label="Mapa da rota entre origem e destino"></div>
+            <div class="fr-mapa-google" id="mapa-osm" role="img" aria-label="Mapa da rota entre origem e destino"></div>
             <span class="fr-mapa-clima">Condições da Rota: Normal</span>
           </div>
 
@@ -557,6 +559,7 @@
   <section id="proposta-print" class="pp" aria-hidden="true"></section>
 
   <script src="/js/layout.js"></script>
+  <script src="/js/mapa.js"></script>
   <script src="/js/frete.js"></script>
 </body>
 
