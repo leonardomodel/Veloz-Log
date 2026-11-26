@@ -147,8 +147,8 @@ html {
 }
 
 .selo-status {
-  background: #ffe9dc;
-  color: var(--laranja-escuro);
+  background: #ccffcc;
+  color: #0f4d0f;
 }
 
 .selo-status::before {
@@ -156,12 +156,12 @@ html {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--laranja);
+  background: #0f4d0f;
 }
 
 .selo-carga {
-  background: #ccffcc;
-  color: #0f4d0f;
+  background: #ffe9dc;
+  color: var(--laranja-escuro);
 }
 
 /* origem → destino + previsão */
