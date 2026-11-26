@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VelozLog | Cotação De Frete</title>
+  <link rel="icon" href="/img/icon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/frete.css">
+</head>
+
+<body>
+
+  <!-- NAV (partials/nav.html) -->
+  <div data-include="nav"></div>
+
+  <main class="fr-pagina">
+
+    <!-- ================= BARRA DE STATUS ================= -->
+    <div class="fr-status">
+      <div class="fr-status-info">
+        <span class="fr-tag">Cotação #VLZ-94821</span>
+        <span>Gerada em tempo real há 1 min</span>
+        <span class="fr-tag fr-tag-neutra">Válida por 72 horas</span>
+      </div>
+      <div class="fr-status-acoes">
+        <button type="button" class="fr-link" id="btn-editar">Editar Parâmetros da Carga</button>
+        <button type="button" class="fr-link" id="btn-compartilhar">Compartilhar</button>
+      </div>
+    </div>
+
+    <!-- ================= RESUMO DA CARGA ================= -->
+    <section class="fr-resumo" aria-label="Resumo da carga">
+      <div class="fr-resumo-rota">
+        <div class="fr-ponto">
+          <span class="fr-ponto-icone"></span>
+          <div>
+            <small>ORIGEM</small>
+            <strong id="r-origem-cidade">São Paulo • SP</strong>
+            <em id="r-origem-cep">CEP 01000-000</em>
+          </div>
+        </div>
+
+        <div class="fr-distancia"><span id="r-distancia">400 km via BR-116</span></div>
+
+        <div class="fr-ponto">
+          <span class="fr-ponto-icone fr-ponto-destino"></span>
+          <div>
+            <small>DESTINO</small>
+            <strong id="r-destino-cidade">Curitiba • PR</strong>
+            <em id="r-destino-cep">CEP 80010-000</em>
+          </div>
+        </div>
+      </div>
+
+      <div class="fr-resumo-dados">
+        <div><small>Peso Tributável</small><strong id="r-peso">45,00 kg</strong></div>
+        <div><small>Volumes</small><strong id="r-volumes">4 caixas</strong></div>
+        <div><small>Valor NF Declarada</small><strong id="r-nf">R$ 15.000,00</strong></div>
+        <div><small>Tipo Mercadoria</small><strong id="r-tipo">Manufaturados</strong></div>
+      </div>
+    </section>
+
+    <!-- ================= CONTEÚDO PRINCIPAL ================= -->
+    <div class="fr-grade">
+
+      <!-- ---------- ESQUERDA ---------- -->
+      <div class="fr-esquerda">
+
+        <div class="fr-titulo-bloco">
+          <h1>Selecione a Modalidade</h1>
+          <span class="fr-chip">Prazo Prioritário &amp; Rastreado</span>
+        </div>
+        <p class="fr-nota">Tarifas negociadas para o corredor industrial SP → PR com gestão integrada.</p>
+
+        <!-- Cards de modalidade (radio escondido + label) -->
+        <div class="fr-modalidades" role="radiogroup" aria-label="Modalidades de entrega">
+
+          <label class="fr-modal">
+            <input type="radio" name="modalidade" value="express" checked>
+            <div class="fr-modal-corpo">
+              <div class="fr-modal-topo">
+                <span class="fr-modal-icone"></span>
+                <div class="fr-modal-titulo">
+                  <h2>Express Rodoviário <span class="fr-selo fr-selo-laranja">Mais Escolhido</span></h2>
+                  <p>Prioridade no despacho noturno pelo HUB Central Dutra.</p>
+                </div>
+                <div class="fr-modal-preco">
+                  <s>R$ 420,00</s>
+                  <strong>R$ 384,50</strong>
+                  <small class="fr-economia">Você economiza R$ 35,50</small>
+                </div>
+              </div>
+
+              <div class="fr-modal-prazo">
+                <div>
+                  <small>Previsão de Entrega</small>
+                  <strong>Até 24h úteis (Amanhã até às 18:00)</strong>
+                </div>
+                <div class="fr-modal-etiquetas">
+                  <span>Coleta Hoje até 14h30</span>
+                  <span>Janela Dedicada</span>
+                </div>
+              </div>
+
+              <ul class="fr-modal-itens">
+                <li>Embarque preferencial</li>
+                <li>Telemetria 24h em trânsito</li>
+                <li>Comprovante digital com GPS</li>
+              </ul>
+            </div>
+          </label>
+
+          <label class="fr-modal">
+            <input type="radio" name="modalidade" value="fracionada">
+            <div class="fr-modal-corpo">
+              <div class="fr-modal-topo">
+                <span class="fr-modal-icone fr-icone-azul"></span>
+                <div class="fr-modal-titulo">
+                  <h2>Carga Fracionada Padrão <span class="fr-selo fr-selo-verde">Econômico</span></h2>
+                  <p>Consolidação inteligente de cargas fracionadas entre parceiros.</p>
+                </div>
+                <div class="fr-modal-preco">
+                  <strong>R$ 248,00</strong>
+                  <small>Melhor custo por volume</small>
+                </div>
+              </div>
+
+              <div class="fr-modal-prazo">
+                <div>
+                  <small>Previsão de Entrega</small>
+                  <strong>2 a 3 dias úteis (Previsão: Quinta-feira)</strong>
+                </div>
+                <div class="fr-modal-etiquetas">
+                  <span>Coleta em até 24h</span>
+                </div>
+              </div>
+
+              <ul class="fr-modal-itens">
+                <li>Rastreio sistêmico</li>
+                <li>Seguro RCTR-C e RCF-DC</li>
+                <li>Checklist de entrega remota</li>
+              </ul>
+            </div>
+          </label>
+
+          <label class="fr-modal">
+            <input type="radio" name="modalidade" value="dedicado">
+            <div class="fr-modal-corpo">
+              <div class="fr-modal-topo">
+                <span class="fr-modal-icone fr-icone-roxo"></span>
+                <div class="fr-modal-titulo">
+                  <h2>Dedicado Expresso / Same-Day <span class="fr-selo fr-selo-azul">Veículo Exclusivo</span></h2>
+                  <p>Fiorino ou VUC dedicado exclusivamente à sua remessa, saída direta.</p>
+                </div>
+                <div class="fr-modal-preco">
+                  <strong>R$ 890,00</strong>
+                  <small>Saída imediata após coleta</small>
+                </div>
+              </div>
+
+              <div class="fr-modal-prazo">
+                <div>
+                  <small>Previsão de Entrega</small>
+                  <strong>Hoje até 22:00 (Mesmo dia útil)</strong>
+                </div>
+                <div class="fr-modal-etiquetas">
+                  <span>Coleta Imediata</span>
+                  <span>Sem paradas</span>
+                </div>
+              </div>
+
+              <ul class="fr-modal-itens">
+                <li>Lacre de segurança exclusivo</li>
+                <li>Gerente de rota dedicado</li>
+                <li>Sem paradas intermediárias</li>
+              </ul>
+            </div>
+          </label>
+
+        </div>
+
+        <!-- Mapa -->
+        <section class="fr-mapa" aria-label="Mapa operacional da rota">
+          <h3>Mapa Operacional da Rota: São Paulo → Curitiba</h3>
+          <small class="fr-mapa-sub">Rodovia Régis Bittencourt (BR-116)</small>
+
+          <div class="fr-mapa-area">
+            <svg viewBox="0 0 640 220" preserveAspectRatio="none" role="img" aria-label="Rota entre São Paulo e Curitiba">
+              <rect width="640" height="220" fill="#DDE7DD" />
+              <path d="M0 150 C120 120 200 190 330 150 S560 110 640 140 L640 220 L0 220Z" fill="#CBDCCB" />
+              <path d="M0 60 C140 30 260 90 400 55 S580 20 640 50 L640 0 L0 0Z" fill="#E7EFE7" />
+              <path d="M60 170 C170 140 230 150 300 120 S470 90 580 50" stroke="#fff" stroke-width="9" fill="none" stroke-linecap="round" />
+              <path d="M60 170 C170 140 230 150 300 120 S470 90 580 50" stroke="#F26A1B" stroke-width="4" fill="none" stroke-linecap="round" stroke-dasharray="1 9" />
+              <circle cx="60" cy="170" r="9" fill="#0E2A5C" stroke="#fff" stroke-width="3" />
+              <circle cx="580" cy="50" r="9" fill="#F26A1B" stroke="#fff" stroke-width="3" />
+              <text x="76" y="190" font-size="12" font-weight="700" fill="#0E2A5C">São Paulo</text>
+              <text x="500" y="38" font-size="12" font-weight="700" fill="#0E2A5C">Curitiba</text>
+            </svg>
+            <span class="fr-mapa-clima">Condições da Rota: Normal</span>
+          </div>
+
+          <div class="fr-mapa-legenda">
+            <span>CD Central Guarulhos</span>
+            <span>Posto Fiscal Registro</span>
+            <span>Hub Piraí/Cajati</span>
+          </div>
+        </section>
+      </div>
+
+      <!-- ---------- DIREITA ---------- -->
+      <aside class="fr-direita" aria-label="Composição da tarifa">
+
+        <div class="fr-painel">
+          <div class="fr-painel-topo">
+            <h2>Composição da Tarifa</h2>
+            <span class="fr-selo fr-selo-laranja">Express</span>
+          </div>
+
+          <ul class="fr-linhas" id="linhas-tarifa">
+            <li><span>Frete Peso / Cubagem (49kg)</span><strong id="v-frete">R$ 290,00</strong></li>
+            <li><span>GRIS (Gerenciamento de Risco)</span><strong id="v-gris">R$ 15,00</strong></li>
+            <li><span>Seguro RCTR-C / RCF-DC (100%)</span><strong id="v-seguro">R$ 45,00</strong></li>
+            <li><span>Pedágios &amp; Taxas de Despacho</span><strong id="v-pedagio">R$ 34,50</strong></li>
+          </ul>
+
+          <div class="fr-totais">
+            <div class="fr-total-linha">
+              <span>Valor Total do Frete</span>
+              <strong id="v-total">R$ 384,50</strong>
+            </div>
+            <div class="fr-desconto">
+              <span>Desconto Corporativo (5%)</span>
+              <strong id="v-desconto">– R$ 19,22</strong>
+            </div>
+            <div class="fr-desconto" id="linha-pix" hidden>
+              <span>Desconto PIX (1,5%)</span>
+              <strong id="v-pix">– R$ 0,00</strong>
+            </div>
+            <div class="fr-total-final">
+              <span>Total faturado</span>
+              <strong id="v-final">R$ 365,28</strong>
+            </div>
+          </div>
+
+          <div class="fr-pagamento">
+            <h3>Condição de Pagamento / Faturamento</h3>
+            <div class="fr-pag-grade" role="radiogroup" aria-label="Condição de pagamento">
+              <label class="fr-pag">
+                <input type="radio" name="pagamento" value="faturado" checked>
+                <span>Faturamento 28D <small>(CNPJ)</small></span>
+              </label>
+              <label class="fr-pag">
+                <input type="radio" name="pagamento" value="pix">
+                <span>PIX Instantâneo <small>(–1,5%)</small></span>
+              </label>
+              <label class="fr-pag">
+                <input type="radio" name="pagamento" value="cartao">
+                <span>Cartão em até 6x</span>
+              </label>
+              <label class="fr-pag">
+                <input type="radio" name="pagamento" value="boleto">
+                <span>Boleto Bancário DDA</span>
+              </label>
+            </div>
+          </div>
+
+          <button type="button" class="fr-btn fr-btn-laranja fr-btn-grande" id="btn-contratar">Contratar Coleta Imediata</button>
+          <button type="button" class="fr-btn fr-btn-azul fr-btn-grande" id="btn-pdf">Baixar Proposta Comercial em PDF</button>
+
+          <div class="fr-duvida">
+            <div>
+              <strong>Dúvidas com a cotação?</strong>
+              <small>Especialista via WhatsApp</small>
+            </div>
+            <a class="fr-btn fr-btn-contorno" href="https://wa.me/5545000000000" target="_blank" rel="noopener">Chamar</a>
+          </div>
+        </div>
+
+        <div class="fr-garantia">
+          <h3>Garantia e Gestão de Risco Integrada</h3>
+          <p>Sua carga é monitorada por central de risco 24h, com seguro averbado automaticamente a cada embarque e rastreamento do coleta à entrega.</p>
+          <div class="fr-garantia-itens">
+            <span>Averbação em tempo real automática</span>
+            <span>Emissão do DACTE-A MDF-e</span>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+
+    <!-- ================= ESTRUTURA OPERACIONAL ================= -->
+    <section class="fr-estrutura">
+      <div class="fr-estrutura-topo">
+        <div>
+          <small class="fr-sobretitulo">Qualidade comprovada</small>
+          <h2>Estrutura Operacional VelozLog</h2>
+        </div>
+        <p>Capilaridade rodoviária com pontualidade auditada superior a 98,7% no eixo Sul-Sudeste brasileiro.</p>
+      </div>
+
+      <div class="fr-estrutura-cards">
+        <article class="fr-card-op">
+          <figure class="fr-card-op-img">
+            <img src="/img/frota-rastreada.jpg" alt="Centro de distribuição VelozLog em São Paulo" loading="lazy">
+            <figcaption>Centro de Distribuição SP</figcaption>
+          </figure>
+          <h3>Frota 100% Rastreada</h3>
+          <p>Veículos próprios com travas de quinta-roda eletrônicas, sensor de desengate e canal direto com central 24 horas.</p>
+        </article>
+
+        <article class="fr-card-op">
+          <figure class="fr-card-op-img">
+            <img src="/img/conferencia.jpg" alt="Conferência de cargas no cross-docking" loading="lazy">
+            <figcaption>Cross-Docking 4.0</figcaption>
+          </figure>
+          <h3>Conferência por Dimensão</h3>
+          <p>Balanças e túneis de volumetria dinâmica aferidos pelo IPEM para garantir pesagem transparente sem surpresas.</p>
+        </article>
+
+        <article class="fr-card-op">
+          <figure class="fr-card-op-img">
+            <img src="/img/baixa-instantanea.jpg" alt="Comprovante de entrega digital em tablet" loading="lazy">
+            <figcaption>POD Digital</figcaption>
+          </figure>
+          <h3>Baixa Instantânea</h3>
+          <p>Foto do canhoto da NF e geolocalização exata da entrega enviadas por webhook para seu ERP em segundos.</p>
+        </article>
+
+        <article class="fr-card-op">
+          <div class="fr-card-op-selo">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 2.5l2.4 1.6 2.9-.2 1.2 2.6 2.5 1.5-.5 2.9 1 2.7-1.9 2.2-.3 2.9-2.8.9-1.9 2.2L12 20.6l-2.6 1.2-1.9-2.2-2.8-.9-.3-2.9L2.5 13.6l1-2.7-.5-2.9 2.5-1.5 1.2-2.6 2.9.2z"></path>
+              <path d="m8.5 12 2.5 2.5 4.5-5"></path>
+            </svg>
+            <span>Homologação Oficial</span>
+          </div>
+          <h3>Certificações Ativas</h3>
+          <p>Cadastro ANTT regular, selo de qualidade ISO 9001:2015 e atendimento completo às diretrizes SASSMAQ.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <!-- RODAPÉ (partials/footer.html) -->
+  <div data-include="footer"></div>
+
+  <!-- ================= MODAL: EDITAR PARÂMETROS ================= -->
+  <dialog class="fr-dialog" id="modal-params" aria-labelledby="modal-params-titulo">
+    <form id="form-params" novalidate>
+      <header class="fr-dialog-topo">
+        <span class="fr-dialog-icone" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M4 6h8M18 6h2M4 12h2M12 12h8M4 18h10M20 18h0" />
+            <circle cx="15" cy="6" r="2" />
+            <circle cx="9" cy="12" r="2" />
+            <circle cx="17" cy="18" r="2" />
+          </svg>
+        </span>
+        <div>
+          <h2 id="modal-params-titulo">Editar Parâmetros da Carga</h2>
+          <p>Altere os dados de cubagem, rota ou valor para recalcular instantaneamente as tarifas.</p>
+        </div>
+        <button type="button" class="fr-dialog-fechar" data-fechar aria-label="Fechar">
+          <svg viewBox="0 0 24 24">
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
+        </button>
+      </header>
+
+      <div class="fr-dialog-corpo">
+        <div class="fr-form-grade">
+
+          <div class="fr-campo col-3">
+            <label for="p-cep-origem">CEP de Origem</label>
+            <div class="fr-input">
+              <svg class="fr-input-icone" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              <input id="p-cep-origem" type="text" inputmode="numeric" maxlength="9" placeholder="00000-000" autocomplete="off">
+            </div>
+            <small class="fr-dica" id="d-cep-origem"></small>
+            <small class="fr-erro" id="e-p-cep-origem" role="alert"></small>
+          </div>
+
+          <div class="fr-campo col-3">
+            <label for="p-cep-destino">CEP de Destino</label>
+            <div class="fr-input">
+              <svg class="fr-input-icone" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              <input id="p-cep-destino" type="text" inputmode="numeric" maxlength="9" placeholder="00000-000" autocomplete="off">
+            </div>
+            <small class="fr-dica" id="d-cep-destino"></small>
+            <small class="fr-erro" id="e-p-cep-destino" role="alert"></small>
+          </div>
+
+          <div class="fr-campo col-2">
+            <label for="p-peso">Peso Bruto Total (kg)</label>
+            <div class="fr-input sem-icone">
+              <input id="p-peso" type="text" inputmode="numeric" maxlength="12" placeholder="0,00" autocomplete="off">
+            </div>
+            <small class="fr-dica"></small>
+            <small class="fr-erro" id="e-p-peso" role="alert"></small>
+          </div>
+
+          <div class="fr-campo col-2">
+            <label for="p-volumes">Quantidade de Volumes</label>
+            <div class="fr-input">
+              <svg class="fr-input-icone" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M21 8 12 3 3 8v8l9 5 9-5z" />
+                <path d="m3 8 9 5 9-5M12 13v8" />
+              </svg>
+              <input id="p-volumes" type="text" inputmode="numeric" placeholder="1" autocomplete="off">
+            </div>
+            <small class="fr-dica"></small>
+            <small class="fr-erro" id="e-p-volumes" role="alert"></small>
+          </div>
+
+          <div class="fr-campo col-2">
+            <label for="p-dims">Dimensões (A x L x P) cm</label>
+            <div class="fr-input">
+              <svg class="fr-input-icone" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 17 17 3l4 4L7 21z" />
+                <path d="m7 13 2 2M10 10l2 2M13 7l2 2" />
+              </svg>
+              <input id="p-dims" type="text" inputmode="numeric" maxlength="15" placeholder="A x L x P" autocomplete="off">
+            </div>
+            <small class="fr-dica"></small>
+            <small class="fr-erro" id="e-p-dims" role="alert"></small>
+          </div>
+
+          <div class="fr-campo col-3">
+            <label for="p-nf">Valor Declarado NF (R$)</label>
+            <div class="fr-input">
+              <span class="fr-input-icone fr-input-simbolo" aria-hidden="true">$</span>
+              <input id="p-nf" type="text" inputmode="numeric" placeholder="0,00" autocomplete="off">
+            </div>
+            <small class="fr-dica">Base para seguro RCTR-C e RCF-DC</small>
+            <small class="fr-erro" id="e-p-nf" role="alert"></small>
+          </div>
+
+          <div class="fr-campo col-3">
+            <label for="p-tipo">Tipo de Mercadoria</label>
+            <div class="fr-input">
+              <svg class="fr-input-icone" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M21 8 12 3 3 8v8l9 5 9-5z" />
+                <path d="m3 8 9 5 9-5M12 13v8" />
+              </svg>
+              <select id="p-tipo">
+                <option value="manufaturados" data-resumo="Manufaturados">Manufaturados / Geral</option>
+                <option value="eletronicos" data-resumo="Eletroeletrônicos">Eletroeletrônicos</option>
+                <option value="alimentos" data-resumo="Alimentos">Alimentos não perecíveis</option>
+                <option value="medicamentos" data-resumo="Medicamentos">Medicamentos e saúde</option>
+                <option value="vestuario" data-resumo="Vestuário">Vestuário e têxteis</option>
+                <option value="autopecas" data-resumo="Autopeças">Autopeças</option>
+              </select>
+            </div>
+            <small class="fr-dica"></small>
+            <small class="fr-erro" id="e-p-tipo" role="alert"></small>
+          </div>
+        </div>
+
+        <div class="fr-dialog-aviso">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 11v5M12 8h.01" />
+          </svg>
+          <p><strong>Cálculo Dinâmico Inteligente:</strong> ao atualizar peso ou cubagem, as tarifas das modalidades (Express, Fracionado e Dedicado) e a taxa de seguro são recalculadas proporcionalmente em tempo real.</p>
+        </div>
+      </div>
+
+      <footer class="fr-dialog-rodape">
+        <button type="button" class="fr-btn fr-btn-texto" data-fechar>Cancelar</button>
+        <button type="submit" class="fr-btn fr-btn-laranja" id="btn-salvar-params">
+          Recalcular e Salvar Parâmetros
+        </button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- ================= MODAL: COMPARTILHAR COTAÇÃO ================= -->
+  <dialog class="fr-dialog fr-dialog-estreito" id="modal-compartilhar" aria-labelledby="modal-comp-titulo">
+    <header class="fr-dialog-topo">
+      <span class="fr-dialog-icone" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <circle cx="18" cy="5" r="3" />
+          <circle cx="6" cy="12" r="3" />
+          <circle cx="18" cy="19" r="3" />
+          <path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4" />
+        </svg>
+      </span>
+      <div>
+        <h2 id="modal-comp-titulo">Compartilhar Cotação</h2>
+        <p>Envie a proposta para o seu cliente ou equipe, com os valores desta simulação.</p>
+      </div>
+      <button type="button" class="fr-dialog-fechar" data-fechar-comp aria-label="Fechar">
+        <svg viewBox="0 0 24 24">
+          <path d="M18 6 6 18M6 6l12 12" />
+        </svg>
+      </button>
+    </header>
+
+    <div class="fr-dialog-corpo">
+      <div class="fr-opcoes">
+        <button type="button" class="fr-opcao fr-opcao-destaque" id="comp-pdf">
+          <span class="fr-opcao-icone"><svg viewBox="0 0 24 24">
+              <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+              <path d="M14 3v5h5M12 12v5m0 0-2-2m2 2 2-2" />
+            </svg></span>
+          <span class="fr-opcao-texto"><strong>Baixar proposta em PDF</strong><small>Formato A4 com o visual da VelozLog</small></span>
+        </button>
+        <button type="button" class="fr-opcao" id="comp-whats">
+          <span class="fr-opcao-icone"><svg viewBox="0 0 24 24">
+              <path d="M21 12a9 9 0 0 1-13.4 7.8L3 21l1.3-4.4A9 9 0 1 1 21 12z" />
+              <path d="M9 9c0 3 3 6 6 6l1.2-1.4-2-1-1 .6a4 4 0 0 1-1.8-1.8l.6-1-1-2z" />
+            </svg></span>
+          <span class="fr-opcao-texto"><strong>Enviar por WhatsApp</strong><small>Resumo da cotação em texto</small></span>
+        </button>
+        <button type="button" class="fr-opcao" id="comp-email">
+          <span class="fr-opcao-icone"><svg viewBox="0 0 24 24">
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <path d="m3 7 9 6 9-6" />
+            </svg></span>
+          <span class="fr-opcao-texto"><strong>Enviar por e-mail</strong><small>Abre o seu programa de e-mail</small></span>
+        </button>
+        <button type="button" class="fr-opcao" id="comp-copiar">
+          <span class="fr-opcao-icone"><svg viewBox="0 0 24 24">
+              <rect x="9" y="9" width="11" height="11" rx="2" />
+              <path d="M5 15V6a2 2 0 0 1 2-2h9" />
+            </svg></span>
+          <span class="fr-opcao-texto"><strong id="comp-copiar-titulo">Copiar resumo</strong><small>Cole onde quiser</small></span>
+        </button>
+        <button type="button" class="fr-opcao" id="comp-nativo" hidden>
+          <span class="fr-opcao-icone"><svg viewBox="0 0 24 24">
+              <circle cx="5" cy="12" r="1.5" />
+              <circle cx="12" cy="12" r="1.5" />
+              <circle cx="19" cy="12" r="1.5" />
+            </svg></span>
+          <span class="fr-opcao-texto"><strong>Mais opções…</strong><small>Apps do seu aparelho</small></span>
+        </button>
+      </div>
+      <p class="fr-comp-dica">
+        Para o PDF, na janela que abrir escolha <strong>“Salvar como PDF”</strong> no destino.
+        WhatsApp e e-mail levam o resumo em texto: anexe o PDF depois de salvá-lo.
+      </p>
+    </div>
+  </dialog>
+
+  <!-- documento que vira o PDF (só aparece na impressão) -->
+  <section id="proposta-print" class="pp" aria-hidden="true"></section>
+
+  <script src="/js/layout.js"></script>
+  <script src="/js/frete.js"></script>
+</body>
+
+</html>

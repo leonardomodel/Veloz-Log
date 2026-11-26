@@ -156,6 +156,13 @@ select:focus-visible {
     background-color 0.15s,
     color 0.15s;
 }
+
+.menu a.ativo {
+  background: var(--laranja, #f26a1b);
+  color: #fff;
+  border-radius: 10px;
+}
+
 /* hover laranja e branco ao dar tab ou selecionar */
 .menu a:hover,
 .menu a:focus-visible {
@@ -1690,7 +1697,7 @@ main > .hero {
 .depoimentos-eyebrow {
   display: block;
   margin-bottom: 6px;
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
