@@ -92,14 +92,14 @@ html {
 .rastreio-voltar {
   flex-shrink: 0;
   padding: 12px 20px;
-  border: 1px solid var(--borda);
+  border: 1px solid var(--laranja);
   border-radius: 10px;
   background: #fff;
   font-size: 13px;
   font-weight: 700;
   line-height: 1.2;
   white-space: nowrap;
-  color: var(--cor-texto);
+  color: var(--laranja);
   transition:
     border-color 0.15s,
     color 0.15s;
@@ -107,8 +107,8 @@ html {
 
 .rastreio-voltar:hover,
 .rastreio-voltar:focus-visible {
-  border-color: var(--laranja);
-  color: var(--laranja);
+  background: var(--laranja);
+  color: #fff;
   outline: none;
 }
 
