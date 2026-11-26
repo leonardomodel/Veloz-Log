@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rastreamento VLZ-849102-SP | VelozLog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="/img/icon.svg" type="image/svg+xml">
+  <!-- style.css traz o menu e as variáveis; rastreio.css traz só esta página -->
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/rastreio.css">
+</head>
+
+<body class="pagina-rastreio">
+  <!--NAVBAR (igual à da home; os links apontam para as seções da home)-->
+  <header class="topo">
+    <a class="logo" href="/" aria-label="VelozLog – página inicial">
+      <span class="logo-icone" aria-hidden="true">
+        <img src="/img/logo.svg" alt="Logo VelozLog">
+      </span>
+    </a>
+    <nav class="Principal">
+      <ul class="menu">
+        <li><a href="/#servicos">Serviços</a></li>
+        <li><a href="/#rastreamento">Rastreamento</a></li>
+        <li><a href="/#cotacao">Cotação de Frete</a></li>
+        <li><a href="/#sobre">Sobre</a></li>
+        <li><a href="/#contato">contato</a></li>
+      </ul>
+    </nav>
+
+    <div class="acoes">
+      <a class="btn-area" href="/#area-cliente">Área do Cliente</a>
+      <a class="btn-cotacao" href="/#cotacao">Cotação Rápida</a>
+      <div class="avatar">
+        <span class="icone-mask" style="--icone: url('/img/user.svg')"></span>
+      </div>
+    </div>
+  </header>
+
+  <main class="rastreio">
+    <!--CABEÇALHO DA PÁGINA-->
+    <nav class="rastreio-migalhas" aria-label="Você está em">
+      <ol>
+        <li><a href="/">Início</a></li>
+        <li><a href="/*rastreamento">Rastreamento</a></li>
+        <li><a aria-current="page">VLZ-849102-SP</a></li>
+      </ol>
+    </nav>
+
+    <header class="rastreio-cabecalho">
+      <div>
+        <h1>Acompanhe sua entrega</h1>
+        <p>Cada etapa da sua carga, com a tranquilidade de saber onde ela está.</p>
+      </div>
+      <a class="rastreio-voltar" href="/#rastreamento">&larr; Rastrear outro pedido</a></a>
+    </header>
+    <!--RESUMO DO PEDIDO-->
+    <section class="rastreio-card resumo" aria-label="Resumo do pedido">
+      <div class="resumo-topo">
+        <div>
+          <p class="rotulo">Código de rastreamento</p>
+          <p class="resumo-codigo">VLZ-849102-SP</p>
+        </div>
+        <div class="resumo-selos">
+          <span class="selo-status">Em Trânsito</span>
+          <span class="selo-carga">Carga Segurada</span>
+        </div>
+      </div>
+
+      <div class="rota">
+        <div class="rota-local">
+          <p class="rotulo">Origem</p>
+          <strong>São Paulo (HUB-01)</strong>
+          <small>São Paulo &bull; SP</small>
+        </div>
+        <span class="rota-seta" aria-hidden="true">&rarr;</span>
+        <div class="rota-local">
+          <p class="rotulo">Destino</p>
+          <strong>Curitiba (PR)</strong>
+          <small>Paraná</small>
+        </div>
+        <div class="previsao">
+          <p class="rotulo">Previsão de entrega</p>
+          <strong>Hoje, até 18:30</strong>
+          <small>Acompanhe as próximas atualizações.</small>
+        </div>
+      </div>
+
+      <div class="progresso">
+        <div class="progresso-info">
+          <p>Telemetria em tempo real &bull; BR-116 KM 84</p>
+          <p><strong>75% do trajeto concluído</strong></p>
+        </div>
+        <progress value="75" max="100" aria-label="Progresso do trajeto">75%</progress>
+
+        <ol class="etapas">
+          <li><span class="etapa-marca" aria-hidden="true">&check;</span>Coleta realizada</li>
+          <li><span class="etapa-marca" aria-hidden="true">&check;</span>No centro de distribuição</li>
+          <li class="etapa-atual" aria-current="step"><span class="etapa-marca" aria-hidden="true">&check;</span>Em trânsito</li>
+          <li class="etapa-pendente" aria-hidden="true"><span class="etapa-marca" aria-hidden="true">&check;</span>Entregue</li>
+        </ol>
+      </div>
+    </section>
+    <!--HISTÓRICO + LATERAL-->
+    <div class="rastreio-grade">
+      <section class="rastreio-card historico" aria-labelledby="historico-titulo">
+        <header class="historico-topo">
+          <div>
+            <h2 id="historico-titulo">Histórico de movimentações</h2>
+            <p class="historico-sub">Da coleta ao destino, acompanhe cada atualização.</p>
+          </div>
+          <span class="historico-ordem">Mais recentes primeiro</span>
+        </header>
+
+        <ol class="linha-tempo">
+          <li class="evento evento-atual">
+            <span class="evento-marca" aria-hidden="true">03</span>
+            <div class="evento-texto">
+              <h3>Carga em trânsito</h3>
+              <p class="evento-local">BR-116 KM 84 &bull; A caminho de Curitiba (PR)</p>
+              <p class="evento-desc">Sua carga segue viagem para o destino.</p>
+            </div>
+            <span class="evento-status">Agora</span>
+          </li>
+
+          <li class="evento">
+            <span class="evento-marca" aria-hidden="true">&check;</span>
+            <div class="evento-texto">
+              <h3>Saída do centro de distribuição</h3>
+              <p class="evento-local">São Paulo (HUB-01)</p>
+              <p class="evento-desc">Carga liberada para transferência rodoviária.</p>
+            </div>
+            <span class="evento-status">Concluído</span>
+          </li>
+
+          <li class="evento">
+            <span class="evento-marca" aria-hidden="true">&check;</span>
+            <div class="evento-texto">
+              <h3>Carga recebida no hub</h3>
+              <p class="evento-local">São Paulo (HUB-01)</p>
+              <p class="evento-desc">Conferência finalizada no centro de distribuição.</p>
+            </div>
+            <span class="evento-status">Concluído</span>
+          </li>
+
+          <li class="evento">
+            <span class="evento-marca" aria-hidden="true">&check;</span>
+            <div class="evento-texto">
+              <h3>Coleta realizada</h3>
+              <p class="evento-local">São Paulo &bull; SP</p>
+              <p class="evento-desc">Mercadoria coletada e integrada à operação.</p>
+            </div>
+            <span class="evento-status">Concluído</span>
+          </li>
+        </ol>
+
+        <p class="historico-nota">As movimentações são exibidas conforme o registro em cada etapa da operação.</p>
+      </section>
+      <!--Coluna da direita-->
+      <aside class="rastreio-lateral">
+
+        <section class="rastreio-card info" aria-labelledby="info-titulo">
+          <h2 id="info-titulo">Informações do transporte</h2>
+          <dl>
+            <div class="info-linha">
+              <dt>Modal</dt>
+              <dd>Rodoviário</dd>
+            </div>
+            <div class="info-linha">
+              <dt>Origem</dt>
+              <dd>São Paulo (HUB-01)</dd>
+            </div>
+            <div class="info-linha">
+              <dt>Destino</dt>
+              <dd>Curitiba (PR)</dd>
+            </div>
+            <div class="info-linha">
+              <dt>Proteção da carga</dt>
+              <dd>Seguro incluso</dd>
+            </div>
+          </dl>
+          <p class="info-nota">Sua carga é monitorada durante toda a viagem.</p>
+        </section>
+
+        <section class="suporte" aria-labelledby="suporte-titulo">
+          <p class="suporte-rotulo">Suporte dedicado 24/7</p>
+          <h2 id="suporte-titulo">Precisa de ajuda com esta entrega?</h2>
+          <p class="suporte-texto">Fale com nossa equipe e informe o código VLZ-849102-SP.</p>
+          <a class="suporte-botao" href="/#contato">Falar com atendimento &rarr;</a>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <!--RODAPÉ SIMPLES-->
+  <footer class="rastreio-rodape">
+    <div class="rastreio-rodape-conteudo">
+      <div>
+        <strong>VelozLog</strong>
+        <p>Segurança e visibilidade em cada quilômetro.</p>
+      </div>
+      <nav aria-label="Links do rodapé">
+        <ul>
+          <li><a href="/#rastreamento">Rastreamento</a></li>
+          <li><a href="/#contato">Atendimento</a></li>
+          <li><a href="#">Privacidade</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+</body>
+
+</html>
