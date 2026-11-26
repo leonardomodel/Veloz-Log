@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="icon" href="img/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="/img/icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 
@@ -26,7 +26,7 @@
           <li><a href="#servicos">Serviços</a></li>
           <li><a href="#rastreamento">Rastreamento</a></li>
           <li><a href="#cotacao">Cotação de Frete</a></li>
-          <li><a href="#sobre">Sobre</a></li>
+          <li><a href="#seguranca">Sobre</a></li>
           <li><a href="#contato">contato</a></li>
         </ul>
       </nav>
@@ -48,7 +48,7 @@
           <p>Transporte rodoviário fracionado e lotação para todo o território nacional com garantia inegociável de prazo e monitoramento satelital ininterrupto.</p>
           <ul class="hero-selos">
             <li><img src="/img/ic-cotacao.svg" alt="">Cotação B2B Expressa</li>
-            <li><img src="/img/ic-suporte.svg">Suporte Dedicado 24/7</li>
+            <li><img src="/img/ic-suporte.svg" alt="">Suporte Dedicado 24/7</li>
             <li><img src="/img/ic-carga.svg" alt="">Cargas 100% Asseguradas</li>
           </ul>
           <div class="hero-rodape">
@@ -62,38 +62,128 @@
           </div>
         </div>
 
+        <!-- CARD: RASTREAR PEDIDO / SIMULAR FRETE -->
         <div id="rastreamento" class="card-rastreio">
-          <div role="tablist" class="abas">
-            <button role="tab" aria-selected="true" type="button">Rastrear Pedido</button>
-            <button role="tab" aria-selected="false" type="button">Simular Frete</button>
-          </div>
-          <label for="codigo">Código de rastreamento / NF / CPF ou CNPJ</label>
-          <div class="campo-busca">
-            <input type="codigo" type="text" value="VLZ-849102-SP">
-            <button type="button" onclick="window.location.href='/rastreio.html'"">Rastrear</button>
+          <!-- ABAS -->
+          <div class="abas" role="tablist" aria-label="Rastrear pedido ou simular frete" data-ativa="rastrear">
+            <button type="button" role="tab" id="aba-rastrear" data-aba="rastrear" aria-controls="painel-rastrear" aria-selected="true">Rastrear Pedido</button>
+            <button type="button" role="tab" id="aba-simular" data-aba="simular" aria-controls="painel-simular" aria-selected="false" tabindex="-1">Simular Frete</button>
           </div>
 
-          <article class=" pedido">
-              <header>
-                <h2>VLZ-849102-SP</h2>
-                <span class="status">Em Trânsito</span>
-                <span class="segurada">Carga Segurada</span>
-              </header>
-              <div class="trajeto">
-                <p><small>Origem</small> São Paulo (HUB-01)</p>
-                <div>
-                  <p>Prazo: Hoje até 18:30</p>
-                  <progress value="75" max="100"></progress>
-                  <p>75% do trajeto concluído</p>
+          <div class="paineis">
+            <!-- PAINEL: RASTREAR -->
+            <section class="painel ativo" id="painel-rastrear" role="tabpanel" aria-labelledby="aba-rastrear">
+              <form class="rastreio-form" novalidate>
+                <label for="codigo">Código de rastreamento / NF / CPF ou CNPJ</label>
+                <div class="campo-busca">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <path d="m20 20-3.5-3.5"></path>
+                  </svg>
+                  <input id="codigo" type="text" placeholder="Informe o código de rastreio" autocomplete="off">
+                  <button type="submit" class="btn-rastrear">
+                    <span>Rastrear</span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M5 12h14M13 6l6 6-6 6"></path>
+                    </svg>
+                  </button>
                 </div>
-                <p><small>Destino</small> Curitiba (PR)</p>
+              </form>
+
+              <div class="estados" aria-live="polite">
+                <!-- estado 1: vazio -->
+                <div class="estado estado-vazio ativo">
+                  <span class="vazio-icone" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                      <circle cx="10" cy="10" r="7.5"></circle>
+                      <path d="M2.5 10h15M10 2.5c2.2 2 3.4 4.6 3.4 7.5s-1.2 5.5-3.4 7.5C7.8 15.5 6.6 12.9 6.6 10S7.8 4.5 10 2.5z"></path>
+                      <circle class="lupa" cx="17" cy="17" r="3.5"></circle>
+                      <path d="m19.6 19.6 2 2"></path>
+                    </svg>
+                  </span>
+                  <h3>Acompanhe sua remessa em tempo real</h3>
+                  <p>Digite o código de rastreio, NF ou CPF/CNPJ no campo acima e clique em <strong>Rastrear</strong> para visualizar o status da entrega.</p>
+                  <div class="vazio-nota">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"></path>
+                    </svg>
+                    Monitoramento 24h via satélite ativo
+                  </div>
+                </div>
+
+                <!-- estado 2: resultado -->
+                <article class="estado estado-resultado" inert>
+                  <header class="surge" style="--i:0">
+                    <h2 id="codigo-exibido">VLZ-849102-SP</h2>
+                    <span class="status"><svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"></path>
+                        <path d="M15 18H9"></path>
+                        <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"></path>
+                        <circle cx="17" cy="18" r="2"></circle>
+                        <circle cx="7" cy="18" r="2"></circle>
+                      </svg>Em Trânsito</span>
+                    <span class="segurada">Carga Segurada</span>
+                  </header>
+
+                  <div class="trajeto surge" style="--i:1">
+                    <p><small>Origem</small>São Paulo (HUB-01)</p>
+                    <div>
+                      <p>Prazo: Hoje até 18:30</p>
+                      <div class="barra" role="progressbar" aria-label="Progresso do trajeto" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                        <span class="barra-preenchimento"></span>
+                      </div>
+                      <p id="porcentagem">0% do trajeto concluído</p>
+                    </div>
+                    <p><small>Destino</small>Curitiba (PR)</p>
+                  </div>
+
+                  <footer class="surge" style="--i:2">
+                    <p><svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="12" r="2"></circle>
+                        <path d="M16.2 7.8a6 6 0 0 1 0 8.4"></path>
+                        <path d="M19.1 4.9a10 10 0 0 1 0 14.2"></path>
+                        <path d="M7.8 16.2a6 6 0 0 1 0-8.4"></path>
+                        <path d="M4.9 19.1a10 10 0 0 1 0-14.2"></path>
+                      </svg>Telemetria em tempo real • BR-116 KM 84</p>
+                    <a href="/rastreio.html">Ver Ocorrências<svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="m9 6 6 6-6 6"></path>
+                      </svg></a>
+                  </footer>
+                </article>
               </div>
-              <footer>
-                <p>Telemetria em tempo real • BR-116 KM 84</p>
-                <a href="#">Ver Ocorrências</a>
-              </footer>
-              </article>
+            </section>
+
+            <!-- PAINEL: SIMULAR FRETE -->
+            <section class="painel" id="painel-simular" role="tabpanel" aria-labelledby="aba-simular" aria-hidden="true" inert>
+              <form class="simular-form" novalidate>
+                <div class="simular-grade">
+                  <div class="simular-campo">
+                    <label for="sim-origem">CEP Origem</label>
+                    <input id="sim-origem" type="text" placeholder="01001-000" inputmode="numeric" maxlength="9" data-mascara="cep">
+                  </div>
+                  <div class="simular-campo">
+                    <label for="sim-destino">CEP Destino</label>
+                    <input id="sim-destino" type="text" placeholder="80010-000" inputmode="numeric" maxlength="9" data-mascara="cep">
+                  </div>
+                  <div class="simular-campo">
+                    <label for="sim-peso">Peso Aprox. (Kg)</label>
+                    <input id="sim-peso" type="text" placeholder="25" inputmode="decimal">
+                  </div>
+                  <div class="simular-campo">
+                    <label for="sim-volumes">Volumes (Qtd)</label>
+                    <input id="sim-volumes" type="text" placeholder="2" inputmode="numeric">
+                  </div>
+                </div>
+                <button type="submit" class="btn-simular">
+                  Calcular Cotação Instantânea
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path>
+                  </svg>
+                </button>
+              </form>
+            </section>
           </div>
+        </div>
       </section>
       <!--INDICADORES-->
       <section class="indicadores" aria-label="Números da VelozLog">
@@ -475,13 +565,13 @@
       </div>
 
       <nav class="rodape-coluna" aria-label="Navegação do rodapé">
-        <h3>Navegacão</h3>
+        <h3>Navegação</h3>
         <ul>
           <li><a href="#inicio">Início</a></li>
           <li><a href="#servicos">Serviços</a></li>
           <li><a href="#rastreamento">Rastreamento</a></li>
           <li><a href="#cotacao">Cotação de Frete</a></li>
-          <li><a href="#sobre">Sobre Nós</a></li>
+          <li><a href="#seguranca">Sobre Nós</a></li>
           <li><a href="#contato">Contato e Filiais</a></li>
         </ul>
       </nav>
@@ -524,7 +614,8 @@
       </ul>
     </div>
   </footer>
-  </main>
+
+  <script src="/script.js" defer></script>
 </body>
 
 </html>

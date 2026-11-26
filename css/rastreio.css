@@ -217,10 +217,15 @@ html {
   color: var(--laranja-escuro);
 }
 
-/* barra de progresso + etapas */
+/* ---------- Barra de progresso ---------- */
+.progresso {
+  width: 100%;
+}
+
 .progresso-info {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 16px;
   margin-bottom: 8px;
   font-size: 12px;
@@ -233,8 +238,32 @@ html {
 }
 
 .progresso progress {
-  height: 8px;
+  display: block;
+  width: 100%;
+  height: 5px;
   margin: 0 0 20px;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  appearance: none;
+  -webkit-appearance: none;
+  overflow: hidden;
+  background: #e8eeff;
+}
+
+.progresso progress::-webkit-progress-bar {
+  background: #e8eeff;
+  border-radius: 10px;
+}
+
+.progresso progress::-webkit-progress-value {
+  background: #ff642b;
+  border-radius: 10px;
+}
+
+.progresso progress::-moz-progress-bar {
+  background: #ff642b;
+  border-radius: 10px;
 }
 
 .etapas {
