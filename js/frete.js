@@ -10,17 +10,86 @@
   const DESCONTO_PERCENTUAL = 5; // desconto corporativo
   const DESCONTO_PIX_PERCENTUAL = 1.5; // extra para pagamento via PIX (sobre o valor já com desconto corporativo)
 
-  // Valores derivados dos números da tela (45 kg, NF R$ 15.000).
-  // Quando tiver a tabela real de preços, é só trocar aqui.
+  /* ----- TABELA DE PREÇOS (referência de mercado) -----
+     Fracionada: faixas de peso de uma tabela real de transportadora para ~700 km
+     (até 30 kg ≈ R$ 60 · 50 kg ≈ R$ 72 · 70 kg ≈ R$ 88 · 100 kg ≈ R$ 102 · excedente ≈ R$ 1,02/kg),
+     corrigidas pela distância. Express = fracionada x 2,1 (mesma proporção SEDEX x PAC).
+     Dedicado: preço por km do veículo que comporta a carga (referência: média nacional
+     de R$ 8,72/km para caminhão pesado, Edenred/IFR ago/2026; veículos leves custam menos).
+     Quando a VelozLog tiver a tabela própria, é só trocar os números aqui. */
+  const KM_REFERENCIA = 700; // distância em que as faixas abaixo valem 1,0
+  const KM_PADRAO = 400; // usado até o mapa calcular a distância real
+  const FAIXAS_FRACIONADO = [
+    { ate: 30, valor: 60 },
+    { ate: 50, valor: 72 },
+    { ate: 70, valor: 88 },
+    { ate: 100, valor: 102 },
+  ];
+  const EXCEDENTE_POR_KG = 1.02; // acima de 100 kg
+  const PEDAGIO_FRACAO = 1.2; // R$ por fração de 100 kg a cada 100 km
+  const DESPACHO = 12; // taxa de despacho por conhecimento (CT-e)
+  const VEICULOS = [
+    // kg e m³ máximos; R$/km; mínimo da viagem; pedágio por km (eixos)
+    {
+      nome: "Utilitário Fiorino",
+      kg: 600,
+      m3: 3,
+      porKm: 2.6,
+      minimo: 280,
+      pedagioKm: 0.12,
+    },
+    { nome: "VUC", kg: 3000, m3: 20, porKm: 4.2, minimo: 450, pedagioKm: 0.18 },
+    {
+      nome: "Caminhão Toco",
+      kg: 6000,
+      m3: 40,
+      porKm: 5.8,
+      minimo: 700,
+      pedagioKm: 0.3,
+    },
+    {
+      nome: "Caminhão Truck",
+      kg: 12000,
+      m3: 55,
+      porKm: 7.2,
+      minimo: 900,
+      pedagioKm: 0.45,
+    },
+    {
+      nome: "Carreta",
+      kg: 30000,
+      m3: 90,
+      porKm: 8.72,
+      minimo: 1400,
+      pedagioKm: 0.75,
+    },
+  ];
+  /* ----- PRAZOS (dias úteis, sem feriados) -----
+     Fracionada: 1 dia de coleta/consolidação + 1 dia a cada 500 km (faixa "X a X+1").
+     Express: linha direta, 1 dia útil a cada 700 km.
+     Dedicado: veículo sem paradas; até 350 km entrega no mesmo dia,
+     depois 1 dia corrido a cada 650 km (jornada do motorista, Lei 13.103). */
+  const PRAZO = {
+    corteColeta: { hora: 14, min: 30 }, // depois disso a coleta vai para o próximo dia útil
+    fracionadaKmDia: 500,
+    expressKmDia: 700,
+    dedicadoMesmoDiaKm: 350,
+    dedicadoKmDia: 650,
+  };
   const MODALIDADES = {
-    express: { nome: "Express", porKg: 6.4444, minimo: 120, pedagio: 34.5 },
+    express: {
+      nome: "Express",
+      tipo: "fracionado",
+      multiplicador: 2.1,
+      minimo: 85,
+    },
     fracionada: {
       nome: "Fracionada",
-      porKg: 3.4111,
-      minimo: 80,
-      pedagio: 34.5,
+      tipo: "fracionado",
+      multiplicador: 1,
+      minimo: 45,
     },
-    dedicado: { nome: "Dedicado", porKg: 17.6778, minimo: 450, pedagio: 34.5 },
+    dedicado: { nome: "Dedicado", tipo: "veiculo" },
   };
   const ROTA_PADRAO = { origem: "São Paulo", destino: "Curitiba" };
   // acima disso não abrimos um campo por volume (a tela ficaria enorme): vira cotação corporativa
@@ -46,6 +115,7 @@
     pesos: [11.25, 11.25, 11.25, 11.25],
     nf: 15000,
     tipo: "manufaturados",
+    km: null, // distância da rota (vem do mapa); null = ainda não calculada
   };
 
   /* ================= UTILITÁRIOS ================= */
@@ -163,13 +233,49 @@
     return `Variadas · ${numero(metrosCubicos(medidas), 3)} m³ no total`;
   }
 
+  // faixas mais baratas perto, mais caras longe (nunca abaixo de 60% da tabela)
+  const fatorDistancia = (km) =>
+    Math.max(0.6, 0.55 + 0.45 * (km / KM_REFERENCIA));
+
+  function fretePesoBase(peso) {
+    const faixa = FAIXAS_FRACIONADO.find((f) => peso <= f.ate);
+    if (faixa) return faixa.valor;
+    const ultima = FAIXAS_FRACIONADO[FAIXAS_FRACIONADO.length - 1];
+    return ultima.valor + (peso - ultima.ate) * EXCEDENTE_POR_KG;
+  }
+
+  // menor veículo que comporta o peso tributável e o volume da carga
+  function veiculoPara(peso, m3) {
+    return (
+      VEICULOS.find((v) => peso <= v.kg && m3 <= v.m3) ||
+      VEICULOS[VEICULOS.length - 1]
+    );
+  }
+
   function calcular(m, e) {
     const peso = pesoTributavel(e);
+    const km = e.km || KM_PADRAO;
     const nfCentavos = Math.round(e.nf * 100);
-    const frete = Math.round(Math.max(m.minimo, peso * m.porKg) * 100);
+    let freteReais, pedagioReais, rotulo;
+    if (m.tipo === "veiculo") {
+      const v = veiculoPara(peso, metrosCubicos(e.medidas));
+      freteReais = Math.max(v.minimo, km * v.porKm);
+      pedagioReais = km * v.pedagioKm;
+      rotulo = `Frete Veículo (${v.nome} · ${km.toLocaleString("pt-BR")} km)`;
+    } else {
+      freteReais = Math.max(
+        m.minimo,
+        fretePesoBase(peso) * fatorDistancia(km) * m.multiplicador,
+      );
+      const fracoes = Math.max(1, Math.ceil(peso / 100));
+      pedagioReais =
+        fracoes * PEDAGIO_FRACAO * Math.max(1, Math.ceil(km / 100)) + DESPACHO;
+      rotulo = `Frete Peso / Cubagem (${peso.toLocaleString("pt-BR", { maximumFractionDigits: 2 })}kg)`;
+    }
+    const frete = Math.round(freteReais * 100);
     const gris = Math.round((nfCentavos * GRIS_POR_MIL) / 1000);
     const seguro = Math.round((nfCentavos * SEGURO_POR_MIL) / 1000);
-    const pedagio = Math.round(m.pedagio * 100);
+    const pedagio = Math.round(pedagioReais * 100);
     const total = frete + gris + seguro + pedagio;
     const desconto = Math.floor((total * DESCONTO_PERCENTUAL) / 100);
     const pix =
@@ -178,6 +284,7 @@
         : 0;
     return {
       peso,
+      rotulo,
       frete,
       gris,
       seguro,
@@ -295,8 +402,7 @@
       }
 
       if (id === selecionada) {
-        const kg = t.peso.toLocaleString("pt-BR", { maximumFractionDigits: 2 });
-        definir("#linhas-tarifa li span", `Frete Peso / Cubagem (${kg}kg)`);
+        definir("#linhas-tarifa li span", t.rotulo);
         definir("#v-frete", brl(t.frete), animar);
         definir("#v-gris", brl(t.gris), animar);
         definir("#v-seguro", brl(t.seguro), animar);
@@ -312,12 +418,134 @@
     }
   }
 
+  /* ----- prazos de entrega conforme a distância ----- */
+  const ehDiaUtil = (d) => d.getDay() !== 0 && d.getDay() !== 6;
+  function somarDiasUteis(data, n) {
+    const d = new Date(data);
+    while (n > 0) {
+      d.setDate(d.getDate() + 1);
+      if (ehDiaUtil(d)) n--;
+    }
+    return d;
+  }
+  // coleta hoje se for dia útil antes do corte; senão no próximo dia útil
+  function dataColeta(agora = new Date()) {
+    const { hora, min } = PRAZO.corteColeta;
+    const antesDoCorte =
+      agora.getHours() < hora ||
+      (agora.getHours() === hora && agora.getMinutes() < min);
+    return ehDiaUtil(agora) && antesDoCorte
+      ? new Date(agora)
+      : somarDiasUteis(agora, 1);
+  }
+  function nomeDia(d, hoje = new Date()) {
+    const dias = Math.round(
+      (new Date(d).setHours(0, 0, 0, 0) - new Date(hoje).setHours(0, 0, 0, 0)) /
+        864e5,
+    );
+    if (dias === 0) return "Hoje";
+    if (dias === 1) return "Amanhã";
+    const semana = d
+      .toLocaleDateString("pt-BR", { weekday: "long" })
+      .split("-")[0];
+    const dataCurta = d.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+    });
+    return `${semana[0].toUpperCase()}${semana.slice(1)}, ${dataCurta}`;
+  }
+
+  function prazosPara(km) {
+    const coleta = dataColeta();
+    const coletaHoje = nomeDia(coleta) === "Hoje";
+
+    const dExp = Math.max(1, Math.ceil(km / PRAZO.expressKmDia));
+    const entregaExp = somarDiasUteis(coleta, dExp);
+    const express =
+      dExp === 1
+        ? `Até 24h úteis (${nomeDia(entregaExp)} até às 18:00)`
+        : `Até ${dExp} dias úteis (${nomeDia(entregaExp)} até às 18:00)`;
+
+    const dFr = 1 + Math.ceil(km / PRAZO.fracionadaKmDia);
+    const fracionada = `${dFr} a ${dFr + 1} dias úteis (Previsão: ${nomeDia(somarDiasUteis(coleta, dFr + 1))})`;
+
+    let dedicado;
+    if (km <= PRAZO.dedicadoMesmoDiaKm) {
+      dedicado = coletaHoje
+        ? "Hoje até 22:00 (Mesmo dia útil)"
+        : `${nomeDia(coleta)} até 22:00 (Mesmo dia da coleta)`;
+    } else {
+      const dias = Math.ceil(km / PRAZO.dedicadoKmDia);
+      const entrega = new Date(coleta);
+      entrega.setDate(entrega.getDate() + dias); // corridos: o veículo não para no fim de semana
+      // ...mas o destinatário normalmente não recebe sábado/domingo: entrega no próximo dia útil
+      if (!ehDiaUtil(entrega))
+        entrega.setTime(somarDiasUteis(entrega, 1).getTime());
+      dedicado = `${nomeDia(entrega)} (até ${dias * 24}h de viagem direta)`;
+    }
+
+    const etiquetaColeta = coletaHoje
+      ? `Coleta Hoje até ${PRAZO.corteColeta.hora}h${String(PRAZO.corteColeta.min).padStart(2, "0")}`
+      : `Coleta ${nomeDia(coleta).split(",")[0]}`;
+    return {
+      express,
+      fracionada,
+      dedicado,
+      etiquetaColeta,
+      mesmoDia: km <= PRAZO.dedicadoMesmoDiaKm,
+    };
+  }
+
+  function renderPrazos(animar) {
+    const km = estado.km || KM_PADRAO;
+    const p = prazosPara(km);
+    for (const id of Object.keys(MODALIDADES)) {
+      const entrada = $(`input[name="modalidade"][value="${id}"]`);
+      const card = entrada && entrada.closest(".fr-modal");
+      if (!card) continue;
+      const alvo = $(".fr-modal-prazo strong", card);
+      if (alvo && alvo.textContent !== p[id]) {
+        alvo.textContent = p[id];
+        if (animar) destacar(alvo);
+      }
+    }
+    // etiqueta de coleta do Express e título do Dedicado (Same-Day só quando dá no mesmo dia)
+    const etqExpress = $('input[value="express"]')
+      ?.closest(".fr-modal")
+      ?.querySelector(".fr-modal-etiquetas span");
+    if (etqExpress) etqExpress.textContent = p.etiquetaColeta;
+    const tituloDed = $('input[value="dedicado"]')
+      ?.closest(".fr-modal")
+      ?.querySelector("h2");
+    if (
+      tituloDed &&
+      tituloDed.firstChild &&
+      tituloDed.firstChild.nodeType === 3
+    )
+      tituloDed.firstChild.textContent = p.mesmoDia
+        ? "Dedicado Expresso / Same-Day "
+        : "Dedicado Expresso ";
+  }
+
   function renderTudo(animar) {
     renderResumo(animar);
     renderTarifas(animar);
+    renderPrazos(animar);
     if (animar)
       definir(".fr-status-info span:nth-child(2)", "Recalculada agora");
   }
+
+  // o mapa (js/mapa.js) avisa a distância da rota → preços passam a usar o km real
+  document.addEventListener("rota:distancia", (e) => {
+    const { km, linhaReta } = e.detail || {};
+    if (!(km > 0)) return;
+    // linha reta é menor que a estrada: corrige com o fator médio rodoviário (~1,25)
+    const kmRota = Math.round(linhaReta ? km * 1.25 : km);
+    if (kmRota === estado.km) return;
+    estado.km = kmRota;
+    renderTarifas(true);
+    renderPrazos(true);
+  });
 
   /* ================= CEP (ViaCEP) ================= */
   const cacheCep = new Map();
@@ -521,7 +749,7 @@
       <section class="pp-secao">
         <h2>Composição da tarifa · ${esc(e.nome)}</h2>
         <div class="pp-linhas">
-          <div><span>Frete peso / cubagem (${esc(e.t.peso.toLocaleString("pt-BR", { maximumFractionDigits: 2 }))} kg)</span><strong>${brl(e.t.frete)}</strong></div>
+          <div><span>${esc(e.t.rotulo)}</span><strong>${brl(e.t.frete)}</strong></div>
           <div><span>GRIS (Gerenciamento de Risco)</span><strong>${brl(e.t.gris)}</strong></div>
           <div><span>Seguro RCTR-C / RCF-DC (100%)</span><strong>${brl(e.t.seguro)}</strong></div>
           <div><span>Pedágios &amp; taxas de despacho</span><strong>${brl(e.t.pedagio)}</strong></div>
@@ -826,6 +1054,254 @@
     setTimeout(reiniciarWhats, 6000);
   }
 
+  /* ================= E-MAIL: rascunho .eml com visual da VelozLog + PDF anexo =================
+     O "mailto:" só aceita texto puro e não anexa arquivos. Então montamos um arquivo .eml
+     marcado como rascunho (X-Unsent: 1): ao abrir, o Outlook mostra a mensagem pronta,
+     formatada, com o logo e a proposta em PDF anexada — o cliente só coloca o destinatário. */
+  const b64Texto = (t) => {
+    const bytes = new TextEncoder().encode(t);
+    let bin = "";
+    bytes.forEach((b) => (bin += String.fromCharCode(b)));
+    return btoa(bin);
+  };
+  const linhas76 = (b64) => b64.replace(/.{1,76}/g, "$&\r\n").trimEnd();
+  const assuntoMime = (t) => `=?UTF-8?B?${b64Texto(t)}?=`;
+  function blobBase64(blob) {
+    return new Promise((ok, falha) => {
+      const r = new FileReader();
+      r.onload = () => ok(String(r.result).split(",")[1]);
+      r.onerror = falha;
+      r.readAsDataURL(blob);
+    });
+  }
+  // o Outlook não mostra SVG: o logo vai como PNG embutido na mensagem
+  async function logoPng() {
+    try {
+      const img = new Image();
+      img.src = "/img/logo.svg";
+      await img.decode();
+      const largura = 322; // 2x do tamanho exibido, para ficar nítido
+      const altura = Math.round((largura * 50) / 161);
+      const c = document.createElement("canvas");
+      c.width = largura;
+      c.height = altura;
+      c.getContext("2d").drawImage(img, 0, 0, largura, altura);
+      return c.toDataURL("image/png").split(",")[1];
+    } catch {
+      return null;
+    }
+  }
+
+  function assuntoEmail() {
+    const d = dadosProposta();
+    const rota =
+      estado.origem.cidade && estado.destino.cidade
+        ? ` · ${estado.origem.cidade} → ${estado.destino.cidade}`
+        : "";
+    return `Cotação de frete VelozLog ${d.numero}${rota}`;
+  }
+
+  // versão em texto (usada também no "e-mail simples" para Gmail/webmail)
+  function textoEmail() {
+    const d = dadosProposta();
+    const e = d.escolhida;
+    const volumes = `${estado.volumes} ${estado.volumes === 1 ? "volume" : "volumes"}`;
+    const linha = "━".repeat(24);
+    return [
+      `${EMOJI.caminhao} VelozLog | Cotação de Frete ${d.numero}`,
+      linha,
+      "Olá! Segue a cotação do seu frete:",
+      "",
+      `${EMOJI.origem} Origem: ${local(estado.origem)} (CEP ${estado.origem.cep})`,
+      `${EMOJI.chegada} Destino: ${local(estado.destino)} (CEP ${estado.destino.cep})`,
+      `${EMOJI.caixa} Carga: ${numero(pesoTributavel(estado))} kg tributáveis · ${volumes}`,
+      `${EMOJI.nota} Valor da NF: ${brl(Math.round(estado.nf * 100))}`,
+      `${EMOJI.foguete} Modalidade: ${e.nome}`,
+      `${EMOJI.calendario} Prazo: ${e.prazo}`,
+      linha,
+      `${EMOJI.dinheiro} TOTAL: ${brl(e.t.final)}${e.t.pix ? " (com desconto PIX)" : ""}`,
+      `${EMOJI.cartao} Pagamento: ${d.pagamento}`,
+      linha,
+      `${EMOJI.escudo} Seguro RCTR-C incluso   ${EMOJI.satelite} Rastreamento 24h`,
+      `${EMOJI.ampulheta} Válida até ${d.validade}`,
+      "",
+      "Central 24h: 0800 700 8900 · atendimento@velozlog.com.br",
+    ].join("\n");
+  }
+
+  // versão HTML: tabelas e estilos inline (é o que os programas de e-mail entendem)
+  function htmlEmail(temLogo) {
+    const d = dadosProposta();
+    const e = d.escolhida;
+    const volumes = `${estado.volumes} ${estado.volumes === 1 ? "volume" : "volumes"}`;
+    const fonte = "font-family:Segoe UI,Arial,Helvetica,sans-serif;";
+    const linha = (icone, rotulo, valor) => `
+      <tr>
+        <td style="${fonte}padding:10px 0;border-bottom:1px solid #e2e8f0;font-size:13px;color:#64748b;width:42%;">${icone}&nbsp; ${esc(rotulo)}</td>
+        <td style="${fonte}padding:10px 0;border-bottom:1px solid #e2e8f0;font-size:14px;color:#0f172a;font-weight:600;text-align:right;">${esc(valor)}</td>
+      </tr>`;
+    const logo = temLogo
+      ? '<img src="cid:logo-velozlog" width="161" height="50" alt="VelozLog" style="display:block;border:0;">'
+      : `<span style="${fonte}font-size:22px;font-weight:800;color:#0e2a5c;">Veloz<span style="color:#f26a1b;">Log</span></span>`;
+    return `<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>${esc(assuntoEmail())}</title></head>
+<body style="margin:0;padding:0;background:#f4f7fb;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f7fb;">
+<tr><td align="center" style="padding:24px 12px;">
+  <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:100%;background:#ffffff;border-radius:14px;border:1px solid #e2e8f0;">
+    <tr><td style="height:6px;background:#f26a1b;border-radius:14px 14px 0 0;font-size:0;line-height:0;">&nbsp;</td></tr>
+    <tr><td style="padding:22px 32px 8px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+        <td valign="middle">${logo}</td>
+        <td valign="middle" align="right" style="${fonte}">
+          <div style="font-size:11px;letter-spacing:.06em;color:#64748b;font-weight:700;">PROPOSTA COMERCIAL</div>
+          <div style="font-size:16px;color:#f26a1b;font-weight:800;">${esc(d.numero)}</div>
+        </td>
+      </tr></table>
+    </td></tr>
+    <tr><td style="${fonte}padding:14px 32px 4px;font-size:15px;color:#0f172a;line-height:1.5;">
+      Olá! ${EMOJI.mao}<br>Segue a cotação do seu frete. A <strong>proposta completa em PDF</strong> está em anexo.
+    </td></tr>
+    <tr><td style="padding:16px 32px 4px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#eaf0fa;border-radius:12px;">
+        <tr>
+          <td style="${fonte}padding:14px 16px;width:44%;">
+            <div style="font-size:10.5px;letter-spacing:.06em;color:#64748b;font-weight:700;">${EMOJI.origem} ORIGEM</div>
+            <div style="font-size:15px;color:#0e2a5c;font-weight:700;">${esc(local(estado.origem))}</div>
+            <div style="font-size:11px;color:#64748b;">CEP ${esc(estado.origem.cep)}</div>
+          </td>
+          <td align="center" style="${fonte}font-size:18px;color:#f26a1b;font-weight:700;">&rarr;<div style="font-size:10.5px;color:#64748b;font-weight:600;">${esc(d.distancia)}</div></td>
+          <td style="${fonte}padding:14px 16px;width:44%;text-align:right;">
+            <div style="font-size:10.5px;letter-spacing:.06em;color:#64748b;font-weight:700;">DESTINO ${EMOJI.chegada}</div>
+            <div style="font-size:15px;color:#0e2a5c;font-weight:700;">${esc(local(estado.destino))}</div>
+            <div style="font-size:11px;color:#64748b;">CEP ${esc(estado.destino.cep)}</div>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+    <tr><td style="padding:8px 32px 0;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        ${linha(EMOJI.caixa, "Carga", `${numero(pesoTributavel(estado))} kg tributáveis · ${volumes}`)}
+        ${linha(EMOJI.nota, "Valor da NF", brl(Math.round(estado.nf * 100)))}
+        ${linha(EMOJI.foguete, "Modalidade", e.nome)}
+        ${linha(EMOJI.calendario, "Prazo", e.prazo)}
+        ${linha(EMOJI.cartao, "Pagamento", d.pagamento)}
+      </table>
+    </td></tr>
+    <tr><td style="padding:18px 32px 6px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fff1e8;border:1px solid #fcd9c2;border-radius:12px;">
+        <tr>
+          <td style="${fonte}padding:16px 18px;">
+            <div style="font-size:12px;color:#64748b;">Valor do frete <span style="text-decoration:line-through;">${brl(e.t.total)}</span></div>
+            <div style="font-size:12px;color:#16a34a;font-weight:600;">Desconto corporativo${e.t.pix ? " + PIX" : ""} aplicado</div>
+          </td>
+          <td align="right" style="${fonte}padding:16px 18px;">
+            <div style="font-size:11px;letter-spacing:.06em;color:#64748b;font-weight:700;">TOTAL ${EMOJI.dinheiro}</div>
+            <div style="font-size:26px;color:#0e2a5c;font-weight:800;">${brl(e.t.final)}</div>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+    <tr><td style="${fonte}padding:10px 32px 18px;font-size:12px;color:#334155;line-height:1.8;">
+      ${EMOJI.escudo} Seguro RCTR-C incluso &nbsp;·&nbsp; ${EMOJI.satelite} Rastreamento 24h em tempo real<br>
+      ${EMOJI.ampulheta} Cotação válida até <strong>${esc(d.validade)}</strong> &nbsp;·&nbsp; ${EMOJI.documento} Detalhes no PDF anexo
+    </td></tr>
+    <tr><td style="${fonte}padding:16px 32px;background:#0e2a5c;border-radius:0 0 14px 14px;font-size:12px;color:#cbd5e1;line-height:1.6;">
+      <strong style="color:#ffffff;">VelozLog Transportes &amp; Logística</strong><br>
+      Central 24h: 0800 700 8900 · atendimento@velozlog.com.br
+    </td></tr>
+  </table>
+</td></tr>
+</table>
+</body></html>`;
+  }
+
+  async function montarEml() {
+    const [pdf, logo] = await Promise.all([
+      pdfPronto || prepararPDF(),
+      logoPng(),
+    ]);
+    if (!pdf) throw new Error("PDF indisponível");
+    const pdfB64 = await blobBase64(pdf.blob);
+    const mix = "=_vl_mix_" + Date.now().toString(36);
+    const rel = "=_vl_rel_" + Date.now().toString(36);
+    const alt = "=_vl_alt_" + Date.now().toString(36);
+    const partes = [
+      "X-Unsent: 1", // abre como rascunho (pronto para enviar) e não como e-mail recebido
+      "To: ",
+      `Subject: ${assuntoMime(assuntoEmail())}`,
+      "MIME-Version: 1.0",
+      `Content-Type: multipart/mixed; boundary="${mix}"`,
+      "",
+      `--${mix}`,
+      `Content-Type: multipart/related; boundary="${rel}"`,
+      "",
+      `--${rel}`,
+      `Content-Type: multipart/alternative; boundary="${alt}"`,
+      "",
+      `--${alt}`,
+      "Content-Type: text/plain; charset=UTF-8",
+      "Content-Transfer-Encoding: base64",
+      "",
+      linhas76(b64Texto(textoEmail())),
+      `--${alt}`,
+      "Content-Type: text/html; charset=UTF-8",
+      "Content-Transfer-Encoding: base64",
+      "",
+      linhas76(b64Texto(htmlEmail(!!logo))),
+      `--${alt}--`,
+    ];
+    if (logo)
+      partes.push(
+        `--${rel}`,
+        'Content-Type: image/png; name="logo-velozlog.png"',
+        "Content-Transfer-Encoding: base64",
+        "Content-ID: <logo-velozlog>",
+        'Content-Disposition: inline; filename="logo-velozlog.png"',
+        "",
+        linhas76(logo),
+      );
+    partes.push(
+      `--${rel}--`,
+      `--${mix}`,
+      `Content-Type: application/pdf; name="${pdf.nome}"`,
+      "Content-Transfer-Encoding: base64",
+      `Content-Disposition: attachment; filename="${pdf.nome}"`,
+      "",
+      linhas76(pdfB64),
+      `--${mix}--`,
+      "",
+    );
+    return new Blob([partes.join("\r\n")], { type: "message/rfc822" });
+  }
+
+  async function enviarEmail(botao) {
+    const titulo = $("strong", botao);
+    const legenda = $("small", botao);
+    const original = [titulo.textContent, legenda.textContent];
+    botao.disabled = true;
+    titulo.textContent = "Preparando o e-mail…";
+    legenda.textContent = "Montando a mensagem e o PDF";
+    try {
+      const eml = await montarEml();
+      baixarBlob(
+        eml,
+        `Email-Cotacao-${dadosProposta().numero.replace("#", "")}.eml`,
+      );
+      titulo.textContent = "E-mail pronto ✔";
+      legenda.textContent =
+        "Abra o arquivo baixado: abre no Outlook com o PDF anexado";
+    } catch (erro) {
+      console.error("frete.js: não montou o e-mail", erro);
+      titulo.textContent = "Não consegui montar o e-mail";
+      legenda.textContent = "Use o e-mail simples logo abaixo";
+    }
+    botao.disabled = false;
+    setTimeout(() => {
+      [titulo.textContent, legenda.textContent] = original;
+    }, 8000);
+  }
+
   const dialogComp = $("#modal-compartilhar");
   const botaoComp = $("#btn-compartilhar");
   if (dialogComp && botaoComp) {
@@ -842,10 +1318,15 @@
     $("#comp-whats").addEventListener("click", (e) =>
       enviarWhats(e.currentTarget),
     );
-    $("#comp-email").addEventListener("click", () => {
-      const assunto = `Cotação de frete VelozLog ${dadosProposta().numero}`;
-      location.href = `mailto:?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(resumoTexto())}`;
-    });
+    $("#comp-email").addEventListener("click", (e) =>
+      enviarEmail(e.currentTarget),
+    );
+    // Gmail / webmail: e-mail simples (texto com emojis, sem anexo)
+    const emailSimples = $("#comp-email-simples");
+    if (emailSimples)
+      emailSimples.addEventListener("click", () => {
+        location.href = `mailto:?subject=${encodeURIComponent(assuntoEmail())}&body=${encodeURIComponent(textoEmail())}`;
+      });
     $("#comp-copiar").addEventListener("click", async () => {
       const titulo = $("#comp-copiar-titulo");
       try {
