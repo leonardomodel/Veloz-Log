@@ -28,7 +28,7 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.5" /></svg>
       Telemetria de Rota
     </a>
-    <a href="#" data-em-breve="Solicitar Coleta">
+    <a href="/portal-coleta.html">
       <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M12 8v8M8 12h8" /></svg>
       Solicitar Coleta
     </a>

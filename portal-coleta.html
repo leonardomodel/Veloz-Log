@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solicitar Coleta | Portal B2B VelozLog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="/img/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/style.css">
+  <!-- estrutura do portal (menu lateral, topo, cartões) -->
+  <link rel="stylesheet" href="/css/portal.css">
+  <!-- só desta tela (prefixo cl-) -->
+  <link rel="stylesheet" href="/css/coleta.css">
+  <!-- sem sessão (não passou pelo login): volta para o login antes de desenhar a página -->
+  <script>
+    try {
+      if (!sessionStorage.getItem("velozlog:sessao")) location.replace("/login.html");
+    } catch (e) { /* sem sessionStorage: segue */ }
+  </script>
+</head>
+
+<body class="pt-corpo">
+  <div class="pt-app">
+
+    <!-- MENU LATERAL (partials/portal-lateral.tpl) -->
+    <div data-include="portal-lateral"></div>
+
+    <div class="pt-principal">
+
+      <!-- TOPO (partials/portal-topo.tpl) -->
+      <div data-include="portal-topo"></div>
+
+      <main class="pt-conteudo">
+
+        <!-- ===== CABEÇALHO ===== -->
+        <section class="cl-cabeca">
+          <div class="cl-titulo">
+            <p class="cl-eyebrow">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7" /><path d="M9 11l3 3 9-9" /></svg>
+              Portal Logístico Corporativo
+            </p>
+            <h1>Solicitar Nova Coleta B2B</h1>
+            <p>Agende coletas dedicadas ou fracionadas nas plantas da sua empresa ou fornecedores homologados com alocação dinâmica de docas.</p>
+          </div>
+          <span class="cl-sla">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2.5 2M9 2h6" /></svg>
+            <span>SLA Médio de Alocação: <b>38 min</b></span>
+          </span>
+        </section>
+
+        <!-- ===== ETAPAS ===== -->
+        <nav class="pt-cartao cl-etapas" aria-label="Etapas da solicitação">
+          <ol id="cl-etapas">
+            <li><button type="button" data-etapa="1" data-ir="cl-secao-1"><span class="cl-etapa-num" aria-hidden="true">1</span><span><small>Etapa 01</small><strong>Endereço &amp; Janela</strong></span></button></li>
+            <li><button type="button" data-etapa="2" data-ir="cl-secao-2"><span class="cl-etapa-num" aria-hidden="true">2</span><span><small>Etapa 02</small><strong>Dados da Carga &amp; NFs</strong></span></button></li>
+            <li><button type="button" data-etapa="3" data-ir="cl-secao-3"><span class="cl-etapa-num" aria-hidden="true">3</span><span><small>Etapa 03</small><strong>Veículo &amp; Modalidade</strong></span></button></li>
+            <li><button type="button" data-etapa="4" data-ir="cl-resumo"><span class="cl-etapa-num" aria-hidden="true">4</span><span><small>Etapa 04</small><strong>Confirmação &amp; Protocolo</strong></span></button></li>
+          </ol>
+        </nav>
+
+        <div class="cl-grade">
+          <form class="cl-form" id="cl-form" novalidate>
+
+            <!-- ===== 1. PONTO DE COLETA ===== -->
+            <section class="pt-cartao cl-secao" id="cl-secao-1" data-secao="1">
+              <header class="cl-secao-topo">
+                <span class="cl-secao-icone">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /></svg>
+                </span>
+                <div>
+                  <h2>1. Ponto de Coleta &amp; Janela Operacional</h2>
+                  <p>Origem onde a frota coletora realizará o carregamento</p>
+                </div>
+                <button type="button" class="cl-link-acao" id="cl-novo-ponto">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8v8M8 12h8" /></svg>
+                  Cadastrar Novo Ponto
+                </button>
+              </header>
+
+              <div class="cl-campo">
+                <label for="cl-planta">Planta / Unidade Homologada</label>
+                <div class="cl-caixa cl-caixa-select">
+                  <select id="cl-planta" name="planta">
+                    <option value="vinhedo">Planta Principal Vinhedo - SP (Rod. Anhanguera, km 74, Galpão A-4)</option>
+                    <option value="technopark">Techno Park Campinas - SP (Doca Externa #12)</option>
+                    <option value="sumare">Unidade Sumaré - SP (Av. Eng. Antônio Carlos, 1.200, Doca 02)</option>
+                    <option value="fornecedor">Fornecedor Homologado Aços Paulista - Jundiaí - SP</option>
+                  </select>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+                </div>
+              </div>
+
+              <!-- cadastro rápido de novo ponto (abre no lugar) -->
+              <div class="cl-novo-ponto" id="cl-novo-ponto-caixa" hidden>
+                <div class="cl-campo">
+                  <label for="cl-novo-nome">Nome e endereço do novo ponto</label>
+                  <div class="cl-caixa">
+                    <input type="text" id="cl-novo-nome" placeholder="Ex.: CD Hortolândia - SP (Rua das Indústrias, 450, Doca 1)">
+                  </div>
+                </div>
+                <div class="cl-novo-ponto-botoes">
+                  <button type="button" class="cl-btn-texto" id="cl-novo-cancelar">Cancelar</button>
+                  <button type="button" class="cl-btn-mini" id="cl-novo-salvar">Adicionar ponto</button>
+                </div>
+              </div>
+
+              <div class="cl-linha">
+                <div class="cl-campo">
+                  <span class="cl-rotulo" id="cl-data-rotulo">Data da Coleta Solicitada</span>
+                  <div class="cl-segmento" role="radiogroup" aria-labelledby="cl-data-rotulo">
+                    <label><input type="radio" name="data" value="hoje" checked><span><i></i>Hoje (Imediato)</span></label>
+                    <label><input type="radio" name="data" value="amanha"><span><i></i>Amanhã</span></label>
+                  </div>
+                </div>
+                <div class="cl-campo">
+                  <label for="cl-janela">Janela de Prontidão da Doca</label>
+                  <div class="cl-caixa cl-caixa-select">
+                    <select id="cl-janela" name="janela">
+                      <option value="08:00|11:30">Janela das 08:00 às 11:30</option>
+                      <option value="11:00|14:00">Janela das 11:00 às 14:00</option>
+                      <option value="14:00|17:30" selected>Janela das 14:00 às 17:30</option>
+                      <option value="18:00|21:00">Janela das 18:00 às 21:00</option>
+                    </select>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+                  </div>
+                </div>
+              </div>
+
+              <div class="cl-linha">
+                <div class="cl-campo">
+                  <label for="cl-responsavel">Responsável na Expedição / Docas</label>
+                  <div class="cl-caixa">
+                    <input type="text" id="cl-responsavel" name="responsavel" value="Marcos Roberto Silveira" autocomplete="name" required>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="2" /><circle cx="9" cy="12.5" r="2" /><path d="M6 17c.6-1.3 1.7-2 3-2s2.4.7 3 2M14.5 11h3.5M14.5 14h2.5M10 6V4h4v2" /></svg>
+                  </div>
+                  <small class="cl-erro" hidden>Informe quem vai receber o motorista na doca.</small>
+                </div>
+                <div class="cl-campo">
+                  <label for="cl-telefone">Telefone de Contato Direto (Pátio)</label>
+                  <div class="cl-caixa">
+                    <input type="tel" id="cl-telefone" name="telefone" value="(19) 99841-3310" inputmode="numeric" autocomplete="tel" required>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2" /></svg>
+                  </div>
+                  <small class="cl-erro" hidden>Telefone incompleto: use DDD + número.</small>
+                </div>
+              </div>
+            </section>
+
+            <!-- ===== 2. CARGA & NOTAS ===== -->
+            <section class="pt-cartao cl-secao" id="cl-secao-2" data-secao="2">
+              <header class="cl-secao-topo">
+                <span class="cl-secao-icone">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4V3h6v1M9 12l2 2 4-4" /></svg>
+                </span>
+                <div>
+                  <h2>2. Especificação da Carga &amp; Notas Fiscais</h2>
+                  <p>Parâmetros de peso, volumetria e importação de documentos fiscais</p>
+                </div>
+              </header>
+
+              <div class="cl-campo">
+                <span class="cl-rotulo" id="cl-acond-rotulo">Acondicionamento Predominante</span>
+                <div class="cl-acond" role="radiogroup" aria-labelledby="cl-acond-rotulo">
+                  <label><input type="radio" name="acond" value="paletizada" checked><span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="3" width="12" height="9" rx="1" /><path d="M3 16h18M5 16v4M12 16v4M19 16v4M3 20h18" /></svg>
+                    Paletizada</span></label>
+                  <label><input type="radio" name="acond" value="seca"><span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z" /><path d="M4 7.5l8 4.5 8-4.5M12 12v9" /></svg>
+                    Carga Seca Geral</span></label>
+                  <label><input type="radio" name="acond" value="bobinas"><span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" /><circle cx="12" cy="12" r="3" /></svg>
+                    Bobinas / Rolos</span></label>
+                  <label><input type="radio" name="acond" value="caixas"><span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1" /><rect x="13" y="4" width="7" height="7" rx="1" /><rect x="4" y="13" width="7" height="7" rx="1" /><rect x="13" y="13" width="7" height="7" rx="1" /></svg>
+                    Caixas Soltas</span></label>
+                </div>
+              </div>
+
+              <div class="cl-linha">
+                <div class="cl-campo">
+                  <label for="cl-volumes">Qtd. de Volumes / Paletes</label>
+                  <div class="cl-caixa">
+                    <input type="number" id="cl-volumes" name="volumes" value="8" min="1" max="60" inputmode="numeric" required class="cl-curto">
+                    <span class="cl-sufixo" id="cl-volumes-unidade">Paletes PBR (1,00 x 1,20m)</span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5z" /><path d="M3 13l9 5 9-5" /></svg>
+                  </div>
+                  <small class="cl-erro" hidden>Informe de 1 a 60 volumes.</small>
+                </div>
+                <div class="cl-campo">
+                  <label for="cl-peso">Peso Estimado Total (Bruto)</label>
+                  <div class="cl-caixa">
+                    <input type="text" id="cl-peso" name="peso" value="3.400" inputmode="numeric" required class="cl-curto cl-negrito">
+                    <span class="cl-sufixo cl-negrito">kg</span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 8h11l2 12h-15z" /><circle cx="12" cy="5" r="2" /></svg>
+                  </div>
+                  <small class="cl-erro" hidden>Informe o peso bruto (até 30.000 kg).</small>
+                </div>
+              </div>
+
+              <div class="cl-campo">
+                <div class="cl-rotulo-linha">
+                  <span class="cl-rotulo">Importação de NF-e &amp; Chaves de Acesso</span>
+                  <span class="cl-sefaz">Integração SEFAZ Ativa</span>
+                </div>
+                <label class="cl-soltar" id="cl-soltar">
+                  <input type="file" id="cl-arquivos" accept=".xml,text/xml,application/xml" multiple class="pt-oculto">
+                  <span class="cl-soltar-icone">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.6-9 6 6 0 0 1 11.4 1.5A3.8 3.8 0 0 1 17.5 18" /><path d="M12 12v8M9 15l3-3 3 3" /></svg>
+                  </span>
+                  <strong>Arraste seus arquivos XML aqui</strong>
+                  <small>Ou selecione múltiplos arquivos NF-e modelo 55 do seu computador</small>
+                  <span class="cl-procurar">Procurar XMLs</span>
+                </label>
+
+                <div class="cl-chave">
+                  <div class="cl-caixa">
+                    <input type="text" id="cl-chave" placeholder="Ou cole aqui a Chave de Acesso de 44 dígitos..." inputmode="numeric" aria-label="Chave de acesso da NF-e (44 dígitos)">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2" /><path d="M7 10v4M10.5 10v4M14 10h3v2h-3v2h3" /></svg>
+                  </div>
+                  <button type="button" class="cl-autopreencher" id="cl-autopreencher">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8M4 3v5h5M4 13a8 8 0 0 0 14.3 4.9L20 16M20 21v-5h-5" /></svg>
+                    Autopreencher
+                  </button>
+                </div>
+                <small class="cl-erro" id="cl-chave-erro" hidden></small>
+
+                <ul class="cl-notas" id="cl-notas" aria-label="Notas fiscais vinculadas"></ul>
+              </div>
+            </section>
+
+            <!-- ===== 3. REQUISITOS ===== -->
+            <section class="pt-cartao cl-secao" id="cl-secao-3" data-secao="3">
+              <header class="cl-secao-topo">
+                <span class="cl-secao-icone">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0" /><circle cx="16" cy="6" r="2" /><circle cx="10" cy="12" r="2" /><circle cx="18" cy="18" r="2" /></svg>
+                </span>
+                <div>
+                  <h2>3. Requisitos Especiais de Operação</h2>
+                  <p>Equipamentos adicionais e diretrizes para o motorista no pátio</p>
+                </div>
+              </header>
+
+              <div class="cl-requisitos">
+                <label class="cl-requisito">
+                  <input type="checkbox" name="plataforma" checked>
+                  <span>
+                    <strong>Caminhão com Plataforma Elevatória Hidráulica</strong>
+                    <small>Requerido se o ponto de coleta não possuir doca elevada na altura padrão (1,30m).</small>
+                  </span>
+                </label>
+                <label class="cl-requisito">
+                  <input type="checkbox" name="ajudante">
+                  <span>
+                    <strong>Necessário Ajudante Adicional VelozLog</strong>
+                    <small>Operador auxiliar para agilizar manuseio e conferência física dos volumes paletizados.</small>
+                  </span>
+                </label>
+                <label class="cl-requisito">
+                  <input type="checkbox" name="escolta">
+                  <span>
+                    <strong>Carga com Seguro Específico ou Escolta Armada</strong>
+                    <small>Aplicável automaticamente para mercadorias com valor agregado superior ao limite de apólice padrão.</small>
+                  </span>
+                </label>
+              </div>
+            </section>
+          </form>
+
+          <!-- ===== RESUMO ===== -->
+          <aside class="cl-lateral">
+            <section class="pt-cartao cl-resumo" id="cl-resumo" aria-labelledby="cl-resumo-titulo">
+              <header class="cl-resumo-topo">
+                <h2 id="cl-resumo-titulo">Resumo do Agendamento</h2>
+                <span class="cl-prioritario">B2B Prioritário</span>
+              </header>
+
+              <div class="cl-trajeto">
+                <div class="cl-trajeto-ponto">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21V9l6-4v4l6-4v4l6-4v16z" /><path d="M7 17h2M11 17h2M15 17h2" /></svg>
+                  <div>
+                    <small>Ponto de Coleta</small>
+                    <strong id="cl-r-empresa">Indústrias Metalúrgicas ABC</strong>
+                    <span id="cl-r-planta">Vinhedo / SP - Planta Principal</span>
+                  </div>
+                </div>
+                <div class="cl-trajeto-ponto">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2.5" /><circle cx="12" cy="3.5" r="1.8" /><circle cx="12" cy="20.5" r="1.8" /><circle cx="3.5" cy="12" r="1.8" /><circle cx="20.5" cy="12" r="1.8" /><path d="M12 5.3v4.2M12 14.5v4.2M5.3 12h4.2M14.5 12h4.2" /></svg>
+                  <div>
+                    <small>Destino de Triagem</small>
+                    <strong>Hub Central SP-01 (Campinas)</strong>
+                    <span>Cross-docking &amp; Expedição Interestadual</span>
+                  </div>
+                </div>
+              </div>
+
+              <dl class="cl-dados">
+                <div><dt>Tipo de Veículo Indicado:</dt><dd id="cl-r-veiculo">Toco ou VUC Sider</dd></div>
+                <div><dt>Capacidade de Carga:</dt><dd id="cl-r-capacidade">8 Paletes (3.400 kg)</dd></div>
+                <div><dt>Estimativa de Chegada:</dt><dd class="cl-laranja" id="cl-r-chegada">Hoje até às 15:30</dd></div>
+                <div><dt>Condição Comercial:</dt><dd id="cl-r-condicao">Incluso em Contrato Faturado</dd></div>
+              </dl>
+
+              <div class="cl-homologado">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z" /><path d="M9 12l2 2 4-4.5" /></svg>
+                <div>
+                  <strong>Cadastro Homologado</strong>
+                  <small>Motorista auditado por Buonny &amp; Pamcary 24h</small>
+                </div>
+              </div>
+
+              <button type="submit" form="cl-form" class="cl-confirmar" id="cl-confirmar">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 6h12v10H2zM14 9h4l3 3.5V16h-7" /><circle cx="6" cy="17.5" r="1.8" /><circle cx="17" cy="17.5" r="1.8" /></svg>
+                <span>Confirmar Agendamento de Coleta</span>
+              </button>
+              <button type="button" class="cl-rascunho" id="cl-rascunho">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z" /></svg>
+                Salvar como Rascunho
+              </button>
+              <p class="cl-cancelamento">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8h0" /></svg>
+                Cancelamento sem ônus em até 40 min
+              </p>
+
+              <!-- protocolo gerado depois de confirmar -->
+              <div class="cl-protocolo" id="cl-protocolo" hidden>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M8.5 12l2.5 2.5 4.5-5" /></svg>
+                <div>
+                  <small>Coleta agendada • Protocolo</small>
+                  <strong class="cl-mono" id="cl-protocolo-numero">COL-2026-8842</strong>
+                  <button type="button" class="cl-btn-texto" id="cl-nova">Solicitar outra coleta</button>
+                </div>
+              </div>
+            </section>
+
+            <div class="pt-cartao cl-ajuda">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15v-3a8 8 0 0 1 16 0v3" /><rect x="3" y="14" width="4" height="6" rx="1.5" /><rect x="17" y="14" width="4" height="6" rx="1.5" /></svg>
+              <div>
+                <strong>Dúvidas na Cubagem?</strong>
+                <small>Fale com seu gestor de conta</small>
+              </div>
+              <button type="button" id="cl-chamar">Chamar</button>
+            </div>
+          </aside>
+        </div>
+
+        <!-- ===== HISTÓRICO ===== -->
+        <section class="pt-cartao cl-historico" aria-labelledby="cl-historico-titulo">
+          <header class="cl-historico-topo">
+            <h2 id="cl-historico-titulo">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5M12 7v5l3 2" /></svg>
+              Histórico Recente de Solicitações
+            </h2>
+            <a href="/portal-manifestos.html" class="cl-ver-todos">
+              Ver todos os manifestos emitidos
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+            </a>
+          </header>
+          <div class="cl-rolagem">
+            <table class="cl-tabela">
+              <thead>
+                <tr>
+                  <th>Protocolo / Data</th>
+                  <th>Unidade de Origem</th>
+                  <th>Veículo / Motorista</th>
+                  <th>Volume &amp; Carga</th>
+                  <th>Status Operacional</th>
+                  <th class="cl-th-acao">Ação</th>
+                </tr>
+              </thead>
+              <!-- linhas montadas pelo /js/coleta.js -->
+              <tbody id="cl-linhas"></tbody>
+            </table>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="/js/whatsapp.js"></script>
+  <script src="/js/layout.js"></script>
+  <script src="/js/portal-base.js"></script>
+  <script src="/js/coleta.js"></script>
+</body>
+
+</html>
