@@ -32,7 +32,7 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M12 8v8M8 12h8" /></svg>
       Solicitar Coleta
     </a>
-    <a href="#" data-em-breve="Faturas & Canhotos">
+    <a href="/portal-faturas.html">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z" /><path d="M9 8h6M9 12h6M9 16h3" /></svg>
       Faturas &amp; Canhotos
     </a>

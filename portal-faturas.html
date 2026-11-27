@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faturas &amp; Canhotos | Portal B2B VelozLog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="/img/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/style.css">
+  <!-- estrutura do portal (menu lateral, topo, cartões) -->
+  <link rel="stylesheet" href="/css/portal.css">
+  <!-- só desta tela (prefixo fa-) -->
+  <link rel="stylesheet" href="/css/faturas.css">
+  <!-- sem sessão (não passou pelo login): volta para o login antes de desenhar a página -->
+  <script>
+    try {
+      if (!sessionStorage.getItem("velozlog:sessao")) location.replace("/login.html");
+    } catch (e) { /* sem sessionStorage: segue */ }
+  </script>
+</head>
+
+<body class="pt-corpo">
+  <div class="pt-app">
+
+    <!-- MENU LATERAL (partials/portal-lateral.tpl) -->
+    <div data-include="portal-lateral"></div>
+
+    <div class="pt-principal">
+
+      <!-- TOPO (partials/portal-topo.tpl) -->
+      <div data-include="portal-topo"></div>
+
+      <main class="pt-conteudo">
+
+        <!-- ===== CABEÇALHO ===== -->
+        <section class="fa-cabeca">
+          <div class="fa-titulo">
+            <p class="fa-trilha">Portal Financeiro <span aria-hidden="true">›</span> <b>Conciliação Corporativa</b></p>
+            <h1>Faturas, Conciliação e Canhotos Digitais</h1>
+            <p>Gestão de boletos a vencer, conciliação de faturas faturadas B2B e download de comprovantes de entrega (POD).</p>
+          </div>
+          <div class="fa-cabeca-botoes">
+            <button type="button" class="fa-btn fa-btn-claro" id="fa-lote">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7.5v8M8.5 12.5l3.5 3.5 3.5-3.5" /></svg>
+              Baixar Lote de Boletos
+            </button>
+            <button type="button" class="fa-btn fa-btn-laranja" id="fa-exportar">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M3 9h18M3 14h18M9 4v16M15 4v16" /></svg>
+              Exportar Relatório (CSV / XLS)
+            </button>
+          </div>
+        </section>
+
+        <!-- ===== ABAS ===== -->
+        <div class="fa-abas" role="tablist" aria-label="Seções financeiras" id="fa-abas">
+          <button type="button" role="tab" id="fa-aba-faturas" aria-controls="fa-painel-faturas" aria-selected="true" data-aba="faturas">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z" /><path d="M9 8h6M9 12h6M9 16h3" /></svg>
+            Faturas e Boletos <span class="fa-aba-num" id="fa-aba-num">3</span>
+          </button>
+          <button type="button" role="tab" id="fa-aba-pod" aria-controls="fa-painel-pod" aria-selected="false" data-aba="pod" tabindex="-1">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2" /><path d="M8.5 12l2.5 2.5 4.5-5" /></svg>
+            Repositório de Canhotos (POD)
+          </button>
+          <button type="button" role="tab" id="fa-aba-edi" aria-controls="fa-painel-edi" aria-selected="false" data-aba="edi" tabindex="-1">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h14M14 4l4 4-4 4M20 16H6M10 12l-4 4 4 4" /></svg>
+            Conciliação EDI / Espelho de Frete
+          </button>
+        </div>
+
+        <!-- ===== INDICADORES ===== -->
+        <section class="fa-kpis" aria-label="Indicadores financeiros">
+          <article class="pt-cartao fa-kpi">
+            <div class="fa-kpi-topo">
+              <h2>Total a Vencer</h2>
+              <span class="fa-kpi-icone fa-kpi-icone-laranja">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4V3h6v1" /><circle cx="14.5" cy="15" r="3.5" /><path d="M14.5 13.5V15l1 .8M8 9h6M8 12h3" /></svg>
+              </span>
+            </div>
+            <p class="fa-kpi-valor" id="fa-kpi-vencer">R$ 42.850<small>,00</small></p>
+            <p class="fa-kpi-nota"><i class="fa-bola"></i><span>Próximo: <b id="fa-kpi-proximo">28/11</b> (via DDA)</span><b class="fa-laranja" id="fa-kpi-lotes">1 lote</b></p>
+          </article>
+
+          <article class="pt-cartao fa-kpi">
+            <div class="fa-kpi-topo">
+              <h2>Faturas Liquidadas (Mês)</h2>
+              <span class="fa-kpi-icone">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 2.1 3.2-.4.9 3.1 2.8 1.6-1.1 3 1.1 3-2.8 1.6-.9 3.1-3.2-.4L12 22l-2.4-2.1-3.2.4-.9-3.1-2.8-1.6 1.1-3-1.1-3 2.8-1.6.9-3.1 3.2.4z" /><path d="M8.5 12l2.5 2.5 4.5-5" /></svg>
+              </span>
+            </div>
+            <p class="fa-kpi-valor">R$ 184.200<small>,00</small></p>
+            <p class="fa-kpi-nota">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M8.5 12l2.5 2.5 4.5-5" /></svg>
+              <span>Conciliação bancária 100% deferida</span>
+            </p>
+          </article>
+
+          <article class="pt-cartao fa-kpi">
+            <div class="fa-kpi-topo">
+              <h2>Canhotos Disponíveis</h2>
+              <span class="fa-kpi-icone">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M7 17l4-5 3 3.5 2-2.5 2 4z" /><circle cx="15.5" cy="8.5" r="1.5" /></svg>
+              </span>
+            </div>
+            <p class="fa-kpi-valor">204 <span class="fa-kpi-unidade">PODs</span></p>
+            <p class="fa-kpi-nota">
+              <svg class="fa-laranja" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /></svg>
+              <span>100% com geolocalização e carimbo</span>
+            </p>
+          </article>
+
+          <article class="pt-cartao fa-kpi">
+            <div class="fa-kpi-topo">
+              <h2>Notas de Débito / Disputas</h2>
+              <span class="fa-kpi-icone">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h9M4 15h9M16 9l4 6M20 9l-4 6" /></svg>
+              </span>
+            </div>
+            <p class="fa-kpi-valor">0 <span class="fa-kpi-unidade fa-kpi-unidade-suave">pendências ativas</span></p>
+            <p class="fa-kpi-nota"><span>Espelho de frete sem divergência</span><b class="fa-laranja">Regular</b></p>
+          </article>
+        </section>
+
+        <!-- =====================================================
+             ABA 1 — FATURAS E BOLETOS
+             ===================================================== -->
+        <div class="fa-painel" id="fa-painel-faturas" role="tabpanel" aria-labelledby="fa-aba-faturas">
+
+          <section class="pt-cartao fa-filtros" aria-label="Filtros de faturas">
+            <label class="fa-busca">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" /></svg>
+              <input type="search" id="fa-busca" placeholder="Buscar por Nº Fatura, CTe ou NF-e..." aria-label="Buscar por número da fatura, CT-e ou NF-e">
+            </label>
+            <label class="fa-mes">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /></svg>
+              <!-- opções montadas pelo /js/faturas.js -->
+              <select id="fa-mes" aria-label="Ciclo de faturamento"></select>
+              <svg class="fa-mes-seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+            </label>
+            <div class="fa-chips" role="group" aria-label="Filtrar por status" id="fa-chips">
+              <button type="button" data-status="todos" aria-pressed="true">Todos</button>
+              <button type="button" data-status="aberto" aria-pressed="false">Em Aberto (<span data-conta="aberto">1</span>)</button>
+              <button type="button" data-status="liquidado" aria-pressed="false">Liquidado (<span data-conta="liquidado">2</span>)</button>
+              <button type="button" data-status="hoje" aria-pressed="false">Vencendo Hoje (<span data-conta="hoje">0</span>)</button>
+            </div>
+            <span class="fa-dda">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2" /><path d="M3 10h18M7 15h4" /></svg>
+              DDA Integrado Itaú BBA S/A
+            </span>
+          </section>
+
+          <section class="pt-cartao fa-tabela-cartao" aria-labelledby="fa-tabela-titulo">
+            <header class="fa-tabela-topo">
+              <h2 id="fa-tabela-titulo">Faturas Consolidadas VelozLog <span class="fa-ciclo">Ciclo Quinzenal</span></h2>
+              <span id="fa-exibindo">Exibindo 3 registros auditados</span>
+            </header>
+            <div class="fa-rolagem">
+              <table class="fa-tabela">
+                <thead>
+                  <tr>
+                    <th>Fatura / Lote</th>
+                    <th>Período de Apuração</th>
+                    <th class="fa-centro">CTes Vinculados</th>
+                    <th class="fa-direita">Valor Total (R$)</th>
+                    <th>Vencimento</th>
+                    <th class="fa-centro">Status</th>
+                    <th class="fa-direita">Ações Rápidas</th>
+                  </tr>
+                </thead>
+                <!-- linhas montadas pelo /js/faturas.js -->
+                <tbody id="fa-linhas"></tbody>
+              </table>
+            </div>
+            <footer class="fa-tabela-pe">
+              <span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 2.1 3.2-.4.9 3.1 2.8 1.6-1.1 3 1.1 3-2.8 1.6-.9 3.1-3.2-.4L12 22l-2.4-2.1-3.2.4-.9-3.1-2.8-1.6 1.1-3-1.1-3 2.8-1.6.9-3.1 3.2.4z" /><path d="M8.5 12l2.5 2.5 4.5-5" /></svg>
+                Boletos emitidos com registro CIP bancário em conformidade com o Febraban DDA.
+              </span>
+              <nav class="fa-paginas" aria-label="Páginas">
+                <span id="fa-pagina">Página 1 de 1</span>
+                <button type="button" id="fa-anterior" aria-label="Página anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg></button>
+                <button type="button" id="fa-proxima" aria-label="Próxima página"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg></button>
+              </nav>
+            </footer>
+          </section>
+
+          <!-- galeria rápida (últimos 3 canhotos) -->
+          <section class="fa-galeria" aria-labelledby="fa-galeria-titulo">
+            <header class="fa-galeria-topo">
+              <div>
+                <h2 id="fa-galeria-titulo">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z" /><path d="M9 12l2 2 4-4.5" /></svg>
+                  Galeria Rápida de Canhotos Digitais Assinados (Últimas Entregas)
+                </h2>
+                <p>Comprovantes com assinatura manuscrita digitalizada, dados do recebedor e coordenadas GPS de entrega registradas pelo app do motorista.</p>
+              </div>
+              <button type="button" class="fa-ver-todos" data-ir-aba="pod">
+                Ver todos os 204 canhotos
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+              </button>
+            </header>
+            <div class="fa-cards" id="fa-galeria"></div>
+          </section>
+        </div>
+
+        <!-- =====================================================
+             ABA 2 — REPOSITÓRIO DE CANHOTOS
+             ===================================================== -->
+        <div class="fa-painel" id="fa-painel-pod" role="tabpanel" aria-labelledby="fa-aba-pod" hidden>
+          <section class="pt-cartao fa-filtros" aria-label="Filtros de canhotos">
+            <label class="fa-busca">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" /></svg>
+              <input type="search" id="fa-pod-busca" placeholder="Buscar por CTe, recebedor ou cidade..." aria-label="Buscar canhoto por CT-e, recebedor ou cidade">
+            </label>
+            <span class="fa-pod-total" id="fa-pod-total">9 canhotos nesta página • 204 no repositório</span>
+            <button type="button" class="fa-btn fa-btn-claro fa-btn-baixo" id="fa-pod-zip">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="M7 10l5 5 5-5M12 15V3" /></svg>
+              Baixar Metadados (JSON)
+            </button>
+          </section>
+          <div class="fa-cards" id="fa-pod-lista"></div>
+          <p class="fa-vazio" id="fa-pod-vazio" hidden>Nenhum canhoto encontrado para essa busca.</p>
+        </div>
+
+        <!-- =====================================================
+             ABA 3 — CONCILIAÇÃO EDI
+             ===================================================== -->
+        <div class="fa-painel" id="fa-painel-edi" role="tabpanel" aria-labelledby="fa-aba-edi" hidden>
+          <section class="pt-cartao fa-edi-resumo" aria-label="Resumo da conciliação">
+            <div>
+              <small>Arquivo EDI (PROCEDA 5.0)</small>
+              <strong class="fa-mono" id="fa-edi-arquivo">DOCCOB_VLZ_1102.txt</strong>
+            </div>
+            <div>
+              <small>CT-es Conciliados</small>
+              <strong id="fa-edi-conciliados">8 de 8</strong>
+            </div>
+            <div>
+              <small>Diferença Total</small>
+              <strong class="fa-verde">R$ 0,00</strong>
+            </div>
+            <div>
+              <small>Situação do Espelho</small>
+              <strong class="fa-selo-ok">Sem divergência</strong>
+            </div>
+            <label class="fa-mes fa-edi-fatura">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z" /></svg>
+              <select id="fa-edi-fatura" aria-label="Fatura conciliada"></select>
+              <svg class="fa-mes-seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+            </label>
+          </section>
+
+          <section class="pt-cartao fa-tabela-cartao" aria-labelledby="fa-edi-titulo">
+            <header class="fa-tabela-topo">
+              <h2 id="fa-edi-titulo">Espelho de Frete × Fatura <span class="fa-ciclo">Amostra auditada</span></h2>
+              <span>Comparação CT-e a CT-e entre o valor contratado e o faturado</span>
+            </header>
+            <div class="fa-rolagem">
+              <table class="fa-tabela fa-tabela-edi">
+                <thead>
+                  <tr>
+                    <th>CT-e / Rastreio</th>
+                    <th>NF-e</th>
+                    <th>Destino</th>
+                    <th class="fa-direita">Frete Contratado</th>
+                    <th class="fa-direita">Frete Faturado</th>
+                    <th class="fa-direita">Diferença</th>
+                    <th class="fa-centro">Conciliação</th>
+                  </tr>
+                </thead>
+                <tbody id="fa-edi-linhas"></tbody>
+              </table>
+            </div>
+            <footer class="fa-tabela-pe">
+              <span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8h0" /></svg>
+                Encontrou alguma diferença? Abra uma disputa e a Torre Financeira responde em até 48h úteis.
+              </span>
+              <button type="button" class="fa-btn fa-btn-claro fa-btn-baixo" id="fa-disputa">Abrir Disputa</button>
+            </footer>
+          </section>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ===================== JANELA (boleto, quitação, fatura, canhoto, JSON) ===================== -->
+  <dialog class="fa-modal" id="fa-modal" aria-labelledby="fa-modal-titulo">
+    <header class="fa-modal-topo">
+      <h2 id="fa-modal-titulo">Detalhes</h2>
+      <button type="button" class="fa-modal-fechar" data-fechar aria-label="Fechar">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+      </button>
+    </header>
+    <div class="fa-modal-corpo" id="fa-modal-corpo"></div>
+    <footer class="fa-modal-pe" id="fa-modal-pe"></footer>
+  </dialog>
+
+  <script src="/js/whatsapp.js"></script>
+  <script src="/js/layout.js"></script>
+  <script src="/js/manifestos.js"></script>
+  <script src="/js/portal-base.js"></script>
+  <script src="/js/faturas.js"></script>
+</body>
+
+</html>
