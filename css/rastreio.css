@@ -284,7 +284,9 @@
   margin-bottom: 14px;
 }
 
-/* Sobe sozinha até 75% (só CSS, não depende do JS) */
+/* Sobe de 0 até a largura do pedido (o rastreio.js grava o % no style: 100% se entregue).
+   Sem pedido, fica em 75%. O keyframe só tem o "from": o fim é sempre a largura atual
+   do elemento — antes o "to" fixo em 75% travava todos os pedidos nesse valor. */
 .rt-barra-preenchida {
   width: 75%;
   height: 100%;
@@ -296,9 +298,6 @@
 @keyframes rt-barra-subir {
   from {
     width: 0;
-  }
-  to {
-    width: 75%;
   }
 }
 

@@ -118,9 +118,10 @@
       ocorrencia ? "Ocorrência na entrega" : entregaHoje ? "Saiu para entrega" : "Em trânsito",
       "Entregue",
     ];
-    // ícone da etapa: ✓ passada · alerta na ocorrência · número nas demais
+    // ícone da etapa: ✓ nas já alcançadas (inclusive a atual) · alerta se a atual for ocorrência
+    // · número só nas que ainda vão acontecer
     const iconeEtapa = (i) =>
-      i < info.etapa ? "✓" : i === info.etapa && ocorrencia ? ALERTA : String(i + 1).padStart(2, "0");
+      i < info.etapa ? "✓" : i === info.etapa ? (ocorrencia ? ALERTA : "✓") : String(i + 1).padStart(2, "0");
 
     $('[data-rt="etapas"]').innerHTML = nomesEtapas
       .map((nome, i) => {

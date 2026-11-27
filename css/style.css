@@ -844,7 +844,7 @@ main > .hero {
 
 .trajeto {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 16px;
   align-items: end;
   font-size: 17px;
@@ -861,7 +861,20 @@ main > .hero {
 }
 
 .trajeto > div {
+  min-width: 0; /* deixa a linha do prazo encolher com "…" em vez de quebrar */
   text-align: center;
+}
+
+/* prazo / data da entrega: uma linha só; texto longo termina em "…" (inteiro no mouse) */
+.trajeto > div .prazo {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.trajeto > div .prazo.entregue {
+  font-weight: 600;
+  color: #15803d;
 }
 
 .trajeto > div p {

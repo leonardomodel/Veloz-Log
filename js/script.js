@@ -237,6 +237,19 @@
     Object.entries(campos).map(([k, el]) => [k, el ? el.textContent : ""]),
   );
   const linkDetalhes = card.querySelector("#home-detalhes");
+  const linhaPrazo = card.querySelector("#home-prazo-linha");
+  const rotuloPrazo = card.querySelector("#home-prazo-rotulo");
+
+  // data e hora da entrega: do comprovante (POD) "19/05/2024 às 14:28:11";
+  // sem POD, do texto "Entregue em 19/05, 14:28" com o ano da previsão
+  function dataDaEntrega(m) {
+    const pod = m.pod && /(\d{2}\/\d{2}\/\d{4}) às (\d{2}:\d{2})/.exec(m.pod.carimbo || "");
+    if (pod) return `${pod[1]} • ${pod[2]}`;
+    const eta = /(\d{2}\/\d{2})\D+(\d{2}:\d{2})/.exec(m.eta || "");
+    if (!eta) return m.eta;
+    const ano = (/\d{4}/.exec(m.prev || "") || [new Date().getFullYear()])[0];
+    return `${eta[1]}/${ano} • ${eta[2]}`;
+  }
 
   function preencherResultado(codigo) {
     const dados = window.VelozManifestos;
@@ -259,8 +272,18 @@
       };
     }
 
+    // entregue: no lugar do prazo, só a data e a hora da entrega (ex.: 19/05/2024 • 14:28)
+    const entregue = m && m.status === "entregue";
+    if (entregue) valores = { ...valores, prazo: dataDaEntrega(m) };
+
     codigoExibido.textContent = exibido;
     Object.entries(campos).forEach(([k, el]) => el && (el.textContent = valores[k]));
+
+    if (linhaPrazo) {
+      rotuloPrazo.hidden = entregue;
+      linhaPrazo.classList.toggle("entregue", entregue);
+      linhaPrazo.title = entregue ? `Entregue em ${valores.prazo}` : `Prazo: ${valores.prazo}`;
+    }
 
     // telemetria longa fica numa linha com "…": o texto inteiro aparece no mouse
     const telemetria = card.querySelector("#home-telemetria");

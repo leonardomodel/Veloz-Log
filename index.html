@@ -112,7 +112,8 @@
                   <div class="trajeto surge" style="--i:1">
                     <p><small>Origem</small><span id="home-origem">São Paulo (HUB-01)</span></p>
                     <div>
-                      <p>Prazo: <span id="home-prazo">Hoje até 18:30</span></p>
+                      <!-- sempre numa linha: "Prazo: …" ou, se entregue, só a data e a hora da entrega -->
+                      <p class="prazo" id="home-prazo-linha"><span id="home-prazo-rotulo">Prazo: </span><span id="home-prazo">Hoje até 18:30</span></p>
                       <div class="barra" role="progressbar" aria-label="Progresso do trajeto" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
                         <span class="barra-preenchimento"></span>
                       </div>
