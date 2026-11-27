@@ -2175,6 +2175,36 @@ main > .hero {
   }
 }
 
+/* ===== Cotação: ajuste de fonte dos campos ===== */
+
+/* texto digitado / selecionado nos campos */
+.cotacao-grade input,
+.cotacao-grade select {
+  font-size: 15px;
+  line-height: 1.2;
+  min-width: 0; /* deixa o campo encolher dentro da grade sem estourar */
+  text-overflow: ellipsis; /* se um nome muito longo não couber, termina em "…" em vez de cortar seco */
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* espaço reservado à direita para a setinha não ficar em cima do texto */
+.cotacao-grade select {
+  padding-right: 36px;
+}
+
+/* texto cinza de exemplo (placeholder) menor */
+.cotacao-grade input::placeholder {
+  font-size: 15px;
+  color: #9aa3b5;
+  opacity: 1; /* o Firefox deixa o placeholder mais apagado sem isso */
+}
+
+/* as opções da lista aberta acompanham o mesmo tamanho */
+.cotacao-grade select option {
+  font-size: 15px;
+}
+
 @media (max-width: 600px) {
   .servicos .grade-4 {
     grid-template-columns: 1fr;
