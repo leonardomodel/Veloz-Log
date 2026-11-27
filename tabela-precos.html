@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabela de Preços Referencial | VelozLog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="/img/icon.svg" type="image/svg+xml">
+  <!-- Mesmo CSS do index (nav, footer, variáveis) -->
+  <link rel="stylesheet" href="/css/style.css">
+  <!-- CSS só desta página (prefixo tp-pagina) -->
+  <link rel="stylesheet" href="/css/tabela-precos.css">
+</head>
+
+<body>
+
+  <!-- NAV (partials/nav.html) -->
+  <div data-include="nav"></div>
+
+  <main class="tp-pagina">
+    <div class="tp-pagina-topo">
+      <div>
+        <span class="tp-pagina-eyebrow">Atendimento corporativo</span>
+        <h1>Tabela de Preços Referencial</h1>
+        <p>Valores de referência por faixa de peso e distância. Para o valor exato da sua carga, faça a cotação instantânea.</p>
+      </div>
+      <div class="tp-pagina-acoes">
+        <a class="tp-pagina-botao" href="/index.html#cotacao">Fazer cotação</a>
+        <button type="button" class="tp-pagina-botao tp-pagina-botao-laranja" data-tabela-pdf>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <path d="M7 10l5 5 5-5" />
+            <path d="M12 15V3" />
+          </svg>
+          <span data-rotulo>Baixar em PDF</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- a tabela é montada pelo /js/tabela-precos.js com os números do /js/precos.js -->
+    <article class="tp-pagina-folha" data-tabela-precos></article>
+  </main>
+
+  <!-- FOOTER (partials/footer.html) -->
+  <div data-include="footer"></div>
+
+  <script src="/js/layout.js"></script>
+  <script src="/js/precos.js"></script>
+  <script src="/js/tabela-precos.js"></script>
+</body>
+
+</html>

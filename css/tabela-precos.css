@@ -1,0 +1,104 @@
+/* VelozLog — página da Tabela de Preços Referencial (tabela-precos.html)
+   A tabela em si (classes .tp-*) traz o próprio estilo, o mesmo usado no PDF. */
+.tp-pagina {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: clamp(24px, 4vw, 48px) clamp(16px, 3vw, 32px) 64px;
+}
+.tp-pagina-topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+.tp-pagina-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f26a1b;
+}
+.tp-pagina-topo h1 {
+  margin: 6px 0 8px;
+  font-size: clamp(26px, 3.4vw, 36px);
+  color: #0e2a5c;
+}
+.tp-pagina-topo p {
+  max-width: 560px;
+  color: #64748b;
+}
+.tp-pagina-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.tp-pagina-botao {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0e2a5c;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+.tp-pagina-botao:hover {
+  border-color: #cbd5e1;
+  background: #f4f7fb;
+}
+.tp-pagina-botao-laranja {
+  border-color: #f26a1b;
+  background: #f26a1b;
+  color: #fff;
+}
+.tp-pagina-botao-laranja:hover {
+  border-color: #d9570c;
+  background: #d9570c;
+}
+.tp-pagina-botao svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tp-pagina-botao[aria-busy="true"] {
+  opacity: 0.7;
+  cursor: wait;
+}
+/* "folha" A4 na tela */
+.tp-pagina-folha {
+  padding: clamp(18px, 3vw, 36px);
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  overflow-x: auto;
+}
+@media print {
+  [data-include],
+  .topo,
+  .rodape,
+  .tp-pagina-topo {
+    display: none !important;
+  }
+  .tp-pagina,
+  .tp-pagina-folha {
+    max-width: none;
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+  }
+}

@@ -13,6 +13,9 @@
   <script src="/js/layout.js"></script>
   <script src="/js/script.js" defer></script>
   <script src="/js/cotacao-form.js"></script>
+  <script src="/js/precos.js" defer></script>
+  <script src="/js/tabela-precos.js" defer></script>
+  <script src="/js/whatsapp.js" defer></script>
 </head>
 
 <body>
@@ -532,20 +535,20 @@
         </div>
 
         <div class="contato-acoes">
-          <a href="#" class="contato-botao">
+          <a href="#" class="contato-botao" data-whatsapp>
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
               <path d="M8 9h8M8 13h5" />
             </svg>
             Falar no WhatsApp com Especialista
           </a>
-          <a href="#" class="contato-botao contato-botao-claro">
+          <a href="/tabela-precos.html" class="contato-botao contato-botao-claro" data-tabela-pdf>
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
               <path d="M7 10l5 5 5-5" />
               <path d="M12 15V3" />
             </svg>
-            Baixar Tabela de Preços Referencial
+            <span data-rotulo>Baixar Tabela de Preços Referencial</span>
           </a>
         </div>
       </div>
