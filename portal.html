@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal B2B | VelozLog</title>
+  <!-- Mesma fonte do site -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="/img/icon.svg" type="image/svg+xml">
+  <!-- Base do site (fonte, cores, transição entre páginas) -->
+  <link rel="stylesheet" href="/css/style.css">
+  <!-- CSS só do portal (prefixo pt-) -->
+  <link rel="stylesheet" href="/css/portal.css">
+  <!-- sem sessão (não passou pelo login): volta para o login antes de desenhar a página -->
+  <script>
+    try {
+      if (!sessionStorage.getItem("velozlog:sessao")) location.replace("/login.html");
+    } catch (e) { /* sem sessionStorage: segue */ }
+  </script>
+</head>
+
+<body class="pt-corpo">
+  <div class="pt-app">
+
+    <!-- ===================== MENU LATERAL ===================== -->
+    <aside class="pt-lateral">
+      <a class="pt-marca" href="/portal.html" aria-label="Portal B2B VelozLog – visão geral">
+        <img src="/img/icon.svg" alt="" width="40" height="42">
+        <span>
+          <strong>Veloz<em>Log</em></strong>
+          <small>Portal B2B</small>
+        </span>
+      </a>
+
+      <div class="pt-ambiente">
+        <div>
+          <small>Ambiente Operacional</small>
+          <strong>Cargas Corporativas</strong>
+        </div>
+        <i aria-label="Ambiente ativo"></i>
+      </div>
+
+      <nav class="pt-menu" aria-label="Menu do portal">
+        <a class="ativo" href="/portal.html" aria-current="page">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></svg>
+          Visão Geral B2B
+        </a>
+        <a href="#" data-em-breve="Manifestos & CTEs">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M3 9h18M8 13h8M8 16h5" /></svg>
+          Manifestos &amp; CTEs
+        </a>
+        <a href="#" data-em-breve="Telemetria de Rota">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.5" /></svg>
+          Telemetria de Rota
+        </a>
+        <a href="#" data-em-breve="Solicitar Coleta">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M12 8v8M8 12h8" /></svg>
+          Solicitar Coleta
+        </a>
+        <a href="#" data-em-breve="Faturas & Canhotos">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z" /><path d="M9 8h6M9 12h6M9 16h3" /></svg>
+          Faturas &amp; Canhotos
+        </a>
+        <a class="pt-menu-site" href="/index.html">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+          Site Institucional
+        </a>
+      </nav>
+
+      <div class="pt-lateral-pe">
+        <div class="pt-suporte">
+          <strong>Suporte Dedicado B2B</strong>
+          <small>Torre de Controle 24/7</small>
+          <a href="tel:1938409099">(19) 3840-9099</a>
+        </div>
+        <div class="pt-versao">
+          <span class="pt-lmtech"><b>LM</b>TECH</span>
+          <span>v2.4.0</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===================== CONTEÚDO ===================== -->
+    <div class="pt-principal">
+
+      <!-- barra do topo -->
+      <header class="pt-topo">
+        <span class="pt-hub">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2.5" /><circle cx="12" cy="3.5" r="1.8" /><circle cx="12" cy="20.5" r="1.8" /><circle cx="3.5" cy="12" r="1.8" /><circle cx="20.5" cy="12" r="1.8" /><path d="M12 5.3v4.2M12 14.5v4.2M5.3 12h4.2M14.5 12h4.2" /></svg>
+          Hub Central: Campinas SP (SP-01)
+        </span>
+
+        <div class="pt-topo-direita">
+          <button type="button" class="pt-sino" data-em-breve="Central de notificações" aria-label="Notificações (3 novas)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0" /></svg>
+            <i aria-hidden="true"></i>
+          </button>
+
+          <div class="pt-conta">
+            <button type="button" class="pt-conta-botao" id="pt-conta-botao" aria-haspopup="true" aria-expanded="false" aria-controls="pt-conta-menu">
+              <span class="pt-conta-texto">
+                <strong>Indústrias Metalúrgicas ABC</strong>
+                <small>Conta B2B Premium</small>
+              </span>
+              <span class="pt-avatar">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" /><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" /></svg>
+              </span>
+            </button>
+            <div class="pt-conta-menu" id="pt-conta-menu" hidden>
+              <a href="/index.html">Ir para o site</a>
+              <button type="button" id="pt-sair">Sair do portal</button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="pt-conteudo">
+
+        <!-- ===== PERFIL ===== -->
+        <section class="pt-cartao pt-perfil" aria-label="Dados da conta">
+          <span class="pt-perfil-icone" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M3 21V8l6 3V8l6 3V4h6v17z" /><path d="M3 21h18M7 17h1M11 17h1M15 17h1" /></svg>
+          </span>
+          <div class="pt-perfil-dados">
+            <div class="pt-perfil-nome">
+              <h1>Roberto Mendes</h1>
+              <span class="pt-tag pt-tag-laranja">Diretor de Logística</span>
+              <span class="pt-tag pt-tag-lavanda"><i></i> SLA Contratado: 99.4%</span>
+            </div>
+            <p class="pt-perfil-linha">
+              <span>Indústrias Metalúrgicas ABC Ltda</span>
+              <span class="pt-mono">CNPJ: 12.345.678/0001-90</span>
+              <span class="pt-perfil-tabela">Tabela Negociada: SP-SUL-2024.B</span>
+            </p>
+          </div>
+          <div class="pt-sync">
+            <svg class="pt-sync-icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 0 1-15.5 6.2M3 12A9 9 0 0 1 18.5 5.8" /><path d="M18.5 2v3.8h-3.8M5.5 22v-3.8h3.8" /></svg>
+            <div>
+              <small>Sincronização SEFAZ &amp; Siga-Route</small>
+              <strong><span id="pt-sync-hora">14:48:12</span> <em id="pt-sync-ha">(Há 2 min)</em></strong>
+            </div>
+            <button type="button" class="pt-sync-botao" id="pt-sync-botao" aria-label="Sincronizar agora">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.4" /><path d="M21 3v6h-6" /></svg>
+            </button>
+          </div>
+        </section>
+
+        <!-- ===== INDICADORES ===== -->
+        <section class="pt-kpis" aria-label="Indicadores da operação">
+          <article class="pt-cartao pt-kpi">
+            <div class="pt-kpi-corpo">
+              <div class="pt-kpi-topo">
+                <h2>Cargas em trânsito hoje</h2>
+                <span class="pt-kpi-icone">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 6h12v10H2z" /><path d="M14 9h4l3 3.5V16h-7" /><circle cx="6" cy="17.5" r="1.8" /><circle cx="17" cy="17.5" r="1.8" /></svg>
+                </span>
+              </div>
+              <p class="pt-kpi-valor"><strong class="pt-contador" data-valor="18" data-digitos="2">18</strong> <span>remessas ativas</span></p>
+            </div>
+            <div class="pt-kpi-pe">
+              <span><i class="pt-ponto"></i> 14 no horário previsto</span>
+              <b class="pt-laranja">4 rota final</b>
+            </div>
+          </article>
+
+          <article class="pt-cartao pt-kpi">
+            <div class="pt-kpi-corpo">
+              <div class="pt-kpi-topo">
+                <h2>Coletas agendadas</h2>
+                <span class="pt-kpi-icone">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4V3h6v1" /><path d="M9 13l2 2 4-4.5" /></svg>
+                </span>
+              </div>
+              <p class="pt-kpi-valor"><strong class="pt-contador" data-valor="3" data-digitos="2">03</strong> <span>solicitações</span></p>
+            </div>
+            <div class="pt-kpi-pe">
+              <span>Janela prioritária hoje:</span>
+              <b class="pt-laranja">Até 16:30</b>
+            </div>
+          </article>
+
+          <article class="pt-cartao pt-kpi">
+            <div class="pt-kpi-corpo">
+              <div class="pt-kpi-topo">
+                <h2>Entregas no mês</h2>
+                <span class="pt-kpi-icone">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M8.5 12l2.5 2.5 4.5-5" /></svg>
+                </span>
+              </div>
+              <p class="pt-kpi-valor"><strong class="pt-contador" data-valor="247">247</strong> <span>concluídas</span></p>
+            </div>
+            <div class="pt-kpi-pe">
+              <span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M8.5 12l2.5 2.5 4.5-5" /></svg>
+                Índice OTD (No Prazo):
+              </span>
+              <b>99.6%</b>
+            </div>
+          </article>
+
+          <article class="pt-cartao pt-kpi">
+            <div class="pt-kpi-corpo">
+              <div class="pt-kpi-topo">
+                <h2>Faturas em aberto</h2>
+                <span class="pt-kpi-icone">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z" /><path d="M9 8h6M9 12h6M9 16h3" /></svg>
+                </span>
+              </div>
+              <p class="pt-kpi-valor pt-kpi-dinheiro">
+                <strong><span>R$</span> <b class="pt-contador" data-valor="42850" data-milhar>42.850</b><sup>,00</sup></strong>
+              </p>
+            </div>
+            <div class="pt-kpi-pe">
+              <span>Vencimento via DDA:</span>
+              <b>28/11/2024</b>
+            </div>
+          </article>
+        </section>
+
+        <!-- ===== AÇÕES RÁPIDAS ===== -->
+        <section class="pt-acoes" aria-label="Ações rápidas">
+          <a class="pt-acao pt-acao-destaque" href="#" data-em-breve="Nova Solicitação de Coleta">
+            <span class="pt-acao-icone">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8v8M8 12h8" /></svg>
+            </span>
+            <span class="pt-acao-texto">
+              <strong>Nova Solicitação de Coleta</strong>
+              <small>Agendamento imediato</small>
+            </span>
+            <svg class="pt-acao-seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </a>
+          <a class="pt-acao" href="/index.html#painel-simular">
+            <span class="pt-acao-icone">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2" /><path d="M8 7h8M8 11h2M14 11h2M8 15h2M14 15h2" /></svg>
+            </span>
+            <span class="pt-acao-texto">
+              <strong>Simular Frete B2B</strong>
+              <small>Tabela SP-SUL-2024</small>
+            </span>
+            <svg class="pt-acao-seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+          </a>
+          <a class="pt-acao" href="#" data-em-breve="Importar NF-e em Lote">
+            <span class="pt-acao-icone">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" /><path d="M14 3v6h6M12 18v-6M9 15l3-3 3 3" /></svg>
+            </span>
+            <span class="pt-acao-texto">
+              <strong>Importar NF-e em Lote</strong>
+              <small>Leitura XML / Danfe</small>
+            </span>
+            <svg class="pt-acao-seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+          </a>
+          <a class="pt-acao" href="#" data-em-breve="Extrato Consolidado">
+            <span class="pt-acao-icone">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="M7 10l5 5 5-5M12 15V3" /></svg>
+            </span>
+            <span class="pt-acao-texto">
+              <strong>Extrato Consolidado</strong>
+              <small>Exportar Excel / PDF</small>
+            </span>
+            <svg class="pt-acao-seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+          </a>
+        </section>
+
+        <!-- ===== MONITORAMENTO + LATERAL ===== -->
+        <div class="pt-grade">
+
+          <section class="pt-cartao pt-monitor" aria-labelledby="pt-monitor-titulo">
+            <header class="pt-monitor-topo">
+              <h2 id="pt-monitor-titulo"><i class="pt-ponto pt-ponto-pulsa"></i> Monitoramento em Tempo Real</h2>
+              <span class="pt-contagem" id="pt-contagem">18 remessas</span>
+              <label class="pt-busca">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" /></svg>
+                <input type="search" id="pt-busca" placeholder="Filtrar CTe, NF-e ou Cidade..." aria-label="Filtrar CT-e, NF-e ou cidade">
+              </label>
+              <button type="button" class="pt-filtro" data-em-breve="Filtros avançados" aria-label="Filtros avançados">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0" /><circle cx="16" cy="6" r="2" /><circle cx="10" cy="12" r="2" /><circle cx="18" cy="18" r="2" /></svg>
+              </button>
+            </header>
+
+            <div class="pt-tabela-rolagem">
+              <table class="pt-tabela">
+                <thead>
+                  <tr>
+                    <th>CT-e / NF-e</th>
+                    <th>Origem &amp; Destino</th>
+                    <th>Modalidade</th>
+                    <th>Status Operacional</th>
+                    <th>Previsão ETA</th>
+                    <th><span class="pt-oculto">Rastrear</span></th>
+                  </tr>
+                </thead>
+                <!-- linhas montadas pelo /js/portal.js -->
+                <tbody id="pt-linhas"></tbody>
+              </table>
+            </div>
+
+            <footer class="pt-paginacao">
+              <span id="pt-mostrando">Mostrando 5 de 18 manifestos em trânsito</span>
+              <nav aria-label="Páginas">
+                <button type="button" id="pt-anterior">Anterior</button>
+                <span id="pt-paginas"></span>
+                <button type="button" id="pt-proximo">Próximo</button>
+              </nav>
+            </footer>
+          </section>
+
+          <div class="pt-coluna">
+
+            <!-- corredor sul-sudeste -->
+            <section class="pt-cartao pt-corredor" aria-labelledby="pt-corredor-titulo">
+              <header class="pt-corredor-topo">
+                <h2 id="pt-corredor-titulo">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2z" /><path d="M9 4v14M15 6v14" /></svg>
+                  Corredor Sul-Sudeste
+                </h2>
+                <span class="pt-tag pt-tag-lavanda">GPS Satélite</span>
+              </header>
+
+              <div class="pt-mapa">
+                <!-- mapa ilustrativo da rota (SVG) -->
+                <svg class="pt-mapa-svg" viewBox="0 0 280 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                  <rect width="280" height="240" fill="#e9eef7" />
+                  <path d="M0 40 Q60 20 120 50 T280 30 V0 H0z" fill="#dfe8d9" />
+                  <path d="M0 200 Q70 170 150 210 T280 190 V240 H0z" fill="#dfe8d9" />
+                  <circle cx="210" cy="120" r="34" fill="#dfe8d9" />
+                  <g stroke="#fff" stroke-width="3" fill="none">
+                    <path d="M0 90 H280" />
+                    <path d="M0 150 Q140 130 280 160" />
+                    <path d="M70 0 V240" />
+                    <path d="M180 0 Q170 120 200 240" />
+                    <path d="M0 60 L280 210" />
+                  </g>
+                  <g stroke="#f4d58d" stroke-width="5" fill="none" stroke-linecap="round">
+                    <path d="M20 230 Q90 160 140 130 T270 20" />
+                  </g>
+                  <path class="pt-rota" d="M20 230 Q90 160 140 130 T270 20" stroke="#f26a1b" stroke-width="3" fill="none" stroke-dasharray="7 6" stroke-linecap="round" />
+                  <g font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="9" font-weight="700" fill="#5b6478">
+                    <text x="150" y="122">Curitiba</text>
+                    <text x="44" y="186">Garuva</text>
+                    <text x="200" y="64">BR-116</text>
+                  </g>
+                  <circle cx="140" cy="130" r="5" fill="#151b36" stroke="#fff" stroke-width="2" />
+                  <circle class="pt-caminhao" r="5" fill="#f26a1b" stroke="#fff" stroke-width="2">
+                    <animateMotion dur="9s" repeatCount="indefinite" path="M20 230 Q90 160 140 130 T270 20" />
+                  </circle>
+                  <circle class="pt-caminhao" r="5" fill="#f26a1b" stroke="#fff" stroke-width="2">
+                    <animateMotion dur="9s" begin="-4.5s" repeatCount="indefinite" path="M20 230 Q90 160 140 130 T270 20" />
+                  </circle>
+                </svg>
+
+                <span class="pt-mapa-chip pt-mapa-ativas"><i class="pt-ponto"></i> 9 Carretas Ativas em Rota</span>
+                <span class="pt-mapa-chip pt-mapa-br">BR-116 / BR-101</span>
+                <div class="pt-mapa-posto">
+                  <span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M8.5 12l2.5 2.5 4.5-5" /></svg>
+                    Posto Fiscal Garuva (SC): Liberado
+                  </span>
+                  <b>Sem Fila</b>
+                </div>
+              </div>
+
+              <dl class="pt-corredor-dados">
+                <div><dt>Próxima chegada prevista:</dt><dd>Curitiba (CIC) às 15:45</dd></div>
+                <div><dt>Velocidade média na frota:</dt><dd>76 km/h <span>(Dentro da conformidade)</span></dd></div>
+                <div><dt>Status da malha rodoviária:</dt><dd class="pt-laranja">Tráfego Normal</dd></div>
+              </dl>
+            </section>
+
+            <!-- torre dedicada -->
+            <section class="pt-torre" aria-labelledby="pt-torre-titulo">
+              <header class="pt-torre-topo">
+                <h2 id="pt-torre-titulo">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2" /><rect x="3" y="14" width="4" height="6" rx="1.5" /><rect x="17" y="14" width="4" height="6" rx="1.5" /></svg>
+                  Torre Dedicada ABC
+                </h2>
+                <span class="pt-ao-vivo"><i></i> Ao Vivo</span>
+              </header>
+              <p>Sua conta dispõe de analistas operacionais exclusivos monitorando suas remessas 24 horas por dia.</p>
+              <div class="pt-gestora">
+                <span class="pt-gestora-avatar" aria-hidden="true">TM</span>
+                <div>
+                  <strong>Tatiane Moreira</strong>
+                  <small>Gestora de Conta B2B</small>
+                </div>
+              </div>
+              <div class="pt-torre-botoes">
+                <a class="pt-torre-whats" href="#" data-whatsapp="Olá, Tatiane! Sou da Indústrias Metalúrgicas ABC e preciso de apoio com uma remessa.">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /><path d="M8 9h8M8 13h5" /></svg>
+                  WhatsApp
+                </a>
+                <a class="pt-torre-ramal" href="tel:1938409099,9099">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z" /></svg>
+                  Ramal 9099
+                </a>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <!-- ===== AVISO DA JANELA DE COLETA ===== -->
+        <section class="pt-cartao pt-aviso" aria-label="Aviso operacional">
+          <span class="pt-aviso-icone" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8h0" /></svg>
+          </span>
+          <div class="pt-aviso-texto">
+            <strong>Janela de Coleta Programada para Hoje (Planta Vinhedo - SP)</strong>
+            <p>Carreta Sider Placa: GHR-9102 com motorista Marcos Vinícius liberada na portaria. Previsão de carregamento 15:30.</p>
+          </div>
+          <div class="pt-aviso-botoes">
+            <button type="button" class="pt-botao-claro" data-em-breve="Canhoto digital">Ver Canhoto Digital</button>
+            <button type="button" class="pt-botao-escuro" data-em-breve="Autorização de docas">Autorizar Docas</button>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- aviso rápido ("módulo em implantação") -->
+  <div class="pt-toast" id="pt-toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="/js/whatsapp.js"></script>
+  <script src="/js/layout.js"></script>
+  <script src="/js/portal.js"></script>
+</body>
+
+</html>

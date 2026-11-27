@@ -2,8 +2,8 @@
    • CNPJ ou e-mail: o CNPJ ganha máscara automática e tem os dígitos verificadores conferidos
    • Senha: botão do "olho" mostra/oculta
    • "Lembrar este terminal": guarda SÓ o CNPJ/e-mail neste navegador (nunca a senha)
-   • Ainda não existe servidor de autenticação: após validar os campos, mostra um aviso
-     com o contato da Mesa de Operações. Quando houver API, troque a função autenticar(). */
+   • Ainda não existe servidor de autenticação: em MODO_DEMONSTRACAO, CNPJ/e-mail e senha
+     válidos abrem o Portal B2B (portal.html) com dados de exemplo. Quando houver API, troque autenticar(). */
 (() => {
   "use strict";
 
@@ -152,10 +152,32 @@
   }
 
   /* ---------- autenticação ----------
-     Ainda sem servidor: simula a consulta e devolve "não liberado".
-     Com uma API, troque por um fetch e redirecione no sucesso. */
-  function autenticar(/* login, chave */) {
-    return new Promise((ok) => setTimeout(() => ok({ liberado: false }), 1200));
+     Ainda sem servidor: em MODO_DEMONSTRACAO, qualquer CNPJ/e-mail e senha
+     válidos entram no portal com os dados de exemplo. Com uma API, troque por
+     um fetch e use MODO_DEMONSTRACAO = false. */
+  const MODO_DEMONSTRACAO = true;
+  const PAGINA_PORTAL = "/portal.html";
+
+  function autenticar(login) {
+    return new Promise((ok) =>
+      setTimeout(
+        () => ok({ liberado: MODO_DEMONSTRACAO, login }),
+        MODO_DEMONSTRACAO ? 900 : 1200,
+      ),
+    );
+  }
+
+  function abrirPortal(login) {
+    try {
+      // o portal só abre com esta marca de sessão (some ao fechar o navegador)
+      sessionStorage.setItem(
+        "velozlog:sessao",
+        JSON.stringify({ login, desde: Date.now() }),
+      );
+    } catch {
+      /* sem sessionStorage: o portal abre mesmo assim */
+    }
+    location.href = PAGINA_PORTAL;
   }
 
   form.addEventListener("submit", async (e) => {
@@ -169,6 +191,12 @@
     rotuloBotao.textContent = "Validando credenciais…";
 
     const resposta = await autenticar(usuario.value.trim(), senha.value);
+
+    if (resposta.liberado) {
+      rotuloBotao.textContent = "Acesso liberado…";
+      abrirPortal(resposta.login);
+      return;
+    }
 
     botao.disabled = false;
     botao.classList.remove("carregando");
