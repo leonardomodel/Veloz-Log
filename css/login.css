@@ -1,0 +1,800 @@
+/* =========================================================
+   ÁREA DO CLIENTE / LOGIN (login.html) — prefixos lg- e --lg-
+   Não altera nada do style.css: tudo aqui é exclusivo da página.
+   ========================================================= */
+
+:root {
+  --lg-laranja: #f26a1b;
+  --lg-laranja-hover: #e05a0f;
+  --lg-laranja-escuro: #a73a00;
+  --lg-laranja-claro: #fff1e8;
+  --lg-navy: #151b36;
+  --lg-texto: #0b1c30;
+  --lg-texto-suave: #5b6478;
+  --lg-fundo: #f6f7fe;
+  --lg-lavanda: #eef2fd;
+  --lg-lavanda-forte: #e5eafc;
+  --lg-borda: #e6e9f4;
+  --lg-erro: #dc2626;
+  --lg-raio: 14px;
+}
+
+/* o style.css deixa <main> em flex com altura da tela; aqui centraliza os cards */
+main.lg-pagina {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(32px, 6vh, 72px) var(--lateral);
+  background: var(--lg-fundo);
+  color: var(--lg-texto);
+}
+
+.lg-pagina svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lg-grade {
+  display: grid;
+  grid-template-columns: minmax(0, 500px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: stretch;
+  width: 100%;
+}
+
+/* =========================================================
+   PAINEL ESCURO
+   ========================================================= */
+.lg-painel {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 40px;
+  border-radius: var(--lg-raio);
+  background:
+    radial-gradient(70% 45% at 0% 0%, rgba(242, 106, 27, 0.22), transparent 70%),
+    radial-gradient(60% 40% at 100% 100%, rgba(242, 106, 27, 0.12), transparent 70%),
+    var(--lg-navy);
+  box-shadow: 0 20px 40px rgba(21, 27, 54, 0.18);
+  color: #fff;
+}
+
+.lg-marca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lg-marca img {
+  display: block;
+  width: 34px;
+  height: auto;
+}
+
+.lg-marca strong {
+  display: block;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.lg-marca span {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8b93ad;
+}
+
+.lg-selo {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 12px;
+  font-weight: 600;
+  color: #f1d9cc;
+}
+
+.lg-selo i,
+.lg-ssl i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--lg-laranja);
+}
+
+.lg-painel h2 {
+  margin-top: 14px;
+  font-size: clamp(26px, 2.4vw, 32px);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.lg-painel-texto p {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #9aa2bb;
+}
+
+/* card translúcido de hubs */
+.lg-hubs {
+  margin-top: auto;
+  padding: 18px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  transition:
+    background-color var(--transicao),
+    border-color var(--transicao);
+}
+
+.lg-hubs:hover {
+  border-color: rgba(242, 106, 27, 0.35);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.lg-hubs-topo,
+.lg-hubs-indice,
+.lg-hubs-rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.lg-hubs-titulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.lg-hubs-titulo svg {
+  width: 24px;
+  height: 24px;
+}
+
+.lg-hubs-topo strong {
+  font-size: 12px;
+  font-weight: 700;
+  color: #f1d9cc;
+}
+
+.lg-hubs-indice {
+  margin-top: 20px;
+  font-size: 12px;
+  color: #8b93ad;
+}
+
+.lg-hubs-indice strong {
+  font-size: 13px;
+  color: #fff;
+}
+
+.lg-barra {
+  height: 6px;
+  margin-top: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.lg-barra i {
+  display: block;
+  width: var(--valor);
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #f26a1b, #ff8a3d);
+  transform-origin: left;
+  animation: lg-barra-enche 1.6s cubic-bezier(0.22, 0.61, 0.36, 1) 0.3s both;
+}
+
+@keyframes lg-barra-enche {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+.lg-hubs-rodape {
+  margin-top: 18px;
+  font-size: 12px;
+  color: #8b93ad;
+}
+
+.lg-hubs-rodape span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lg-hubs-rodape svg {
+  width: 14px;
+  height: 14px;
+}
+
+.lg-hubs-rodape strong {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.lg-hubs-rodape strong i {
+  margin: 0 4px;
+  font-style: normal;
+}
+
+/* rodapé do painel: telefone de suporte */
+.lg-suporte {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.lg-suporte-titulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.lg-suporte-fone {
+  display: block;
+  margin-top: 4px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #fff;
+  transition: color var(--transicao);
+}
+
+.lg-suporte-fone:hover {
+  color: var(--lg-laranja);
+}
+
+.lg-plantao {
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 12px;
+  font-weight: 600;
+  color: #f1d9cc;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   CARD DO FORMULÁRIO
+   ========================================================= */
+.lg-card {
+  display: flex;
+  flex-direction: column;
+  padding: 40px;
+  border: 1px solid var(--lg-borda);
+  border-radius: var(--lg-raio);
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(21, 27, 54, 0.06);
+}
+
+.lg-card-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.lg-seguro {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.lg-seguro svg {
+  width: 22px;
+  height: 22px;
+  color: var(--lg-laranja-escuro);
+}
+
+.lg-ssl {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--lg-lavanda-forte);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.lg-card h1 {
+  margin-top: 20px;
+  font-size: clamp(28px, 2.6vw, 34px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.lg-sub {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--lg-texto-suave);
+}
+
+/* ---------- campos ---------- */
+.lg-form {
+  margin-top: 28px;
+}
+
+.lg-campo + .lg-campo {
+  margin-top: 14px;
+}
+
+.lg-rotulos {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.lg-rotulos label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.lg-obrigatorio {
+  font-size: 12px;
+  color: var(--lg-texto-suave);
+}
+
+.lg-esqueci {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--lg-laranja-escuro);
+  transition: color var(--transicao);
+}
+
+.lg-esqueci:hover {
+  color: var(--lg-laranja);
+  text-decoration: underline;
+}
+
+.lg-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.lg-input > svg {
+  position: absolute;
+  left: 16px;
+  color: var(--lg-texto-suave);
+  pointer-events: none;
+  transition: color var(--transicao);
+}
+
+.lg-input input {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px 0 48px;
+  border: 1px solid var(--lg-borda);
+  border-radius: 10px;
+  background: #fafbff;
+  font: inherit;
+  font-size: 15px;
+  color: var(--lg-texto);
+  transition:
+    border-color var(--transicao),
+    box-shadow var(--transicao),
+    background-color var(--transicao);
+}
+
+.lg-input input::placeholder {
+  color: #9aa3b5;
+}
+
+.lg-input input:focus {
+  outline: none;
+  border-color: var(--lg-laranja);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(242, 106, 27, 0.15);
+}
+
+.lg-input:focus-within > svg {
+  color: var(--lg-laranja);
+}
+
+#lg-senha {
+  padding-right: 52px;
+}
+
+.lg-olho {
+  position: absolute;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--lg-texto-suave);
+  cursor: pointer;
+  transition:
+    background-color var(--transicao),
+    color var(--transicao);
+}
+
+.lg-olho:hover {
+  background: var(--lg-lavanda);
+  color: var(--lg-texto);
+}
+
+.lg-olho-fechado,
+.lg-olho[aria-pressed="true"] .lg-olho-aberto {
+  display: none;
+}
+
+.lg-olho[aria-pressed="true"] .lg-olho-fechado {
+  display: block;
+}
+
+/* erro no campo */
+.lg-erro {
+  display: block;
+  min-height: 0;
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--lg-erro);
+}
+
+.lg-erro:empty {
+  display: none;
+}
+
+.lg-campo.tem-erro input {
+  border-color: var(--lg-erro);
+  background: #fff;
+}
+
+.lg-campo.tem-erro .lg-input > svg {
+  color: var(--lg-erro);
+}
+
+.lg-campo.tem-erro .lg-input {
+  animation: lg-tremer 0.35s ease;
+}
+
+@keyframes lg-tremer {
+  25% {
+    transform: translateX(-4px);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+  75% {
+    transform: translateX(-2px);
+  }
+}
+
+/* lembrar + IP */
+.lg-linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.lg-lembrar {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.lg-lembrar input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--lg-laranja);
+  cursor: pointer;
+}
+
+.lg-ip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--lg-texto-suave);
+}
+
+.lg-ip svg {
+  width: 14px;
+  height: 14px;
+  color: var(--lg-laranja-escuro);
+}
+
+/* botão principal */
+.lg-botao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 48px;
+  margin-top: 18px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--lg-laranja);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition:
+    background-color var(--transicao),
+    transform var(--transicao),
+    box-shadow var(--transicao);
+}
+
+.lg-botao:hover {
+  background: var(--lg-laranja-hover);
+  box-shadow: 0 10px 20px rgba(242, 106, 27, 0.25);
+}
+
+.lg-botao:active {
+  transform: translateY(1px);
+}
+
+.lg-botao:disabled {
+  opacity: 0.85;
+  cursor: wait;
+}
+
+/* "carregando": a seta dá lugar a um círculo girando */
+.lg-botao.carregando svg {
+  display: none;
+}
+
+.lg-botao.carregando::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: lg-girar 0.8s linear infinite;
+}
+
+@keyframes lg-girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* aviso de retorno */
+.lg-aviso {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border: 1px solid #fcd9c2;
+  border-radius: 8px;
+  background: var(--lg-laranja-claro);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--lg-texto);
+  animation: lg-surge 0.3s ease both;
+}
+
+.lg-aviso a {
+  font-weight: 700;
+  color: var(--lg-laranja-escuro);
+  white-space: nowrap;
+}
+
+@keyframes lg-surge {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+/* divisor "ou autentique com" */
+.lg-divisor {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 22px 0 16px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lg-texto-suave);
+}
+
+.lg-divisor::before,
+.lg-divisor::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--lg-borda);
+}
+
+/* certificado digital */
+.lg-certificado {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: var(--lg-lavanda);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--lg-texto);
+  cursor: pointer;
+  transition:
+    background-color var(--transicao),
+    border-color var(--transicao);
+}
+
+.lg-certificado svg {
+  width: 22px;
+  height: 22px;
+  color: var(--lg-laranja-escuro);
+}
+
+.lg-certificado:hover {
+  border-color: var(--lg-laranja);
+  background: var(--lg-laranja-claro);
+}
+
+/* caixa "abrir conta B2B" */
+.lg-b2b {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 40px;
+  padding: 16px;
+  border-radius: 10px;
+  background: var(--lg-lavanda-forte);
+}
+
+.lg-b2b > svg {
+  align-self: flex-start;
+  width: 24px;
+  height: 24px;
+  color: var(--lg-laranja-escuro);
+}
+
+.lg-b2b-texto {
+  flex: 1;
+  min-width: 0;
+}
+
+.lg-b2b-texto strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.lg-b2b-texto small {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--lg-texto-suave);
+}
+
+.lg-b2b-botao {
+  flex: none;
+  padding: 9px 16px;
+  border-radius: 8px;
+  background: var(--lg-navy);
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  transition: background-color var(--transicao);
+}
+
+.lg-b2b-botao:hover {
+  background: var(--lg-laranja);
+}
+
+/* rodapé do card */
+.lg-rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 24px;
+  font-size: 12px;
+  color: var(--lg-texto-suave);
+}
+
+.lg-rodape span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lg-rodape i {
+  margin: 0 6px;
+  font-style: normal;
+}
+
+.lg-lgpd svg {
+  width: 14px;
+  height: 14px;
+  color: var(--lg-laranja-escuro);
+}
+
+/* =========================================================
+   Meia janela / tablet
+   ========================================================= */
+@media (max-width: 1100px) {
+  .lg-grade {
+    grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+  }
+
+  .lg-painel,
+  .lg-card {
+    padding: 32px;
+  }
+}
+
+/* tablet: formulário em cima (é o que o cliente veio fazer), painel embaixo */
+@media (max-width: 900px) {
+  .lg-grade {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 680px;
+    margin-inline: auto;
+  }
+
+  .lg-card {
+    order: -1;
+  }
+
+  .lg-hubs {
+    margin-top: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-barra i,
+  .lg-aviso,
+  .lg-campo.tem-erro .lg-input,
+  .lg-botao.carregando::before {
+    animation: none;
+  }
+}

@@ -239,7 +239,8 @@ select:focus-visible {
   white-space: nowrap; /* texto em uma linha só */
 }
 
-.btn-area:hover {
+.btn-area:hover,
+.btn-area.ativo {
   border-color: var(--laranja);
   color: var(--laranja);
 }

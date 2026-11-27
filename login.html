@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Área do Cliente | VelozLog</title>
+  <!-- Mesma fonte do index -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="/img/icon.svg" type="image/svg+xml">
+  <!-- Mesmo CSS do index (nav, footer, variáveis) -->
+  <link rel="stylesheet" href="/css/style.css">
+  <!-- CSS só desta página (prefixo lg-) -->
+  <link rel="stylesheet" href="/css/login.css">
+</head>
+
+<body>
+
+  <!-- NAV (partials/nav.html) -->
+  <div data-include="nav"></div>
+
+  <main class="lg-pagina">
+    <div class="lg-grade">
+
+      <!-- ===================== PAINEL ESCURO (institucional) ===================== -->
+      <aside class="lg-painel" aria-label="Portal do Embarcador">
+        <div class="lg-marca">
+          <img src="/img/icon.svg" alt="" width="34" height="36">
+          <div>
+            <strong>VelozLog</strong>
+            <span>Transporte &amp; Malha Integrada</span>
+          </div>
+        </div>
+
+        <div class="lg-painel-texto">
+          <span class="lg-selo"><i></i> Operação Nacional em Tempo Real</span>
+          <h2>Portal do Embarcador &amp; Gestão de Cargas</h2>
+          <p>Ambiente restrito e autenticado para faturamento, emissão massiva de CT-e, controle de cubagem e telemetria ponta a ponta.</p>
+        </div>
+
+        <div class="lg-hubs">
+          <div class="lg-hubs-topo">
+            <span class="lg-hubs-titulo">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2.5" /><circle cx="12" cy="3.5" r="1.8" /><circle cx="12" cy="20.5" r="1.8" /><circle cx="3.5" cy="12" r="1.8" /><circle cx="20.5" cy="12" r="1.8" /><path d="M12 5.3v4.2M12 14.5v4.2M5.3 12h4.2M14.5 12h4.2" /></svg>
+              Hubs Interligados
+            </span>
+            <strong>148 Filiais Ativas</strong>
+          </div>
+          <div class="lg-hubs-indice">
+            <span>Índice OTIF (No Prazo / Íntegro)</span>
+            <strong>99.4%</strong>
+          </div>
+          <div class="lg-barra" role="img" aria-label="99,4% das entregas no prazo e íntegras"><i style="--valor: 99.4%"></i></div>
+          <div class="lg-hubs-rodape">
+            <span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M8.5 12l2.5 2.5 4.5-5" /></svg>
+              18.420 manifestos monitorados hoje
+            </span>
+            <strong>BR-SP <i>•</i> BR-PR</strong>
+          </div>
+        </div>
+
+        <div class="lg-suporte">
+          <div>
+            <span class="lg-suporte-titulo">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2" /><rect x="3" y="14" width="4" height="6" rx="1.5" /><rect x="17" y="14" width="4" height="6" rx="1.5" /></svg>
+              Mesa de Operações B2B
+            </span>
+            <a class="lg-suporte-fone" href="tel:08007008900">0800 700 8900</a>
+          </div>
+          <span class="lg-plantao">24/7 Plantão</span>
+        </div>
+      </aside>
+
+      <!-- ===================== FORMULÁRIO ===================== -->
+      <section class="lg-card" aria-labelledby="lg-titulo">
+        <div class="lg-card-topo">
+          <span class="lg-seguro">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /><circle cx="12" cy="15.5" r="1.3" /></svg>
+            Conexão segura B2B
+          </span>
+          <span class="lg-ssl"><i></i> SSL 256-Bit SHA-2</span>
+        </div>
+
+        <h1 id="lg-titulo">Acesso Corporativo</h1>
+        <p class="lg-sub">Informe as credenciais homologadas da sua empresa para prosseguir à plataforma de cargas.</p>
+
+        <form class="lg-form" id="lg-form" novalidate>
+          <div class="lg-campo">
+            <div class="lg-rotulos">
+              <label for="lg-usuario">CNPJ ou E-mail Cadastrado</label>
+              <span class="lg-obrigatorio">Obrigatório</span>
+            </div>
+            <div class="lg-input">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="2" /><path d="M9 6V4h6v2" /><circle cx="9" cy="12.5" r="2" /><path d="M6 17c.6-1.4 1.7-2 3-2s2.4.6 3 2M15 11h3M15 14h3" /></svg>
+              <input id="lg-usuario" name="usuario" type="text" autocomplete="username" spellcheck="false"
+                placeholder="00.000.000/0001-00 ou embarcador@empresa.com.br" aria-describedby="lg-erro-usuario">
+            </div>
+            <small class="lg-erro" id="lg-erro-usuario" role="alert"></small>
+          </div>
+
+          <div class="lg-campo">
+            <div class="lg-rotulos">
+              <label for="lg-senha">Chave de Acesso / Senha</label>
+              <a class="lg-esqueci" href="#" data-whatsapp="Olá! Preciso redefinir a senha de acesso à Área do Cliente VelozLog.">Esqueceu a senha?</a>
+            </div>
+            <div class="lg-input">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7.5" cy="12" r="3.5" /><path d="M11 12h10M17 12v3M20 12v2" /></svg>
+              <input id="lg-senha" name="senha" type="password" autocomplete="current-password"
+                placeholder="••••••••••••" aria-describedby="lg-erro-senha">
+              <button type="button" class="lg-olho" id="lg-olho" aria-label="Mostrar senha" aria-pressed="false">
+                <svg class="lg-olho-aberto" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" /></svg>
+                <svg class="lg-olho-fechado" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18" /><path d="M10.6 5.1A10.6 10.6 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3 3.9M6.6 6.6A17.4 17.4 0 0 0 2 12s3.5 7 10 7a10 10 0 0 0 5.4-1.6" /><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" /></svg>
+              </button>
+            </div>
+            <small class="lg-erro" id="lg-erro-senha" role="alert"></small>
+          </div>
+
+          <div class="lg-linha">
+            <label class="lg-lembrar">
+              <input type="checkbox" id="lg-lembrar" name="lembrar">
+              <span>Lembrar este terminal corporativo</span>
+            </label>
+            <span class="lg-ip">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z" /><path d="M9 12l2 2 4-4.5" /></svg>
+              IP Verificado
+            </span>
+          </div>
+
+          <button type="submit" class="lg-botao" id="lg-entrar">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" /><path d="M10 17l5-5-5-5" /><path d="M15 12H3" /></svg>
+            <span data-rotulo>Acessar Área do Cliente</span>
+          </button>
+
+          <!-- mensagem de retorno (erro / aviso) -->
+          <p class="lg-aviso" id="lg-aviso" role="status" hidden></p>
+        </form>
+
+        <div class="lg-divisor"><span>Ou autentique com</span></div>
+
+        <button type="button" class="lg-certificado" id="lg-certificado">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6" /><path d="M9.5 9l1.8 1.8L14.8 7.5" /><path d="M8.5 14l-1.5 7 5-3 5 3-1.5-7" /></svg>
+          Certificado Digital (e-CNPJ / ICP-Brasil A1 ou A3)
+        </button>
+
+        <div class="lg-b2b">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l1.5-5h13L19 9" /><path d="M3 9h16v2a2.5 2.5 0 0 1-5 0 2.5 2.5 0 0 1-5 0 2.5 2.5 0 0 1-5 0V9z" transform="translate(0 0)" /><path d="M4.5 13v7h9" /><path d="M19 15v6M16 18h6" /></svg>
+          <div class="lg-b2b-texto">
+            <strong>Ainda não possui faturamento ou conta B2B?</strong>
+            <small>Abra sua conta jurídica com tabelas negociadas e limite de crédito pré-aprovado.</small>
+          </div>
+          <a class="lg-b2b-botao" href="#" data-whatsapp="Olá! Quero abrir uma conta corporativa B2B na VelozLog (faturamento, tabela negociada e limite de crédito).">Solicitar Abertura B2B</a>
+        </div>
+
+        <footer class="lg-rodape">
+          <span class="lg-lgpd">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z" /></svg>
+            Conformidade estrita LGPD (Lei 13.709/18)
+          </span>
+          <span>Certificação ISO 27001 <i>•</i> ANTT RCTR-C / RCF-DC</span>
+        </footer>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- FOOTER (partials/footer.html) -->
+  <div data-include="footer"></div>
+
+  <script src="/js/layout.js"></script>
+  <script src="/js/whatsapp.js"></script>
+  <script src="/js/login.js"></script>
+</body>
+
+</html>

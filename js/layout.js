@@ -71,7 +71,7 @@
     await inserirPartials();
 
     // marca como ativo o link da página atual (só links sem #)
-    document.querySelectorAll(".menu a").forEach((link) => {
+    document.querySelectorAll(".menu a, .acoes .btn-area").forEach((link) => {
       const url = new URL(link.href, location.origin);
       if (mesmaPagina(url) && !url.hash) {
         link.classList.add("ativo");
