@@ -26,9 +26,9 @@
 
       <!-- Breadcrumb -->
       <nav class="rt-breadcrumb" aria-label="Caminho">
-        <a href="/index.html">Início</a>
+        <a href="/index.html" data-rt="trilha-1">Início</a>
         <span>/</span>
-        <a href="/index.html#rastreamento">Rastreamento</a>
+        <a href="/index.html#rastreamento" data-rt="trilha-2">Rastreamento</a>
         <span>/</span>
         <span class="rt-breadcrumb-atual" data-rt="codigo">VLZ-849102-SP</span>
       </nav>
@@ -39,8 +39,8 @@
           <h1 class="rt-titulo">Acompanhe sua entrega</h1>
           <p class="rt-subtitulo">Cada etapa da sua carga, com a tranquilidade de saber onde ela está.</p>
         </div>
-        <a href="/index.html#rastreamento" class="rt-btn-voltar">
-          <span aria-hidden="true">←</span> Rastrear outro pedido
+        <a href="/index.html#rastreamento" class="rt-btn-voltar" data-rt="voltar">
+          <span aria-hidden="true">←</span> <span data-rt="voltar-texto">Rastrear outro pedido</span>
         </a>
       </div>
 
@@ -52,7 +52,7 @@
             <strong class="rt-codigo" data-rt="codigo">VLZ-849102-SP</strong>
           </div>
           <div class="rt-tags">
-            <span class="rt-tag rt-tag-transito"><i></i> Em Trânsito</span>
+            <span class="rt-tag rt-tag-transito" data-rt="status"><i></i> Em Trânsito</span>
             <span class="rt-tag rt-tag-segura">Carga Segurada</span>
           </div>
         </div>
@@ -60,35 +60,35 @@
         <div class="rt-rota">
           <div class="rt-rota-ponto">
             <span class="rt-rotulo">Origem</span>
-            <strong>São Paulo (HUB-01)</strong>
-            <small>São Paulo • SP</small>
+            <strong data-rt="origem">São Paulo (HUB-01)</strong>
+            <small data-rt="origem-sub">São Paulo • SP</small>
           </div>
 
           <span class="rt-rota-seta" aria-hidden="true">→</span>
 
           <div class="rt-rota-ponto">
             <span class="rt-rotulo">Destino</span>
-            <strong>Curitiba (PR)</strong>
-            <small>Paraná</small>
+            <strong data-rt="destino">Curitiba (PR)</strong>
+            <small data-rt="destino-sub">Paraná</small>
           </div>
 
           <div class="rt-previsao">
             <span class="rt-rotulo">Previsão de entrega</span>
-            <strong>Hoje, até 18:30</strong>
-            <small>Acompanhe as próximas atualizações.</small>
+            <strong data-rt="previsao">Hoje, até 18:30</strong>
+            <small data-rt="previsao-nota">Acompanhe as próximas atualizações.</small>
           </div>
         </div>
 
         <div class="rt-progresso">
           <div class="rt-progresso-info">
-            <span>Telemetria em tempo real • BR-116 KM 84</span>
+            <span>Telemetria em tempo real • <span data-rt="local">BR-116 KM 84</span></span>
             <strong><span data-rt="porcentagem">75</span>% do trajeto concluído</strong>
           </div>
           <div class="rt-barra">
             <div class="rt-barra-preenchida" data-progresso="75"></div>
           </div>
 
-          <ol class="rt-etapas">
+          <ol class="rt-etapas" data-rt="etapas">
             <li class="rt-etapa rt-feita"><span class="rt-etapa-icone">✓</span> Coleta realizada</li>
             <li class="rt-etapa rt-feita"><span class="rt-etapa-icone">✓</span> No centro de distribuição</li>
             <li class="rt-etapa rt-atual"><span class="rt-etapa-icone">03</span> Em trânsito</li>
@@ -110,7 +110,7 @@
             <span class="rt-selo-cinza">Mais recentes primeiro</span>
           </div>
 
-          <ul class="rt-linha-tempo">
+          <ul class="rt-linha-tempo" data-rt="historico">
             <li class="rt-evento rt-evento-atual">
               <span class="rt-evento-icone">03</span>
               <div class="rt-evento-texto">
@@ -159,7 +159,7 @@
         <aside class="rt-lateral">
           <section class="rt-info">
             <h2>Informações do transporte</h2>
-            <dl>
+            <dl data-rt="info">
               <div>
                 <dt>Modal</dt>
                 <dd>Rodoviário</dd>
@@ -210,6 +210,7 @@
   </footer>
 
   <script src="/js/layout.js"></script>
+  <script src="/js/manifestos.js"></script>
   <script src="/js/rastreio.js"></script>
 </body>
 
