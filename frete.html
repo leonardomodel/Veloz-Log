@@ -58,7 +58,7 @@
       </div>
 
       <div class="fr-resumo-dados">
-        <div><small>Peso Tributável</small><strong id="r-peso">45,00 kg</strong></div>
+        <div><small>Peso Tributável</small><strong id="r-peso">45,00 kg</strong><em class="fr-peso-detalhe" id="r-peso-detalhe">Real 45,00 kg · Cubado 43,20 kg</em></div>
         <div><small>Volumes</small><strong id="r-volumes">4 caixas</strong></div>
         <div><small>Valor NF Declarada</small><strong id="r-nf">R$ 15.000,00</strong></div>
         <div><small>Tipo Mercadoria</small><strong id="r-tipo">Manufaturados</strong></div>
@@ -403,7 +403,7 @@
             <small class="fr-erro" id="e-p-cep-destino" role="alert"></small>
           </div>
 
-          <div class="fr-campo col-2">
+          <div class="fr-campo fr-campo-peso col-2">
             <label for="p-peso">Peso Bruto Total (kg)</label>
             <div class="fr-input sem-icone">
               <input id="p-peso" type="text" inputmode="numeric" maxlength="12" placeholder="0,00" autocomplete="off">
@@ -412,7 +412,7 @@
             <small class="fr-erro" id="e-p-peso" role="alert"></small>
           </div>
 
-          <div class="fr-campo col-2">
+          <div class="fr-campo fr-campo-volumes col-2">
             <label for="p-volumes">Quantidade de Volumes</label>
             <div class="fr-input">
               <svg class="fr-input-icone" viewBox="0 0 24 24" aria-hidden="true">
@@ -425,16 +425,17 @@
             <small class="fr-erro" id="e-p-volumes" role="alert"></small>
           </div>
 
-          <div class="fr-campo col-2">
-            <label for="p-dims">Dimensões (A x L x P) cm</label>
-            <div class="fr-input">
-              <svg class="fr-input-icone" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M3 17 17 3l4 4L7 21z" />
-                <path d="m7 13 2 2M10 10l2 2M13 7l2 2" />
-              </svg>
-              <input id="p-dims" type="text" inputmode="numeric" maxlength="15" placeholder="A x L x P" autocomplete="off">
+          <!-- Volumes: 1 volume = só dimensões; mais de 1 = dimensões + peso de cada volume (montados pelo frete.js) -->
+          <div class="fr-campo fr-dims col-2" id="campo-dims">
+            <div class="fr-dims-topo">
+              <label id="l-dims" for="p-dim-1">Dimensões (A x L x P) cm</label>
+              <div class="fr-dims-acoes">
+                <button type="button" class="fr-dims-copiar" id="btn-dividir-peso" hidden>Dividir peso igualmente</button>
+                <button type="button" class="fr-dims-copiar" id="btn-copiar-dims" hidden>Repetir medidas do Volume 1</button>
+              </div>
             </div>
-            <small class="fr-dica"></small>
+            <div class="fr-dims-lista" id="p-dims-lista"></div>
+            <small class="fr-dica" id="d-dims"></small>
             <small class="fr-erro" id="e-p-dims" role="alert"></small>
           </div>
 

@@ -245,6 +245,16 @@ body {
   font-size: 15px;
   color: var(--fr-texto);
 }
+/* "Real 18,00 kg · Cubado 30,45 kg" embaixo do peso tributável */
+.fr-peso-detalhe {
+  display: block;
+  margin-top: 2px;
+  font-style: normal;
+  font-size: 11px;
+  white-space: nowrap;
+  color: var(--fr-cinza-texto);
+  cursor: help;
+}
 
 /* ---- grade principal ---- */
 .fr-grade {
@@ -1162,6 +1172,132 @@ body:has(dialog[open]) {
   }
   .fr-dialog-rodape {
     flex-direction: column-reverse;
+  }
+}
+
+/* ----- Dimensões por volume ----- */
+.fr-dims-topo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.fr-dims-copiar {
+  margin-bottom: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fr-laranja);
+  cursor: pointer;
+}
+.fr-dims-copiar:hover {
+  color: var(--fr-laranja-escuro);
+  text-decoration: underline;
+}
+.fr-dims-copiar[hidden] {
+  display: none;
+}
+.fr-dims-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px 16px;
+}
+
+/* dimensões + peso lado a lado em cada volume */
+.fr-form-grade.varios-volumes .fr-dim-linha {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 8px;
+}
+.fr-input-kg input {
+  padding-right: 34px;
+}
+.fr-input-sufixo {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fr-cinza-texto);
+  pointer-events: none;
+}
+/* peso preenchido automaticamente (o que sobra do total) */
+.fr-dim-peso[data-auto] {
+  font-style: italic;
+  color: var(--fr-azul-medio);
+  background: var(--fr-azul-claro);
+}
+/* Peso Bruto Total travado = soma dos volumes */
+.fr-input.travado input {
+  background: var(--fr-cinza-fundo);
+  color: var(--fr-azul);
+  font-weight: 600;
+  cursor: default;
+}
+.fr-input.travado input:focus {
+  border-color: var(--fr-cinza-borda);
+  box-shadow: none;
+}
+.fr-dim-item label {
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--fr-cinza-texto);
+}
+
+/* mais de 1 volume: peso e volumes dividem a linha e as dimensões ganham a largura toda */
+.fr-form-grade.varios-volumes .fr-campo-peso,
+.fr-form-grade.varios-volumes .fr-campo-volumes {
+  grid-column: span 3;
+}
+.fr-form-grade.varios-volumes .fr-dims {
+  grid-column: 1 / -1;
+  padding: 14px 16px 10px;
+  border: 1px solid var(--fr-cinza-borda);
+  border-radius: 12px;
+  background: var(--fr-cinza-fundo);
+}
+.fr-form-grade.varios-volumes .fr-dims-lista {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 16px;
+  max-height: 222px; /* 3 linhas visíveis; o resto rola */
+  margin: 0 -4px;
+  padding: 2px 4px 4px; /* espaço para o brilho do foco não ser cortado */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* erro: só o volume com problema fica vermelho */
+.fr-campo.fr-dims.tem-erro .fr-input input {
+  border-color: var(--fr-cinza-borda);
+}
+.fr-campo.fr-dims .fr-input input[aria-invalid="true"] {
+  border-color: #dc2626;
+}
+
+/* chegando da página inicial: destaca que faltam as medidas */
+.fr-dims.pendente .fr-dica {
+  font-weight: 600;
+  color: var(--fr-laranja);
+}
+.fr-dims.pendente .fr-input input:placeholder-shown {
+  border-color: var(--fr-laranja);
+  background: var(--fr-laranja-claro);
+}
+
+@media (max-width: 600px) {
+  .fr-form-grade.varios-volumes .fr-campo-peso,
+  .fr-form-grade.varios-volumes .fr-campo-volumes {
+    grid-column: 1 / -1;
+  }
+  .fr-form-grade.varios-volumes .fr-dims-lista {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

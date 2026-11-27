@@ -23,6 +23,11 @@
     dedicado: { nome: "Dedicado", porKg: 17.6778, minimo: 450, pedagio: 34.5 },
   };
   const ROTA_PADRAO = { origem: "São Paulo", destino: "Curitiba" };
+  // acima disso não abrimos um campo por volume (a tela ficaria enorme): vira cotação corporativa
+  const MAX_VOLUMES_DETALHADOS = 50;
+  // true: cada volume paga pelo maior entre o SEU peso real e o SEU peso cubado (padrão de courier/expresso)
+  // false: compara só os totais da carga (peso total x cubagem total)
+  const CUBAGEM_POR_VOLUME = true;
 
   /* ================= ESTADO ================= */
   const estado = {
@@ -30,7 +35,15 @@
     destino: { cep: "80010-000", cidade: "Curitiba", uf: "PR" },
     peso: 45,
     volumes: 4,
-    dims: [40, 30, 30], // A x L x P (cm)
+    // uma medida [A, L, P] em cm para cada volume
+    medidas: [
+      [40, 30, 30],
+      [40, 30, 30],
+      [40, 30, 30],
+      [40, 30, 30],
+    ],
+    // peso real (kg) de cada volume, na mesma ordem das medidas
+    pesos: [11.25, 11.25, 11.25, 11.25],
     nf: 15000,
     tipo: "manufaturados",
   };
@@ -107,10 +120,47 @@
     return marcado ? marcado.value : "faturado";
   }
 
+  // volume total em m³ (soma de todos os volumes)
+  const metrosCubicos = (medidas) =>
+    medidas.reduce((soma, [a, l, p]) => soma + (a * l * p) / 1e6, 0);
+  const pesoCubado = (medidas) => metrosCubicos(medidas) * FATOR_CUBAGEM;
+
+  // peso real de cada volume (sem o detalhe, divide o total igualmente)
+  function pesosReais(e) {
+    const n = e.medidas.length;
+    if (n === 1) return [e.peso];
+    return e.pesos && e.pesos.length === n
+      ? e.pesos
+      : Array(n).fill(e.peso / n);
+  }
+
+  // detalhe por volume: real, cubado e o que vale (o maior dos dois)
+  function detalheVolumes(e) {
+    const reais = pesosReais(e);
+    return e.medidas.map((m, i) => {
+      const cubado = pesoCubado([m]);
+      return {
+        medida: m,
+        real: reais[i],
+        cubado,
+        tributavel: Math.max(reais[i], cubado),
+      };
+    });
+  }
+
   function pesoTributavel(e) {
-    const [c, a, l] = e.dims;
-    const cubado = ((c * a * l * e.volumes) / 1e6) * FATOR_CUBAGEM;
-    return Math.max(e.peso, cubado); // vale o maior entre peso real e cubado
+    if (!e.medidas.length) return e.peso; // sem medidas, vale o peso real
+    if (!CUBAGEM_POR_VOLUME) return Math.max(e.peso, pesoCubado(e.medidas));
+    return detalheVolumes(e).reduce((soma, v) => soma + v.tributavel, 0);
+  }
+
+  // texto das dimensões para a proposta: iguais → "40 x 30 x 30 cm (cada)"; diferentes → cubagem total
+  function dimensoesTexto(medidas) {
+    if (!medidas.length) return "Não informadas";
+    const primeira = medidas[0].join(" x ");
+    const iguais = medidas.every((m) => m.join(" x ") === primeira);
+    if (iguais) return `${primeira} cm${medidas.length > 1 ? " (cada)" : ""}`;
+    return `Variadas · ${numero(metrosCubicos(medidas), 3)} m³ no total`;
   }
 
   function calcular(m, e) {
@@ -166,6 +216,19 @@
     definir("#r-destino-cidade", local(estado.destino), animar);
     definir("#r-destino-cep", `CEP ${estado.destino.cep}`, animar);
     definir("#r-peso", `${numero(pesoTributavel(estado))} kg`, animar);
+    // linha de apoio: mostra de onde veio o tributável (real x cubado)
+    definir(
+      "#r-peso-detalhe",
+      estado.medidas.length
+        ? `Real ${numero(estado.peso)} kg · Cubado ${numero(pesoCubado(estado.medidas))} kg`
+        : `Real ${numero(estado.peso)} kg · sem medidas`,
+      animar,
+    );
+    const detalhe = $("#r-peso-detalhe");
+    if (detalhe)
+      detalhe.title = CUBAGEM_POR_VOLUME
+        ? "Cada volume paga pelo maior entre o seu peso real e o seu peso cubado (300 kg/m³)"
+        : "Vale o maior entre o peso real total e o peso cubado total (300 kg/m³)";
     definir(
       "#r-volumes",
       `${estado.volumes} ${estado.volumes === 1 ? "caixa" : "caixas"}`,
@@ -383,7 +446,6 @@
   function montarProposta() {
     const d = dadosProposta();
     const e = d.escolhida;
-    const [a, l, p] = estado.dims;
     const linhasMod = d.modalidades
       .map(
         (m) => `
@@ -421,11 +483,32 @@
           <div><small>Peso bruto</small><strong>${esc(pesoTexto(estado.peso))} kg</strong></div>
           <div><small>Peso tributável</small><strong>${esc(numero(pesoTributavel(estado)))} kg</strong></div>
           <div><small>Volumes</small><strong>${estado.volumes}</strong></div>
-          <div><small>Dimensões (A x L x P)</small><strong>${a} x ${l} x ${p} cm</strong></div>
+          <div><small>Dimensões (A x L x P)</small><strong>${esc(dimensoesTexto(estado.medidas))}</strong></div>
           <div><small>Valor da NF declarada</small><strong>${brl(Math.round(estado.nf * 100))}</strong></div>
           <div><small>Tipo de mercadoria</small><strong>${esc(d.tipo)}</strong></div>
         </div>
       </section>
+      ${
+        estado.medidas.length > 1
+          ? `<section class="pp-secao">
+        <h2>Detalhamento dos volumes</h2>
+        <table class="pp-tabela">
+          <thead><tr><th>Volume</th><th>Dimensões (A x L x P)</th><th class="pp-dir">Peso real</th><th class="pp-dir">Peso cubado</th><th class="pp-dir">Peso tributável</th></tr></thead>
+          <tbody>${detalheVolumes(estado)
+            .map(
+              (v, i) => `<tr>
+              <td><strong>Volume ${i + 1}</strong></td>
+              <td>${v.medida.join(" x ")} cm</td>
+              <td class="pp-dir">${numero(v.real)} kg</td>
+              <td class="pp-dir">${numero(v.cubado)} kg</td>
+              <td class="pp-dir"><strong>${numero(v.tributavel)} kg</strong></td>
+            </tr>`,
+            )
+            .join("")}</tbody>
+        </table>
+      </section>`
+          : ""
+      }
 
       <section class="pp-secao">
         <h2>Modalidades cotadas</h2>
@@ -824,7 +907,13 @@
       : "";
     $("#p-peso").value = pesoTexto(estado.peso);
     $("#p-volumes").value = estado.volumes;
-    $("#p-dims").value = estado.dims.join(" x ");
+    montarCamposDims(
+      estado.volumes,
+      estado.medidas.map((m) => m.join(" x ")),
+      estado.volumes > 1 && estado.pesos.length === estado.volumes
+        ? estado.pesos.map(pesoParaCampo)
+        : [],
+    );
     $("#p-nf").value = formatarMoeda(String(Math.round(estado.nf * 100)));
     $("#p-tipo").value = estado.tipo;
   }
@@ -845,14 +934,282 @@
     form.querySelectorAll(".fr-erro").forEach((e) => (e.textContent = ""));
   }
 
+  /* ----- volumes: medidas e peso de cada um ----- */
+  // 1 volume  → só o campo de dimensões (o peso é o Peso Bruto Total)
+  // 2 ou mais → "Volume N" com dimensões + peso; o total se ajusta sozinho:
+  //   • falta só 1 peso → ele é preenchido com o que sobra do total (em itálico, "automático")
+  //   • todos informados → o Peso Bruto Total vira a soma dos volumes (fica travado)
+  //   • apagou o peso de um volume → o total destrava para editar de novo
+  const grade = $(".fr-form-grade", form);
+  const campoDims = $("#campo-dims");
+  const listaDims = $("#p-dims-lista");
+  const botaoCopiar = $("#btn-copiar-dims");
+  const botaoDividir = $("#btn-dividir-peso");
+  const campoPeso = $("#p-peso");
+  const iconeRegua =
+    '<svg class="fr-input-icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17 17 3l4 4L7 21z" /><path d="m7 13 2 2M10 10l2 2M13 7l2 2" /></svg>';
+
+  const camposDims = () => [...listaDims.querySelectorAll(".fr-dim")];
+  const camposPesoVol = () => [...listaDims.querySelectorAll(".fr-dim-peso")];
+  const medidaOk = (m) => m.length === 3 && m.every((v) => v > 0);
+  function pesoParaCampo(n) {
+    return formatarMoeda(String(Math.round(n * 100)));
+  }
+
+  // guarda o que foi digitado: diminuir e aumentar os volumes não apaga nada
+  let memoriaDims = [];
+  let memoriaPesos = [];
+
+  function montarCamposDims(qtd, valores, pesos) {
+    if (valores) {
+      memoriaDims = [...valores];
+      memoriaPesos = [...(pesos || [])];
+    } else {
+      camposDims().forEach((c, i) => (memoriaDims[i] = c.value));
+      // peso automático não é guardado: ele é recalculado
+      camposPesoVol().forEach(
+        (c, i) => (memoriaPesos[i] = c.dataset.auto ? "" : c.value),
+      );
+    }
+    const n = Math.min(Math.max(qtd || 1, 1), MAX_VOLUMES_DETALHADOS);
+    const varios = n > 1;
+    listaDims.innerHTML = Array.from({ length: n }, (_, i) => {
+      const id = `p-dim-${i + 1}`;
+      return `
+        <div class="fr-dim-item">
+          ${varios ? `<label for="${id}">Volume ${i + 1}</label>` : ""}
+          <div class="fr-dim-linha">
+            <div class="fr-input">
+              ${iconeRegua}
+              <input id="${id}" class="fr-dim" data-volume="${i + 1}" type="text" inputmode="numeric" maxlength="15" placeholder="A x L x P" autocomplete="off" aria-label="Dimensões do volume ${i + 1} (cm)">
+            </div>
+            ${
+              varios
+                ? `<div class="fr-input fr-input-kg sem-icone">
+              <input id="p-dim-peso-${i + 1}" class="fr-dim-peso" data-volume="${i + 1}" type="text" inputmode="numeric" maxlength="9" placeholder="0,00" autocomplete="off" aria-label="Peso do volume ${i + 1} (kg)">
+              <span class="fr-input-sufixo" aria-hidden="true">kg</span>
+            </div>`
+                : ""
+            }
+          </div>
+        </div>`;
+    }).join("");
+    camposDims().forEach((c, i) => (c.value = memoriaDims[i] || ""));
+    camposPesoVol().forEach((c, i) => (c.value = memoriaPesos[i] || ""));
+
+    grade.classList.toggle("varios-volumes", varios);
+    $("#l-dims").textContent = varios
+      ? `Medidas e peso por volume · ${n} volumes`
+      : "Dimensões (A x L x P) cm";
+    botaoCopiar.hidden = !varios;
+    botaoDividir.hidden = !varios;
+    sincronizarPesos();
+  }
+
+  // mantém Peso Bruto Total e pesos dos volumes conversando entre si
+  function sincronizarPesos() {
+    const campos = camposPesoVol();
+    const caixaTotal = campoPeso.closest(".fr-input");
+    const dicaTotal = campoPeso.closest(".fr-campo").querySelector(".fr-dica");
+    const destravar = () => {
+      campoPeso.readOnly = false;
+      caixaTotal.classList.remove("travado");
+      dicaTotal.textContent = "";
+    };
+
+    if (!campos.length) {
+      destravar();
+      atualizarDicaDims();
+      return;
+    }
+
+    const informados = campos.filter(
+      (c) => !c.dataset.auto && lerPeso(c.value) > 0,
+    );
+    const soma = informados.reduce((t, c) => t + lerPeso(c.value), 0);
+    const livres = campos.filter((c) => !informados.includes(c));
+
+    if (!livres.length) {
+      // todos os volumes têm peso → o total é a soma
+      campoPeso.value = pesoParaCampo(soma);
+      campoPeso.readOnly = true;
+      caixaTotal.classList.add("travado");
+      dicaTotal.textContent = "Soma dos volumes";
+    } else {
+      destravar();
+      livres.forEach((c) => {
+        if (c.dataset.auto) {
+          c.value = "";
+          delete c.dataset.auto;
+        }
+      });
+      const total = lerPeso(campoPeso.value) || 0;
+      const resto = Math.round((total - soma) * 100) / 100;
+      if (livres.length === 1 && resto > 0) {
+        livres[0].value = pesoParaCampo(resto);
+        livres[0].dataset.auto = "1";
+        livres[0].title = "Calculado: peso total menos os outros volumes";
+      }
+    }
+    atualizarDicaDims();
+  }
+
+  // dica embaixo do bloco: cubagem e o que ainda falta
+  function atualizarDicaDims() {
+    const dica = $("#d-dims");
+    const varios = camposPesoVol().length > 0;
+    const medidas = camposDims()
+      .map((c) => lerDimensoes(c.value))
+      .filter(medidaOk);
+    const faltamMedidas = camposDims().length - medidas.length;
+    const faltamPesos = camposPesoVol().filter(
+      (c) => !(lerPeso(c.value) > 0),
+    ).length;
+    const soma = camposPesoVol().reduce(
+      (t, c) => t + (lerPeso(c.value) || 0),
+      0,
+    );
+    const total = lerPeso(campoPeso.value) || 0;
+
+    const partes = [];
+    if (medidas.length)
+      partes.push(
+        `Cubagem ${numero(metrosCubicos(medidas), 3)} m³ (${numero(pesoCubado(medidas))} kg cubados)`,
+      );
+    if (faltamMedidas && medidas.length)
+      partes.push(`faltam medidas de ${faltamMedidas}`);
+    if (varios && faltamPesos) {
+      if (faltamPesos === 1 && soma >= total && total > 0)
+        partes.push(
+          `os volumes já somam ${numero(soma)} kg (total ${numero(total)} kg)`,
+        );
+      else partes.push(`falta o peso de ${faltamPesos}`);
+    }
+
+    if (
+      !medidas.length &&
+      (!varios || faltamPesos === camposPesoVol().length)
+    ) {
+      dica.textContent = campoDims.classList.contains("pendente")
+        ? varios
+          ? "Faltam as medidas e o peso de cada volume."
+          : "Faltam as medidas da carga."
+        : "";
+    } else {
+      dica.textContent = partes.join(" · ");
+    }
+    if (!faltamMedidas && !faltamPesos) campoDims.classList.remove("pendente");
+  }
+
+  // máscaras + limpar erro de cada campo da lista
+  listaDims.addEventListener("input", (e) => {
+    const campo = e.target;
+    if (campo.classList.contains("fr-dim")) {
+      const apagando = (e.inputType || "").startsWith("delete");
+      campo.value = formatarDimensoes(campo.value, apagando);
+    } else if (campo.classList.contains("fr-dim-peso")) {
+      campo.value = formatarMoeda(soDigitos(campo.value).slice(0, 9));
+      delete campo.dataset.auto; // mexeu → passa a ser valor do usuário
+      campo.removeAttribute("title");
+    } else return;
+
+    if (campo.hasAttribute("aria-invalid")) {
+      campo.removeAttribute("aria-invalid");
+      if (!listaDims.querySelector("[aria-invalid]")) {
+        campoDims.classList.remove("tem-erro");
+        $("#e-p-dims").textContent = "";
+      }
+    }
+    if (campo.classList.contains("fr-dim-peso")) sincronizarPesos();
+    else atualizarDicaDims();
+  });
+
+  // ao entrar num peso automático, seleciona tudo: digitar substitui o valor
+  listaDims.addEventListener("focusin", (e) => {
+    if (e.target.dataset && e.target.dataset.auto) e.target.select();
+  });
+
+  // Enter pula para o próximo campo da lista (em vez de enviar)
+  listaDims.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+    const campos = [...listaDims.querySelectorAll("input")];
+    const i = campos.indexOf(e.target);
+    if (i > -1 && i < campos.length - 1) {
+      e.preventDefault();
+      campos[i + 1].focus();
+    }
+  });
+
+  function erroNaLista(campo, mensagem) {
+    campo.setAttribute("aria-invalid", "true");
+    campoDims.classList.add("tem-erro");
+    $("#e-p-dims").textContent = mensagem;
+    campo.focus();
+  }
+  function limparErroLista() {
+    listaDims
+      .querySelectorAll("[aria-invalid]")
+      .forEach((c) => c.removeAttribute("aria-invalid"));
+    campoDims.classList.remove("tem-erro");
+    $("#e-p-dims").textContent = "";
+  }
+
+  botaoCopiar.addEventListener("click", () => {
+    const campos = camposDims();
+    const primeira = campos[0].value;
+    if (!medidaOk(lerDimensoes(primeira)))
+      return erroNaLista(
+        campos[0],
+        "Preencha as medidas do Volume 1 para repetir nos demais",
+      );
+    campos.forEach((c) => (c.value = primeira));
+    limparErroLista();
+    atualizarDicaDims();
+  });
+
+  // divide o Peso Bruto Total igualmente (centavos que sobram vão para o último volume)
+  botaoDividir.addEventListener("click", () => {
+    const campos = camposPesoVol();
+    const total = lerPeso(campoPeso.value);
+    if (!(total > 0)) {
+      marcarErro("p-peso", "Informe o peso total para dividir");
+      campoPeso.focus();
+      return;
+    }
+    const centavos = Math.round(total * 100);
+    const parte = Math.floor(centavos / campos.length);
+    campos.forEach((c, i) => {
+      const v =
+        i === campos.length - 1
+          ? centavos - parte * (campos.length - 1)
+          : parte;
+      c.value = formatarMoeda(String(v));
+      delete c.dataset.auto;
+      c.removeAttribute("title");
+    });
+    limparErroLista();
+    sincronizarPesos();
+  });
+
   // abrir e fechar
-  botaoEditar.addEventListener("click", () => {
+  // pedirMedidas = true quando vem da página inicial (lá não há campo de dimensões)
+  function abrirModal(pedirMedidas = false) {
     preencherForm();
     limparErros();
+    campoDims.classList.toggle("pendente", pedirMedidas);
+    atualizarDicaDims();
     if (typeof dialog.showModal === "function") dialog.showModal();
     else dialog.setAttribute("open", "");
-    $("#p-cep-origem").focus();
-  });
+    if (pedirMedidas) {
+      const vazio =
+        [...listaDims.querySelectorAll("input")].find((c) => !c.value) ||
+        camposDims()[0];
+      vazio.focus();
+    } else {
+      $("#p-cep-origem").focus();
+    }
+  }
+  botaoEditar.addEventListener("click", () => abrirModal(false));
   form
     .querySelectorAll("[data-fechar]")
     .forEach((b) => b.addEventListener("click", () => dialog.close()));
@@ -873,13 +1230,13 @@
   });
   $("#p-peso").addEventListener("input", (e) => {
     e.target.value = formatarMoeda(soDigitos(e.target.value).slice(0, 9));
-  });
-  $("#p-dims").addEventListener("input", (e) => {
-    const apagando = (e.inputType || "").startsWith("delete");
-    e.target.value = formatarDimensoes(e.target.value, apagando);
+    sincronizarPesos(); // recalcula o peso automático do volume que falta
   });
   $("#p-volumes").addEventListener("input", (e) => {
     e.target.value = soDigitos(e.target.value).slice(0, 5).replace(/^0+/, "");
+    // muda a quantidade → refaz os campos de dimensão (vazio = espera digitar)
+    const qtd = parseInt(e.target.value || "0", 10);
+    if (qtd >= 1 && qtd !== camposDims().length) montarCamposDims(qtd);
   });
   $("#p-nf").addEventListener("input", (e) => {
     e.target.value = formatarMoeda(e.target.value);
@@ -887,6 +1244,7 @@
 
   // some o erro do campo assim que o usuário volta a digitar
   form.addEventListener("input", (e) => {
+    if (e.target.closest("#p-dims-lista")) return; // tratado na lista dos volumes
     const campo = e.target.closest(".fr-campo");
     if (campo && campo.classList.contains("tem-erro")) {
       campo.classList.remove("tem-erro");
@@ -905,7 +1263,8 @@
     const cepD = soDigitos($("#p-cep-destino").value);
     const peso = lerPeso($("#p-peso").value);
     const volumes = parseInt(soDigitos($("#p-volumes").value) || "0", 10);
-    const dims = lerDimensoes($("#p-dims").value);
+    const medidas = camposDims().map((c) => lerDimensoes(c.value));
+    const pesosVol = camposPesoVol().map((c) => lerPeso(c.value) || 0);
     const nf = lerMoeda($("#p-nf").value);
 
     const erros = [];
@@ -921,10 +1280,33 @@
     exigir("p-peso", !(peso > 0), "Informe o peso em kg");
     exigir("p-volumes", !(volumes >= 1), "Informe ao menos 1 volume");
     exigir(
-      "p-dims",
-      !(dims.length === 3 && dims.every((v) => v > 0)),
-      "Informe A x L x P, ex.: 40 x 30 x 30",
+      "p-volumes",
+      volumes > MAX_VOLUMES_DETALHADOS,
+      `Acima de ${MAX_VOLUMES_DETALHADOS} volumes, solicite a cotação corporativa`,
     );
+
+    // volumes: aponta exatamente qual campo de qual volume está faltando
+    if (volumes >= 1 && volumes <= MAX_VOLUMES_DETALHADOS) {
+      const cDims = camposDims();
+      const cPesos = camposPesoVol();
+      const ruins = [];
+      medidas.forEach((m, i) => {
+        if (!medidaOk(m)) ruins.push(cDims[i]);
+        if (cPesos[i] && !(pesosVol[i] > 0)) ruins.push(cPesos[i]);
+      });
+      if (ruins.length) {
+        ruins.forEach((c) => c.setAttribute("aria-invalid", "true"));
+        campoDims.classList.add("tem-erro");
+        const nomes = [...new Set(ruins.map((c) => c.dataset.volume))];
+        const lista =
+          nomes.slice(0, 4).join(", ") + (nomes.length > 4 ? "…" : "");
+        $("#e-p-dims").textContent =
+          cDims.length === 1
+            ? "Informe A x L x P, ex.: 40 x 30 x 30"
+            : `Preencha medidas e peso do${nomes.length > 1 ? "s volumes" : " volume"} ${lista}`;
+        erros.push(ruins[0].id);
+      }
+    }
     exigir("p-nf", !(nf > 0), "Informe o valor da NF");
 
     if (erros.length) {
@@ -957,16 +1339,40 @@
       cidade: infoD.cidade || null,
       uf: infoD.uf || null,
     };
-    estado.peso = peso;
     estado.volumes = volumes;
-    estado.dims = dims;
+    estado.medidas = medidas;
+    if (pesosVol.length) {
+      estado.pesos = pesosVol;
+      // o total passa a ser exatamente a soma dos volumes
+      estado.peso = Math.round(pesosVol.reduce((t, v) => t + v, 0) * 100) / 100;
+    } else {
+      estado.pesos = [peso];
+      estado.peso = peso;
+    }
     estado.nf = nf;
     estado.tipo = $("#p-tipo").value;
 
+    campoDims.classList.remove("pendente");
     dialog.close();
     renderTudo(true);
     atualizarMapa();
+    salvarNaUrl();
   });
+
+  // grava os parâmetros na URL: recarregar a página mantém a cotação e não reabre o modal
+  function salvarNaUrl() {
+    const q = new URLSearchParams({
+      o: soDigitos(estado.origem.cep),
+      d: soDigitos(estado.destino.cep),
+      p: String(estado.peso),
+      v: String(estado.volumes),
+      nf: String(estado.nf),
+      t: estado.tipo,
+      m: estado.medidas.map((m) => m.join("x")).join("-"),
+    });
+    if (estado.volumes > 1) q.set("w", estado.pesos.join("-"));
+    history.replaceState(null, "", `${location.pathname}?${q}`);
+  }
 
   // trocar de modalidade atualiza a composição da tarifa
   const lista = $(".fr-modalidades");
@@ -982,7 +1388,22 @@
     const volumes = parseInt(q.get("v"), 10);
     const nf = parseFloat(q.get("nf"));
     const tipo = q.get("t");
+    // m=40x30x30-50x40x30 (uma medida por volume, já salva antes)
+    const medidas = (q.get("m") || "")
+      .split("-")
+      .filter(Boolean)
+      .map((m) => m.split("x").map(Number));
+    const medidasOk =
+      volumes >= 1 &&
+      medidas.length === volumes &&
+      medidas.every((m) => m.length === 3 && m.every((v) => v > 0));
+    // w=5-3 (peso de cada volume, já salvo antes)
+    const pesos = (q.get("w") || "").split("-").filter(Boolean).map(Number);
+    const pesosOk =
+      volumes > 1 && pesos.length === volumes && pesos.every((v) => v > 0);
     return {
+      medidas: medidasOk ? medidas : null,
+      pesos: pesosOk ? pesos : null,
       cepO: cepO.length === 8 ? cepO : null,
       cepD: cepD.length === 8 ? cepD : null,
       peso: peso > 0 ? peso : null,
@@ -999,6 +1420,12 @@
       if (ini.volumes) estado.volumes = ini.volumes;
       if (ini.nf) estado.nf = ini.nf;
       if (ini.tipo) estado.tipo = ini.tipo;
+      // a página inicial não pede dimensões: começa sem elas (vale o peso real) e pede no modal
+      estado.medidas = ini.medidas || [];
+      estado.pesos = ini.pesos || [];
+      if (ini.pesos)
+        estado.peso =
+          Math.round(ini.pesos.reduce((t, v) => t + v, 0) * 100) / 100;
       const [infoO, infoD] = await Promise.all([
         ini.cepO ? buscarCep(ini.cepO) : null,
         ini.cepD ? buscarCep(ini.cepD) : null,
@@ -1018,6 +1445,10 @@
     }
     renderTudo(false);
     atualizarMapa();
+    // veio da página inicial (sem medidas/pesos por volume): já abre o modal pedindo o que falta
+    const faltaDetalhe =
+      ini && (!ini.medidas || (estado.volumes > 1 && !ini.pesos));
+    if (faltaDetalhe) abrirModal(true);
   }
   iniciar();
 })();
