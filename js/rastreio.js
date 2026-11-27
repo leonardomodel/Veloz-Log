@@ -33,6 +33,7 @@
   const VOLTAR = {
     portal: { trilha: "Monitoramento", url: "/portal.html", texto: "Voltar ao monitoramento" },
     gestao: { trilha: "Manifestos & CTEs", url: "/portal-manifestos.html", texto: "Voltar à gestão de cargas" },
+    telemetria: { trilha: "Telemetria de Rota", url: "/portal-telemetria.html", texto: "Voltar à telemetria" },
   };
 
   const $ = (s) => document.querySelector(s);

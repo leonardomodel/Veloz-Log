@@ -24,7 +24,7 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M3 9h18M8 13h8M8 16h5" /></svg>
       Manifestos &amp; CTEs
     </a>
-    <a href="#" data-em-breve="Telemetria de Rota">
+    <a href="/portal-telemetria.html">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.5" /></svg>
       Telemetria de Rota
     </a>

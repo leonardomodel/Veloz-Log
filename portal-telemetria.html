@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telemetria de Rota | Portal B2B VelozLog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="/img/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/style.css">
+  <!-- estrutura do portal (menu lateral, topo, cartões) -->
+  <link rel="stylesheet" href="/css/portal.css">
+  <!-- só desta tela (prefixo tl-) -->
+  <link rel="stylesheet" href="/css/telemetria.css">
+  <!-- sem sessão (não passou pelo login): volta para o login antes de desenhar a página -->
+  <script>
+    try {
+      if (!sessionStorage.getItem("velozlog:sessao")) location.replace("/login.html");
+    } catch (e) { /* sem sessionStorage: segue */ }
+  </script>
+</head>
+
+<body class="pt-corpo">
+  <div class="pt-app">
+
+    <!-- MENU LATERAL (partials/portal-lateral.tpl) -->
+    <div data-include="portal-lateral"></div>
+
+    <div class="pt-principal">
+
+      <!-- TOPO (partials/portal-topo.tpl) -->
+      <div data-include="portal-topo"></div>
+
+      <main class="pt-conteudo">
+
+        <!-- ===== CABEÇALHO ===== -->
+        <section class="tl-cabeca">
+          <div class="tl-titulo">
+            <p class="tl-eyebrow">
+              <span class="tl-ao-vivo"><i class="pt-ponto pt-ponto-pulsa"></i> Feed Satelital em Vivo</span>
+              <span>• Torre de Controle Logística</span>
+            </p>
+            <h1>Telemetria de Rota &amp; Rastreamento em Tempo Real</h1>
+            <p>Monitoramento contínuo via satélite, telemetria CAN-bus, conformidade de velocidade e sensores invioláveis de baú da frota corporativa.</p>
+          </div>
+
+          <div class="tl-cabeca-botoes">
+            <button type="button" class="tl-btn tl-btn-claro" id="tl-relatorio">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="M7 10l5 5 5-5M12 15V3" /></svg>
+              <span>Relatório de Telemetria</span>
+            </button>
+            <button type="button" class="tl-btn tl-btn-laranja" id="tl-intervencao">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5a7 7 0 0 1 14 0M8.5 12.5a3.5 3.5 0 0 1 7 0" /><circle cx="12" cy="12.5" r="1" /><path d="M12 13.5V21M9 21h6" /></svg>
+              <span>Intervenção Torre</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- ===== INDICADORES ===== -->
+        <section class="tl-kpis" aria-label="Indicadores da frota">
+          <article class="pt-cartao tl-kpi">
+            <div class="tl-kpi-topo">
+              <h2>Veículos em Trânsito</h2>
+              <span class="tl-kpi-icone">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 6h12v10H2zM14 9h4l3 3.5V16h-7" /><circle cx="6" cy="17.5" r="1.8" /><circle cx="17" cy="17.5" r="1.8" /></svg>
+              </span>
+            </div>
+            <p class="tl-kpi-valor"><strong id="tl-kpi-veiculos">18</strong> <span>carretas</span></p>
+            <p class="tl-kpi-nota"><i class="tl-bola tl-bola-verde"></i> 100% da frota dedicada com Iridium ativo</p>
+          </article>
+
+          <article class="pt-cartao tl-kpi">
+            <div class="tl-kpi-topo">
+              <h2>Conformidade de Velocidade</h2>
+              <span class="tl-kpi-icone tl-kpi-icone-laranja">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 18a8.5 8.5 0 1 1 15 0" /><path d="M12 13.5l4-4" /><circle cx="12" cy="14" r="1.3" /></svg>
+              </span>
+            </div>
+            <p class="tl-kpi-valor"><strong>98.2%</strong></p>
+            <p class="tl-kpi-nota tl-verde">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8M15 7h6v6" /></svg>
+              +0.8% em relação à última semana
+            </p>
+          </article>
+
+          <article class="pt-cartao tl-kpi">
+            <div class="tl-kpi-topo">
+              <h2>Alertas de Rota</h2>
+              <span class="tl-kpi-icone tl-kpi-icone-amarelo">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.6 3.6a1.6 1.6 0 0 1 2.8 0l8 14.2a1.6 1.6 0 0 1-1.4 2.4H4a1.6 1.6 0 0 1-1.4-2.4z" /><path d="M12 9v4.4M12 16.6h0" /></svg>
+              </span>
+            </div>
+            <p class="tl-kpi-valor tl-kpi-alerta"><strong>1</strong> <span>alerta leve</span></p>
+            <p class="tl-kpi-nota"><b class="tl-laranja">BR-116:</b>&nbsp;Tráfego lento altura Registro</p>
+          </article>
+
+          <article class="pt-cartao tl-kpi">
+            <div class="tl-kpi-topo">
+              <h2>Temperatura Baú Frio</h2>
+              <span class="tl-kpi-icone tl-kpi-icone-azul">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M4 7l16 10M20 7L4 17M9 3.5l3 2.5 3-2.5M9 20.5l3-2.5 3 2.5" /></svg>
+              </span>
+            </div>
+            <p class="tl-kpi-valor"><strong id="tl-kpi-temperatura">4.0°C</strong> <span class="tl-verde">Estável</span></p>
+            <p class="tl-kpi-nota"><i class="tl-bola tl-bola-verde"></i> Set-point: 2°C a 6°C (Carga Farmacêutica)</p>
+          </article>
+        </section>
+
+        <!-- ===== MAPA + GRÁFICO | PAINEL DO VEÍCULO ===== -->
+        <div class="tl-grade">
+          <div class="tl-coluna">
+
+            <!-- mapa (Leaflet + OpenStreetMap, o mesmo da cotação) -->
+            <section class="tl-mapa-cartao" id="tl-mapa-cartao" aria-label="Mapa da frota">
+              <div class="tl-mapa" id="tl-mapa"></div>
+              <p class="tl-mapa-aviso" id="tl-mapa-aviso" hidden>Mapa indisponível no momento. As posições continuam na tabela abaixo.</p>
+
+              <div class="tl-mapa-topo">
+                <div class="tl-regioes" role="tablist" aria-label="Região monitorada" id="tl-regioes">
+                  <button type="button" role="tab" aria-selected="true" data-regiao="sul">Sul &amp; Sudeste (14)</button>
+                  <button type="button" role="tab" aria-selected="false" data-regiao="centro">Centro-Oeste (4)</button>
+                  <button type="button" role="tab" aria-selected="false" data-regiao="portos">Corredor Portos (6)</button>
+                </div>
+                <div class="tl-sinal">
+                  <span class="tl-verde">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l5-5M7 11l6 6M9.5 8.5l6 6 4-4-6-6zM16 4l4 4" /></svg>
+                    Sinal 100% (Iridium + 4G)
+                  </span>
+                  <button type="button" class="tl-camada" id="tl-camada" aria-pressed="true">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5z" /><path d="M3 13l9 5 9-5" /></svg>
+                    Camada CAN
+                  </button>
+                </div>
+              </div>
+
+              <div class="tl-corredor">
+                <span class="tl-corredor-icone">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21v-8M12 13L6 6M12 13l6-7M6 6v4M6 6h4M18 6v4M18 6h-4" /></svg>
+                </span>
+                <div class="tl-corredor-texto">
+                  <strong id="tl-corredor-titulo">Corredor Sudeste-Sul (SP / PR / SC)</strong>
+                  <small id="tl-corredor-texto">Posto Fiscal Registro SP com fluxo contínuo • Tempo médio de liberação: 14 min</small>
+                </div>
+                <span class="tl-pedagios">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M8.5 12l2.5 2.5 4.5-5" /></svg>
+                  <span><b id="tl-pedagios">9</b> Pedágios Eletrônicos Sem Parar</span>
+                </span>
+                <button type="button" class="tl-expandir" id="tl-expandir" aria-pressed="false">Expandir Radar</button>
+              </div>
+            </section>
+
+            <!-- perfil de velocidade -->
+            <section class="pt-cartao tl-perfil" aria-labelledby="tl-perfil-titulo">
+              <header class="tl-perfil-topo">
+                <div>
+                  <h2 id="tl-perfil-titulo">Perfil de Velocidade e Telemetria CAN (Últimos 120 km)</h2>
+                  <p id="tl-perfil-trecho">Trecho: Registro (SP) até Curitiba (PR) • Limite da via: 80 km/h</p>
+                </div>
+                <ul class="tl-legenda">
+                  <li><i class="tl-legenda-vel"></i> Velocidade (km/h)</li>
+                  <li><i class="tl-legenda-rpm"></i> RPM x100</li>
+                </ul>
+              </header>
+              <!-- gráfico montado pelo /js/telemetria.js -->
+              <div class="tl-grafico" id="tl-grafico" role="img" aria-label="Gráfico do perfil de velocidade"></div>
+              <ol class="tl-marcos" id="tl-marcos"></ol>
+            </section>
+          </div>
+
+          <!-- painel do veículo selecionado -->
+          <aside class="pt-cartao tl-veiculo" id="tl-veiculo" aria-label="Veículo selecionado" tabindex="-1">
+            <!-- em telas menores os dois blocos ficam lado a lado, embaixo do mapa -->
+            <div class="tl-veiculo-bloco">
+            <header class="tl-veiculo-topo">
+              <span class="tl-veiculo-icone">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 6h12v10H2zM14 9h4l3 3.5V16h-7" /><circle cx="6" cy="17.5" r="1.8" /><circle cx="17" cy="17.5" r="1.8" /></svg>
+              </span>
+              <div class="tl-veiculo-nome">
+                <h2><span class="tl-mono" data-tl="placa">GHR-9102</span> <span class="tl-online">Online</span></h2>
+                <small data-tl="modelo">Scania R450 6x2 • Ano 2023</small>
+              </div>
+              <button type="button" class="tl-mais" id="tl-mais" aria-label="Mais opções do veículo">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="12" cy="19" r="1" /></svg>
+              </button>
+            </header>
+
+            <dl class="tl-ficha">
+              <div><dt>Condutor Escalar:</dt><dd data-tl="condutor">Marcos Vinicius (Cat. E)</dd></div>
+              <div><dt>CTe Emitido:</dt><dd><a class="tl-mono tl-cte" data-tl="cte" href="#">00894012 - Série 1</a></dd></div>
+              <div><dt>Carga Transportada:</dt><dd data-tl="carga">Bobinas de Aço &amp; Inox</dd></div>
+            </dl>
+
+            <h3 class="tl-sub">Telemetria CAN em Tempo Real</h3>
+            <div class="tl-can">
+              <div class="tl-can-item">
+                <small>Velocidade Atual</small>
+                <p><strong data-tl="vel">78</strong> <span>km/h</span></p>
+                <span class="tl-medidor"><i data-tl="vel-barra" style="width: 97%"></i></span>
+                <small class="tl-can-nota">Limite da Via: <span data-tl="limite">80</span> km/h</small>
+              </div>
+              <div class="tl-can-item">
+                <small>Rotação Motor</small>
+                <p><strong data-tl="rpm">1.250</strong> <span>RPM</span></p>
+                <span class="tl-medidor tl-medidor-verde"><i data-tl="rpm-barra" style="width: 52%"></i></span>
+                <small class="tl-can-nota tl-verde" data-tl="faixa">Faixa Verde Econômica</small>
+              </div>
+              <div class="tl-can-item tl-can-linha">
+                <div>
+                  <small>Pressão de Freio</small>
+                  <p class="tl-mono"><b data-tl="freio">8.4</b> bar</p>
+                </div>
+                <svg class="tl-verde" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M8.5 12l2.5 2.5 4.5-5" /></svg>
+              </div>
+              <div class="tl-can-item tl-can-linha">
+                <div>
+                  <small>Odômetro Total</small>
+                  <p class="tl-mono"><b data-tl="odometro">142.810</b> km</p>
+                </div>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2" /><path d="M7 10v4M10.5 10v4M14 10h3v2h-3v2h3" /></svg>
+              </div>
+            </div>
+
+            <div class="tl-fadiga">
+              <div class="tl-fadiga-topo">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" /></svg>
+                <strong>Sensor de Fadiga &amp; Jornada (Lei 13.103)</strong>
+                <span class="tl-selo-verde" data-tl="fadiga-selo">Conforme</span>
+              </div>
+              <p data-tl="fadiga-texto">Tempo ininterrupto ao volante: <b>2h 15m</b>. Parada técnica mandatória programada em <b class="tl-laranja">1h 45m</b> no Posto Rede Graal Petropen.</p>
+              <span class="tl-medidor tl-medidor-verde tl-medidor-largo"><i data-tl="fadiga-barra" style="width: 56%"></i></span>
+            </div>
+            </div>
+
+            <div class="tl-veiculo-bloco">
+            <h3 class="tl-sub">Sensores de Baú &amp; Segurança Ativa</h3>
+            <ul class="tl-sensores" id="tl-sensores"></ul>
+
+            <h3 class="tl-sub">Histórico de Passagens &amp; Fiscais</h3>
+            <ul class="tl-passagens" id="tl-passagens"></ul>
+
+            <div class="tl-veiculo-botoes">
+              <button type="button" class="tl-btn tl-btn-lavanda" id="tl-ligar">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2" /></svg>
+                <span>Ligar p/ Cabine</span>
+              </button>
+              <button type="button" class="tl-btn tl-btn-escuro" id="tl-trava">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /><rect x="9" y="11" width="6" height="5" rx="1" /><path d="M10.5 11V9.5a1.5 1.5 0 0 1 3 0V11" /></svg>
+                <span>Comando Trava</span>
+              </button>
+            </div>
+            <!-- confirmação do comando remoto (sem alert/confirm do navegador) -->
+            <div class="tl-confirmar" id="tl-confirmar" hidden>
+              <p>Enviar comando de <b>travamento remoto</b> do baú para <b data-tl="placa">GHR-9102</b>?</p>
+              <div>
+                <button type="button" class="tl-btn tl-btn-claro" id="tl-trava-cancelar">Cancelar</button>
+                <button type="button" class="tl-btn tl-btn-laranja" id="tl-trava-enviar">Enviar comando</button>
+              </div>
+            </div>
+            </div>
+          </aside>
+        </div>
+
+        <!-- ===== FROTA EM MONITORAMENTO ===== -->
+        <section class="tl-frota" aria-labelledby="tl-frota-titulo">
+          <header class="tl-frota-topo">
+            <div>
+              <h2 id="tl-frota-titulo">Frota em Monitoramento Ativo na Rota B2B</h2>
+              <p>Visão tabular consolidada de velocidades, travas invioláveis e previsões de chegada da malha.</p>
+            </div>
+            <p class="tl-atualiza">Atualização automática em: <b class="tl-mono" id="tl-contagem">10s</b></p>
+          </header>
+
+          <div class="tl-tabela-cartao">
+            <div class="tl-rolagem">
+              <table class="tl-tabela">
+                <thead>
+                  <tr>
+                    <th>Placa / Veículo</th>
+                    <th>Rota Atual</th>
+                    <th>Motorista</th>
+                    <th>Vel. Média</th>
+                    <th>Trava de Baú</th>
+                    <th>Próximo Ponto / Posto</th>
+                    <th class="tl-th-acoes">Ações</th>
+                  </tr>
+                </thead>
+                <!-- linhas montadas pelo /js/telemetria.js -->
+                <tbody id="tl-linhas"></tbody>
+              </table>
+            </div>
+            <footer class="tl-tabela-pe">
+              <span><i class="tl-bola tl-bola-verde"></i> <span id="tl-exibindo">Exibindo 4 carretas de alta prioridade corporativa com CTe ativo vinculado à Indústrias Metalúrgicas ABC</span></span>
+              <span>Latência do Satélite: <b id="tl-latencia">240ms</b></span>
+              <span>Seguradora: <b>Porto Seguro Cargas B2B</b></span>
+            </footer>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="/js/whatsapp.js"></script>
+  <script src="/js/layout.js"></script>
+  <script src="/js/leaflet.js"></script>
+  <script src="/js/manifestos.js"></script>
+  <script src="/js/portal-base.js"></script>
+  <script src="/js/telemetria.js"></script>
+</body>
+
+</html>
