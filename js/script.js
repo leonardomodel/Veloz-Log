@@ -53,9 +53,11 @@
 (function () {
   // ----- configurações -----
   const EXIGIR_CODIGO = true; // false = rastrear com o campo vazio usa o código de demonstração
+  // formato dos códigos de rastreio: VLZ-{CT-e}-{UF} (ver /js/manifestos.js)
   const CODIGO_DEMO = "VLZ-849102-SP";
-  const PERCENTUAL = 75;
-  const DURACAO_BARRA = 2200; // ms que a barra leva para chegar aos 75%
+  const PERCENTUAL_DEMO = 75; // % do código de demonstração
+  let percentual = PERCENTUAL_DEMO; // % do pedido exibido no card
+  const DURACAO_BARRA = 2200; // ms que a barra leva para chegar ao percentual
   const ATRASO_BARRA = 600; // ms de espera (as informações aparecem primeiro)
   const TEMPO_BUSCA = 700; // ms do "Buscando…" antes do resultado
 
@@ -169,7 +171,7 @@
   function aplicarProgresso(valor) {
     const v = Math.round(valor);
     preenchimento.style.width = valor + "%";
-    porcentagem.textContent = v + "% do trajeto concluído";
+    porcentagem.textContent = v + "% concluído"; // curto: cabe numa linha até com 100%
     barra.setAttribute("aria-valuenow", v);
   }
 
@@ -182,14 +184,14 @@
   function iniciarBarra() {
     zerarBarra();
     if (reduzMovimento) {
-      aplicarProgresso(PERCENTUAL);
+      aplicarProgresso(percentual);
       return;
     }
     atraso = setTimeout(() => {
       const inicio = performance.now();
       const passo = (agora) => {
         const t = Math.min((agora - inicio) / DURACAO_BARRA, 1);
-        aplicarProgresso(PERCENTUAL * easeInOutCubic(t));
+        aplicarProgresso(percentual * easeInOutCubic(t));
         if (t < 1) quadro = requestAnimationFrame(passo);
       };
       quadro = requestAnimationFrame(passo);
@@ -223,6 +225,57 @@
     campo.focus();
   }
 
+  // dados do resultado: os valores do HTML são os do código de demonstração
+  const campos = {
+    status: card.querySelector("#home-status"),
+    origem: card.querySelector("#home-origem"),
+    prazo: card.querySelector("#home-prazo"),
+    destino: card.querySelector("#home-destino"),
+    local: card.querySelector("#home-local"),
+  };
+  const DEMO = Object.fromEntries(
+    Object.entries(campos).map(([k, el]) => [k, el ? el.textContent : ""]),
+  );
+  const linkDetalhes = card.querySelector("#home-detalhes");
+
+  function preencherResultado(codigo) {
+    const dados = window.VelozManifestos;
+    const m = dados && dados.buscar(codigo);
+    let valores = DEMO;
+    let exibido = codigo;
+    percentual = PERCENTUAL_DEMO;
+
+    // pedido do portal (ex.: VLZ-894012-SP): mostra os dados reais dele
+    if (m) {
+      const sit = dados.situacao(m);
+      exibido = dados.codigo(m);
+      percentual = sit.progresso;
+      valores = {
+        status: sit.tag,
+        origem: dados.origem(m).nome,
+        prazo: m.eta,
+        destino: `${m.cidade} (${m.uf})`,
+        local: m.local,
+      };
+    }
+
+    codigoExibido.textContent = exibido;
+    Object.entries(campos).forEach(([k, el]) => el && (el.textContent = valores[k]));
+
+    // telemetria longa fica numa linha com "…": o texto inteiro aparece no mouse
+    const telemetria = card.querySelector("#home-telemetria");
+    if (telemetria) telemetria.title = telemetria.textContent.trim();
+
+    // cor da etiqueta conforme a situação (verde = entregue, vermelho = ocorrência…)
+    const etiqueta = campos.status && campos.status.closest(".status");
+    if (etiqueta) {
+      if (m) etiqueta.dataset.situacao = m.status;
+      else delete etiqueta.dataset.situacao; // demonstração: em trânsito (laranja)
+    }
+    if (linkDetalhes)
+      linkDetalhes.href = `/rastreio.html?codigo=${encodeURIComponent(exibido)}`;
+  }
+
   function buscar(codigo) {
     if (buscando) return;
     buscando = true;
@@ -231,7 +284,7 @@
     rotuloBotao.textContent = "Buscando…";
 
     setTimeout(() => {
-      codigoExibido.textContent = codigo;
+      preencherResultado(codigo);
       mostrarEstado("resultado");
       botao.disabled = false;
       botao.classList.remove("carregando");

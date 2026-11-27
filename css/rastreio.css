@@ -166,6 +166,37 @@
   animation: rt-pulsar 1.6s ease-in-out infinite;
 }
 
+/* cor conforme a situação do pedido (rastreio.js marca data-situacao) */
+.rt-tag[data-situacao="entregue"] {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.rt-tag[data-situacao="entregue"] i {
+  background: #16a34a;
+  animation: none; /* entregue: o ponto para de pulsar */
+}
+
+.rt-tag[data-situacao="ocorrencia"] {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.rt-tag[data-situacao="ocorrencia"] i {
+  background: #dc2626;
+}
+
+.rt-tag[data-situacao="coleta"],
+.rt-tag[data-situacao="hub"] {
+  background: #dde7ff;
+  color: #1e3a8a;
+}
+
+.rt-tag[data-situacao="coleta"] i,
+.rt-tag[data-situacao="hub"] i {
+  background: #2563eb;
+}
+
 .rt-tag-segura {
   background: #ccffcc;
   color: #008000;
@@ -366,6 +397,81 @@
   padding: 0;
 }
 
+/* ---------- Histórico longo: "carrossel" vertical (rastreio.js) ----------
+   mostra 4 movimentações e meia; o resto aparece rolando dentro do card */
+.rt-linha-tempo.rt-rolavel {
+  --rt-fade-cima: 0px;
+  --rt-fade-baixo: 0px;
+  position: relative; /* referência para medir a altura de cada item (rastreio.js) */
+  max-height: 540px; /* reserva: o JS ajusta para 4 itens e meio */
+  padding-right: 8px;
+  overflow-y: auto;
+  overscroll-behavior: contain; /* rolar a lista não "puxa" a página */
+  scrollbar-width: thin;
+  scrollbar-color: #f3b38c transparent;
+  /* esmaece em cima/embaixo quando há mais itens naquela direção */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 var(--rt-fade-cima),
+    #000 calc(100% - var(--rt-fade-baixo)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 var(--rt-fade-cima),
+    #000 calc(100% - var(--rt-fade-baixo)),
+    transparent 100%
+  );
+}
+
+.rt-linha-tempo.rt-rolavel.tem-acima {
+  --rt-fade-cima: 36px;
+}
+
+.rt-linha-tempo.rt-rolavel.tem-abaixo {
+  --rt-fade-baixo: 48px;
+}
+
+.rt-linha-tempo.rt-rolavel:focus-visible {
+  outline: 3px solid rgba(255, 107, 26, 0.35);
+  outline-offset: 4px;
+  border-radius: var(--rt-raio-p);
+}
+
+.rt-linha-tempo.rt-rolavel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.rt-linha-tempo.rt-rolavel::-webkit-scrollbar-thumb {
+  border-radius: 99px;
+  background: #f3b38c;
+}
+
+.rt-linha-tempo.rt-rolavel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* os itens depois do 4º entram juntos, logo após os primeiros */
+.rt-linha-tempo.rt-rolavel .rt-evento:nth-child(n + 5) {
+  animation-delay: 0.7s;
+}
+
+/* ocorrência que já passou: alerta discreto no ícone e na hora */
+.rt-evento-alerta .rt-evento-icone {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.rt-evento-alerta .rt-evento-texto h3 {
+  color: #b91c1c;
+}
+
+.rt-evento-alerta .rt-evento-status {
+  color: #b91c1c;
+}
+
 .rt-evento {
   position: relative;
   display: grid;
@@ -467,6 +573,44 @@
 
 .rt-evento-atual .rt-evento-status {
   color: var(--rt-laranja-escuro);
+}
+
+/* ---------- Ocorrência (doca fechada, destinatário ausente…) ----------
+   etapa atual e evento atual em vermelho, com ícone de alerta no lugar do número */
+.rt-etapa-icone svg,
+.rt-evento-icone svg {
+  display: block; /* sem o espaço de linha de texto embaixo: centra de verdade */
+  width: 14px;
+  height: 14px;
+  margin-top: -1px; /* compensa o "peso" visual da base do triângulo */
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.rt-etapa.rt-ocorrencia {
+  color: #b91c1c;
+}
+
+.rt-etapa.rt-ocorrencia .rt-etapa-icone {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.rt-evento-ocorrencia {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.rt-evento-ocorrencia .rt-evento-icone {
+  background: #dc2626;
+}
+
+.rt-evento-ocorrencia .rt-evento-local,
+.rt-evento-ocorrencia .rt-evento-status {
+  color: #b91c1c;
 }
 
 .rt-historico-nota {

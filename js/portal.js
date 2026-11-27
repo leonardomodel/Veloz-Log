@@ -2,7 +2,7 @@
    Dados de DEMONSTRAÇÃO (ainda não há API): manifestos, indicadores e avisos.
    • Tabela "Monitoramento em Tempo Real": busca por CT-e, NF-e ou cidade + paginação
    • Botão de sincronizar (SEFAZ & Siga-Route) e "Há X min" atualizando sozinho
-   • Menu da conta (Sair) · contadores dos indicadores · aviso nos módulos em implantação */
+   • Contadores dos indicadores. Menu da conta, avisos e "em breve": /js/portal-base.js */
 (() => {
   "use strict";
 
@@ -39,10 +39,12 @@
   let pagina = 1;
   let lista = MANIFESTOS;
 
+  const codigoDe = (m) => window.VelozManifestos.codigo(m); // VLZ-{CT-e}-{UF}
+
   function linha(m) {
-    const codigo = `CTE-${m.cte}`;
+    const codigo = codigoDe(m);
     return `<tr class="pt-entrando">
-      <td class="pt-cte"><strong>${codigo}</strong><small>NF ${esc(m.nf)}</small></td>
+      <td class="pt-cte"><strong>${codigo}</strong><small>CT-e ${esc(m.cte)} • NF ${esc(m.nf)}</small></td>
       <td class="pt-destino"><strong>${esc(m.cidade)} / ${esc(m.uf)}</strong><small>De: Ind. ABC (Campinas SP)</small></td>
       <td><span class="pt-modalidade">${esc(m.mod)}</span></td>
       <td><span class="pt-status pt-status-${m.status}">${ICONE_STATUS[m.status]}${esc(m.rotulo)}</span></td>
@@ -80,7 +82,7 @@
     lista = !termo
       ? MANIFESTOS
       : MANIFESTOS.filter((m) =>
-          norm(`cte-${m.cte} ${m.cte} ${m.nf} ${m.nf.replace(".", "")} ${m.cidade} ${m.uf}`).includes(termo),
+          norm(`${codigoDe(m)} cte-${m.cte} ${m.cte} ${m.nf} ${m.nf.replace(".", "")} ${m.cidade} ${m.uf}`).includes(termo),
         );
     pagina = 1;
     render();
@@ -130,7 +132,7 @@
       horaSync.textContent = relogio(new Date(ultimaSync));
       atualizarHa();
       botaoSync.classList.remove("girando");
-      avisar("Sincronização concluída", "SEFAZ e Siga-Route atualizados com sucesso.");
+      window.VelozPortal.avisar("Sincronização concluída", "SEFAZ e Siga-Route atualizados com sucesso.");
     }, 1400);
   });
 
@@ -155,55 +157,4 @@
     });
   }
 
-  /* ---------- menu da conta (Sair) ---------- */
-  const botaoConta = $("#pt-conta-botao");
-  const menuConta = $("#pt-conta-menu");
-
-  function abrirMenu(abrir) {
-    menuConta.hidden = !abrir;
-    botaoConta.setAttribute("aria-expanded", String(abrir));
-  }
-  botaoConta.addEventListener("click", (e) => {
-    e.stopPropagation();
-    abrirMenu(menuConta.hidden);
-  });
-  document.addEventListener("click", (e) => {
-    if (!menuConta.hidden && !menuConta.contains(e.target)) abrirMenu(false);
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") abrirMenu(false);
-  });
-
-  $("#pt-sair").addEventListener("click", () => {
-    try {
-      sessionStorage.removeItem("velozlog:sessao");
-    } catch {
-      /* ignora */
-    }
-    location.href = "/login.html";
-  });
-
-  /* ---------- aviso rápido (módulos em implantação) ---------- */
-  const toast = $("#pt-toast");
-  let timerToast = null;
-
-  function avisar(titulo, texto) {
-    toast.innerHTML = `<strong>${esc(titulo)}</strong>${esc(texto)}`;
-    toast.hidden = false;
-    toast.style.animation = "none";
-    void toast.offsetWidth; // reinicia a animação de entrada
-    toast.style.animation = "";
-    clearTimeout(timerToast);
-    timerToast = setTimeout(() => (toast.hidden = true), 3800);
-  }
-
-  document.addEventListener("click", (e) => {
-    const alvo = e.target.closest("[data-em-breve]");
-    if (!alvo) return;
-    e.preventDefault();
-    avisar(
-      alvo.dataset.emBreve,
-      "Módulo em implantação. Por enquanto, fale com a Torre Dedicada ABC pelo WhatsApp ou Ramal 9099.",
-    );
-  });
 })();

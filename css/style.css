@@ -807,6 +807,33 @@ main > .hero {
   stroke-linejoin: round;
 }
 
+/* cor da etiqueta conforme a situação do pedido (script.js marca data-situacao);
+   em trânsito / saiu para entrega continuam laranja (padrão acima) */
+.status[data-situacao="entregue"] {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.status[data-situacao="ocorrencia"] {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.status[data-situacao="coleta"],
+.status[data-situacao="hub"] {
+  background: #dde7ff;
+  color: #1e3a8a;
+}
+
+.status[data-situacao] svg {
+  stroke: currentColor;
+}
+
+.status[data-situacao="transito"] svg,
+.status[data-situacao="entrega"] svg {
+  stroke: var(--laranja);
+}
+
 .segurada {
   margin-left: auto;
   font-size: 14px;
@@ -846,6 +873,8 @@ main > .hero {
 .trajeto > div #porcentagem {
   font-weight: 700;
   color: var(--cor-texto);
+  white-space: nowrap; /* "100% concluído" sempre numa linha */
+  font-variant-numeric: tabular-nums; /* números com a mesma largura: não "pula" contando */
 }
 
 .trajeto > p:last-child {
@@ -883,7 +912,22 @@ main > .hero {
 .estado-resultado > footer p {
   display: flex;
   align-items: center;
+  flex: 1 1 auto;
   gap: 8px;
+  min-width: 0; /* deixa o texto encolher em vez de empurrar o link */
+}
+
+/* telemetria sempre numa linha: se não couber, termina em "…"
+   (o texto completo aparece ao passar o mouse — title definido no script.js) */
+.estado-resultado > footer .telemetria-texto {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.estado-resultado > footer a {
+  flex: none; /* "Ver Ocorrências" sempre inteiro */
 }
 
 .estado-resultado > footer p svg {

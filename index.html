@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="icon" href="/img/icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/manifestos.js" defer></script>
   <script src="/js/script.js" defer></script>
   <script src="/js/cotacao-form.js"></script>
   <script src="/js/precos.js" defer></script>
@@ -19,7 +20,7 @@
 </head>
 
 <body>
-  <!-- NAV (partials/nav.html) -->
+  <!-- NAV (partials/nav.tpl) -->
   <div class="primeira-tela">
     <div data-include="nav"></div>
     <!--COMEÇO DA HERO-->
@@ -104,20 +105,20 @@
                         <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"></path>
                         <circle cx="17" cy="18" r="2"></circle>
                         <circle cx="7" cy="18" r="2"></circle>
-                      </svg>Em Trânsito</span>
+                      </svg><span id="home-status">Em Trânsito</span></span>
                     <span class="segurada">Carga Segurada</span>
                   </header>
 
                   <div class="trajeto surge" style="--i:1">
-                    <p><small>Origem</small>São Paulo (HUB-01)</p>
+                    <p><small>Origem</small><span id="home-origem">São Paulo (HUB-01)</span></p>
                     <div>
-                      <p>Prazo: Hoje até 18:30</p>
+                      <p>Prazo: <span id="home-prazo">Hoje até 18:30</span></p>
                       <div class="barra" role="progressbar" aria-label="Progresso do trajeto" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
                         <span class="barra-preenchimento"></span>
                       </div>
-                      <p id="porcentagem">0% do trajeto concluído</p>
+                      <p id="porcentagem">0% concluído</p>
                     </div>
-                    <p><small>Destino</small>Curitiba (PR)</p>
+                    <p><small>Destino</small><span id="home-destino">Curitiba (PR)</span></p>
                   </div>
 
                   <footer class="surge" style="--i:2">
@@ -127,8 +128,8 @@
                         <path d="M19.1 4.9a10 10 0 0 1 0 14.2"></path>
                         <path d="M7.8 16.2a6 6 0 0 1 0-8.4"></path>
                         <path d="M4.9 19.1a10 10 0 0 1 0-14.2"></path>
-                      </svg>Telemetria em tempo real • BR-116 KM 84</p>
-                    <a href="/rastreio.html">Ver Ocorrências<svg viewBox="0 0 24 24" aria-hidden="true">
+                      </svg><span class="telemetria-texto" id="home-telemetria" title="Telemetria em tempo real • BR-116 KM 84">Telemetria em tempo real • <span id="home-local">BR-116 KM 84</span></span></p>
+                    <a href="/rastreio.html?codigo=VLZ-849102-SP" id="home-detalhes">Ver Ocorrências<svg viewBox="0 0 24 24" aria-hidden="true">
                         <path d="m9 6 6 6-6 6"></path>
                       </svg></a>
                   </footer>
@@ -622,7 +623,7 @@
       </div>
     </section>
   </div>
-  <!-- RODAPÉ (partials/footer.html) -->
+  <!-- RODAPÉ (partials/footer.tpl) -->
   <div data-include="footer"></div>
 
   <script src="/js/layout.js"></script>

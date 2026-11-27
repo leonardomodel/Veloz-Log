@@ -1,5 +1,8 @@
 /* VelozLog — script comum a TODAS as páginas. Carregue no fim do <body>.
    1. Carrega nav e footer de /partials:  <div data-include="nav"></div>  e  <div data-include="footer"></div>
+      Os partials usam a extensão .tpl (e não .html) de propósito: servidores de teste
+      como o Live Server injetam um script nos .html e cortam o fim do arquivo —
+      era isso que fazia sumir itens do menu do portal.
    2. Rolagem suave para âncoras da própria página (#servicos, #cotacao…)
    3. Transição suave entre páginas (a nova surge por cima da antiga — CSS)
    4. Link para âncora de OUTRA página (ex.: /index.html#servicos vindo do Sobre):
@@ -22,28 +25,57 @@
      Na 1ª página da visita, busca os arquivos. Depois, guarda o HTML na
      sessão e insere NA HORA (antes da página ser desenhada): assim a nova
      página já surge com menu e rodapé, sem "pular" na transição.
-     A cada página o cache é atualizado em segundo plano.
+     A cada página o arquivo é conferido em segundo plano: se mudou, a página
+     já troca para a versão nova (sem precisar abrir outra aba).
      ========================================================= */
   const chavePartial = (nome) => `velozlog:partial:${nome}`;
 
+  // Proteção extra: partials não têm scripts. Se algum servidor de teste
+  // injetar um <script> de recarregamento, ele é removido antes de usar.
+  const limpar = (texto) =>
+    String(texto)
+      .replace(/<!--\s*Code injected by[\s\S]*?-->/gi, "")
+      .replace(/<script\b[\s\S]*?<\/script>/gi, "");
+
   function lerCache(nome) {
     try {
-      return sessionStorage.getItem(chavePartial(nome));
+      const texto = sessionStorage.getItem(chavePartial(nome));
+      return texto === null ? null : limpar(texto);
     } catch {
       return null;
     }
   }
 
+  // o partial está inteiro? (termina fechando a mesma tag com que começa,
+  // ex.: <aside …> … </aside>). Evita guardar um arquivo lido pela metade —
+  // acontece quando o servidor de testes recarrega no meio de uma gravação.
+  function completo(texto) {
+    const abre = /^\s*(?:<!--[\s\S]*?-->\s*)*<([a-z][a-z0-9-]*)/i.exec(texto);
+    return !!abre && new RegExp(`</${abre[1]}>\\s*$`, "i").test(texto);
+  }
+
   async function buscarPartial(nome) {
-    const resposta = await fetch(`/partials/${nome}.html`);
+    const resposta = await fetch(`/partials/${nome}.tpl`, { cache: "no-cache" });
     if (!resposta.ok) throw new Error("HTTP " + resposta.status);
-    const texto = await resposta.text();
-    try {
-      sessionStorage.setItem(chavePartial(nome), texto);
-    } catch {
-      /* sem sessionStorage: só não guarda */
+    const texto = limpar(await resposta.text());
+    if (completo(texto)) {
+      try {
+        sessionStorage.setItem(chavePartial(nome), texto);
+      } catch {
+        /* sem sessionStorage: só não guarda */
+      }
     }
     return texto;
+  }
+
+  // troca um elemento (o espaço reservado ou um partial antigo) pelo HTML do partial
+  // e devolve o novo elemento, para poder trocá-lo de novo depois
+  function colocar(alvo, texto) {
+    const molde = document.createElement("template");
+    molde.innerHTML = texto.trim();
+    const novo = molde.content.firstElementChild;
+    alvo.replaceWith(molde.content);
+    return novo;
   }
 
   function inserirPartials() {
@@ -51,33 +83,49 @@
     document.querySelectorAll("[data-include]").forEach((espaco) => {
       const nome = espaco.dataset.include;
       const cache = lerCache(nome);
-      if (cache) {
-        espaco.outerHTML = cache; // na hora, sem esperar a rede
-        buscarPartial(nome).catch(() => {}); // atualiza para a próxima página
+
+      if (cache && completo(cache)) {
+        const inserido = colocar(espaco, cache); // na hora, sem esperar a rede
+        // confere com o servidor: se o arquivo mudou, troca já nesta página
+        buscarPartial(nome)
+          .then((texto) => {
+            if (texto !== cache && completo(texto) && inserido && inserido.isConnected) {
+              colocar(inserido, texto);
+              marcarAtivos();
+            }
+          })
+          .catch(() => {});
         return;
       }
+
       pendentes.push(
         buscarPartial(nome)
-          .then((texto) => (espaco.outerHTML = texto))
+          .then((texto) => colocar(espaco, texto))
           .catch((erro) =>
-            console.error(`Não carregou /partials/${nome}.html`, erro),
+            console.error(`Não carregou /partials/${nome}.tpl`, erro),
           ),
       );
     });
     return Promise.all(pendentes);
   }
 
-  async function carregarPartials() {
-    await inserirPartials();
-
-    // marca como ativo o link da página atual (só links sem #)
-    document.querySelectorAll(".menu a, .acoes .btn-area").forEach((link) => {
+  // marca como ativo o link da página atual (só links sem #)
+  function marcarAtivos() {
+    document.querySelectorAll(".menu a, .acoes .btn-area, .pt-menu a").forEach((link) => {
+      // "#" (itens "em breve") aponta para a própria página: não conta como ativo
+      const href = link.getAttribute("href") || "";
+      if (href === "" || href.startsWith("#")) return;
       const url = new URL(link.href, location.origin);
       if (mesmaPagina(url) && !url.hash) {
         link.classList.add("ativo");
         link.setAttribute("aria-current", "page");
       }
     });
+  }
+
+  async function carregarPartials() {
+    await inserirPartials();
+    marcarAtivos();
 
     // F5 com #rastreamento/#inicio na URL: o navegador pula direto para o card e
     // esconde o menu — corrige para o mesmo ponto do clique na nav (topo)

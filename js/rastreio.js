@@ -1,7 +1,7 @@
 // =========================================================
 // RASTREIO (rastreio.html)
 // A barra e o histórico já animam só com CSS. Aqui:
-//  • código vindo da URL: rastreio.html?codigo=CTE-894012
+//  • código vindo da URL: rastreio.html?codigo=VLZ-894012-SP (aceita também CTE-894012)
 //  • se o código é de um manifesto do Portal B2B (/js/manifestos.js), a página
 //    inteira mostra os dados DESSE pedido: destino, status, previsão, etapas,
 //    histórico e informações do transporte
@@ -20,15 +20,19 @@
     SC: "Santa Catarina", SP: "São Paulo", SE: "Sergipe", TO: "Tocantins",
   };
 
-  // origem dos manifestos do portal: planta do cliente + hub de Campinas
-  const ORIGEM = { nome: "Campinas (HUB SP-01)", sub: "Ind. ABC • Campinas • SP" };
+  // origem do pedido (hub de saída) — vem do /js/manifestos.js
+  let ORIGEM = null;
 
-  // por status: etiqueta, % do trajeto e etapa atual (0 coleta · 1 hub · 2 trânsito · 3 entregue)
-  const POR_STATUS = {
-    coleta: { tag: "Aguardando Coleta", progresso: 8, etapa: 0 },
-    hub: { tag: "No Centro de Distribuição", progresso: 38, etapa: 1 },
-    transito: { tag: "Em Trânsito", progresso: 65, etapa: 2 },
-    entrega: { tag: "Saiu para Entrega", progresso: 90, etapa: 2 },
+  // histórico: mostra até esta quantidade de movimentações; acima disso vira um
+  // "carrossel" vertical (altura limitada + rolagem suave). Fica aqui no topo porque
+  // é usado já no preenchimento da página (declarado depois dava erro e travava tudo).
+  const LIMITE_SEM_ROLAGEM = 4;
+
+
+  // de onde o cliente veio (botão "voltar" e trilha do topo)
+  const VOLTAR = {
+    portal: { trilha: "Monitoramento", url: "/portal.html", texto: "Voltar ao monitoramento" },
+    gestao: { trilha: "Manifestos & CTEs", url: "/portal-manifestos.html", texto: "Voltar à gestão de cargas" },
   };
 
   const $ = (s) => document.querySelector(s);
@@ -40,7 +44,7 @@
 
   const params = new URLSearchParams(location.search);
   const codigo = (params.get("codigo") || "").trim().toUpperCase();
-  const doPortal = params.get("de") === "portal";
+  const veioDe = VOLTAR[params.get("de")] || null;
   const manifesto =
     codigo && window.VelozManifestos ? window.VelozManifestos.buscar(codigo) : null;
 
@@ -55,33 +59,37 @@
     });
   });
 
-  // 1) código na página
-  if (codigo) definir("codigo", manifesto ? `CTE-${manifesto.cte}` : codigo);
+  // 1) código na página — sempre no formato de rastreio VLZ-{CT-e}-{UF}
+  if (codigo)
+    definir("codigo", manifesto ? window.VelozManifestos.codigo(manifesto) : codigo);
 
-  // 2) vindo do portal: trilha e "voltar" apontam para o portal
-  if (doPortal) {
+  // 2) vindo do portal (monitoramento ou gestão): trilha e "voltar" apontam para lá
+  if (veioDe) {
     const t1 = $('[data-rt="trilha-1"]');
     const t2 = $('[data-rt="trilha-2"]');
     t1.textContent = "Portal B2B";
     t1.href = "/portal.html";
-    t2.textContent = "Monitoramento";
-    t2.href = "/portal.html";
-    $('[data-rt="voltar"]').href = "/portal.html";
-    definir("voltar-texto", "Voltar ao monitoramento");
+    t2.textContent = veioDe.trilha;
+    t2.href = veioDe.url;
+    $('[data-rt="voltar"]').href = veioDe.url;
+    definir("voltar-texto", veioDe.texto);
   }
 
   // 3) dados do manifesto
   if (manifesto) preencher(manifesto);
 
   function preencher(m) {
-    const info = POR_STATUS[m.status] || POR_STATUS.transito;
+    const info = window.VelozManifestos.situacao(m); // etiqueta, % e etapa
     const destino = `${m.cidade} (${m.uf})`;
     const entregaHoje = m.status === "entrega";
+    ORIGEM = window.VelozManifestos.origem(m);
 
-    document.title = `CTE-${m.cte} — ${destino} | VelozLog`;
+    document.title = `${window.VelozManifestos.codigo(m)} — ${destino} | VelozLog`;
 
     // etiqueta de status
-    $('[data-rt="status"]').innerHTML = `<i></i> ${esc(info.tag)}`;
+    const etiqueta = $('[data-rt="status"]');
+    etiqueta.innerHTML = `<i></i> ${esc(info.tag)}`;
+    etiqueta.dataset.situacao = m.status; // cor: verde entregue, vermelho ocorrência… (rastreio.css)
 
     // rota e previsão
     definir("origem", ORIGEM.nome);
@@ -97,41 +105,70 @@
     barra.dataset.progresso = info.progresso;
     barra.style.width = info.progresso + "%";
 
-    // etapas
+    // etapas — a etapa atual acompanha a etiqueta do topo; as já passadas ganham ✓
+    const ocorrencia = m.status === "ocorrencia";
+    // triângulo desenhado centralizado (do 2,5 ao 20,5 na altura) para assentar no meio do círculo
+    const ALERTA =
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.6 3.6a1.6 1.6 0 0 1 2.8 0l8 14.2a1.6 1.6 0 0 1-1.4 2.4H4a1.6 1.6 0 0 1-1.4-2.4z" /><path d="M12 9v4.4M12 16.6h0" /></svg>';
     const nomesEtapas = [
       m.status === "coleta" ? "Aguardando coleta" : "Coleta realizada",
       "No centro de distribuição",
-      entregaHoje ? "Saiu para entrega" : "Em trânsito",
+      ocorrencia ? "Ocorrência na entrega" : entregaHoje ? "Saiu para entrega" : "Em trânsito",
       "Entregue",
     ];
+    // ícone da etapa: ✓ passada · alerta na ocorrência · número nas demais
+    const iconeEtapa = (i) =>
+      i < info.etapa ? "✓" : i === info.etapa && ocorrencia ? ALERTA : String(i + 1).padStart(2, "0");
+
     $('[data-rt="etapas"]').innerHTML = nomesEtapas
       .map((nome, i) => {
-        const classe = i < info.etapa ? " rt-feita" : i === info.etapa ? " rt-atual" : "";
-        const icone = i < info.etapa ? "✓" : String(i + 1).padStart(2, "0");
-        return `<li class="rt-etapa${classe}"><span class="rt-etapa-icone">${icone}</span> ${esc(nome)}</li>`;
+        let classe = i < info.etapa ? " rt-feita" : i === info.etapa ? " rt-atual" : "";
+        if (i === info.etapa && ocorrencia) classe += " rt-ocorrencia";
+        return `<li class="rt-etapa${classe}"><span class="rt-etapa-icone">${iconeEtapa(i)}</span> ${esc(nome)}</li>`;
       })
       .join("");
 
-    // histórico (mais recentes primeiro)
-    $('[data-rt="historico"]').innerHTML = historico(m, destino)
-      .map(
-        (ev, i) => `
-        <li class="rt-evento${i === 0 ? " rt-evento-atual" : ""}">
-          <span class="rt-evento-icone">${i === 0 ? String(info.etapa + 1).padStart(2, "0") : "✓"}</span>
+    // histórico (mais recentes primeiro) — o evento atual usa o mesmo ícone da etapa atual;
+    // ocorrências anteriores (tipo "ocorrencia") ganham o ícone de alerta
+    const eventos = historico(m, destino);
+    const listaHistorico = $('[data-rt="historico"]');
+    listaHistorico.innerHTML = eventos
+      .map((ev, i) => {
+        const atual = i === 0;
+        const alertaAntigo = !atual && ev.tipo === "ocorrencia";
+        const classes = [
+          "rt-evento",
+          atual && "rt-evento-atual",
+          atual && ocorrencia && "rt-evento-ocorrencia",
+          alertaAntigo && "rt-evento-alerta",
+        ]
+          .filter(Boolean)
+          .join(" ");
+        const icone = atual && info.etapa < 4 ? iconeEtapa(info.etapa) : alertaAntigo ? ALERTA : "✓";
+        const status = atual ? (info.etapa === 4 ? "Finalizado" : "Agora") : ev.quando || "Concluído";
+        return `
+        <li class="${classes}">
+          <span class="rt-evento-icone">${icone}</span>
           <div class="rt-evento-texto">
             <h3>${esc(ev.titulo)}</h3>
             <span class="rt-evento-local">${esc(ev.local)}</span>
             <p>${esc(ev.texto)}</p>
           </div>
-          <span class="rt-evento-status">${i === 0 ? "Agora" : "Concluído"}</span>
-        </li>`,
-      )
+          <span class="rt-evento-status">${esc(status)}</span>
+        </li>`;
+      })
       .join("");
+
+    // muitas movimentações: a lista vira um "carrossel" vertical com rolagem suave
+    const selo = $(".rt-historico-topo .rt-selo-cinza");
+    if (selo) selo.textContent = `Mais recentes primeiro • ${eventos.length}`;
+    if (eventos.length > LIMITE_SEM_ROLAGEM) ativarRolagem(listaHistorico);
 
     // informações do transporte
     $('[data-rt="info"]').innerHTML = [
       ["Modal", "Rodoviário"],
       ["Modalidade", m.mod],
+      ["CT-e", `CTE-${m.cte}`],
       ["Nota fiscal", `NF ${m.nf}`],
       ["Origem", ORIGEM.nome],
       ["Destino", destino],
@@ -141,7 +178,80 @@
       .join("");
   }
 
+  /* ---------- histórico longo: rolagem suave dentro do card ----------
+     A roda do mouse move a lista com desaceleração (em vez dos "saltos" padrão).
+     Nas pontas da lista a rolagem volta para a página normalmente. */
+
+  function ativarRolagem(lista) {
+    lista.classList.add("rt-rolavel");
+    lista.tabIndex = 0; // teclado (setas / Page Down) também rola
+    lista.setAttribute("aria-label", "Histórico de movimentações (role para ver todas)");
+
+    // altura = as primeiras LIMITE movimentações + metade da seguinte
+    // (o item "cortado" mostra que há mais para rolar)
+    const limitarAltura = () => {
+      const corte = lista.children[LIMITE_SEM_ROLAGEM];
+      if (!corte) return;
+      lista.style.maxHeight = `${Math.round(corte.offsetTop + corte.offsetHeight * 0.5)}px`;
+    };
+    limitarAltura();
+    let timerAltura = null;
+    window.addEventListener("resize", () => {
+      clearTimeout(timerAltura);
+      timerAltura = setTimeout(limitarAltura, 150);
+    });
+
+    // esmaecimento em cima/embaixo só quando há mais itens naquela direção
+    const sombras = () => {
+      const max = lista.scrollHeight - lista.clientHeight;
+      lista.classList.toggle("tem-acima", lista.scrollTop > 4);
+      lista.classList.toggle("tem-abaixo", lista.scrollTop < max - 4);
+    };
+    lista.addEventListener("scroll", sombras, { passive: true });
+    sombras();
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let alvo = lista.scrollTop;
+    let quadro = null;
+
+    const passo = () => {
+      const falta = alvo - lista.scrollTop;
+      if (Math.abs(falta) < 0.5) {
+        lista.scrollTop = alvo;
+        quadro = null;
+        return;
+      }
+      lista.scrollTop += falta * 0.16; // desacelera até parar
+      quadro = requestAnimationFrame(passo);
+    };
+
+    lista.addEventListener(
+      "wheel",
+      (e) => {
+        if (e.ctrlKey) return; // zoom do navegador
+        const max = lista.scrollHeight - lista.clientHeight;
+        const unidade = e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? lista.clientHeight : 1;
+        const base = quadro ? alvo : lista.scrollTop;
+        const novo = Math.max(0, Math.min(max, base + e.deltaY * unidade));
+        if (novo === base) return; // já está na ponta: deixa a página rolar
+        e.preventDefault();
+        alvo = novo;
+        if (!quadro) quadro = requestAnimationFrame(passo);
+      },
+      { passive: false },
+    );
+
+    // arrastou a barra ou usou o teclado: o próximo giro da roda parte daí
+    lista.addEventListener("scroll", () => {
+      if (!quadro) alvo = lista.scrollTop;
+    }, { passive: true });
+  }
+
   function historico(m, destino) {
+    // pedido com histórico próprio (ex.: VLZ-0089377-SP): usa como está
+    if (Array.isArray(m.eventos) && m.eventos.length) return m.eventos;
+
     const coleta = {
       titulo: "Coleta realizada",
       local: ORIGEM.sub,
@@ -158,7 +268,39 @@
       texto: `Carga liberada para transferência rodoviária (${m.mod}).`,
     };
 
+    const chegadaBase = {
+      titulo: "Chegada à base de destino",
+      local: destino,
+      texto: "Carga conferida e roteirizada para a entrega final.",
+    };
+
     switch (m.status) {
+      case "entregue":
+        return [
+          {
+            titulo: "Entrega realizada",
+            local: m.pod ? m.pod.local : `${m.local} (${m.uf})`,
+            texto: m.pod
+              ? `Recebido por ${m.pod.recebedor} em ${m.pod.carimbo}. Comprovante digital (POD) autenticado.`
+              : "Entrega confirmada pelo destinatário.",
+          },
+          chegadaBase,
+          saidaHub,
+          noHub,
+          coleta,
+        ];
+      case "ocorrencia":
+        return [
+          {
+            titulo: `Ocorrência: ${m.rotulo}`,
+            local: `${m.local} (${m.uf})`,
+            texto: `${m.obs}. ${m.prev} — ${m.prevNota.toLowerCase()}.`,
+          },
+          chegadaBase,
+          saidaHub,
+          noHub,
+          coleta,
+        ];
       case "coleta":
         return [
           {
@@ -189,11 +331,7 @@
             local: `${m.local} (${m.uf})`,
             texto: `${m.obs}. Previsão: ${m.eta.toLowerCase()}.`,
           },
-          {
-            titulo: "Chegada à base de destino",
-            local: destino,
-            texto: "Carga conferida e roteirizada para a entrega final.",
-          },
+          chegadaBase,
           saidaHub,
           noHub,
           coleta,

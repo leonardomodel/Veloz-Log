@@ -16,6 +16,8 @@
 
   <div class="acoes">
     <a class="btn-area" href="/login.html">Área do Cliente</a>
+    <!-- abre a home já na aba "Simular Frete" do card (ver layout.js e script.js) -->
+    <a class="btn-cotacao" href="/index.html#painel-simular">Cotação Rápida</a>
     <a class="avatar" href="/login.html" aria-label="Área do Cliente">
       <span class="icone-mask" style="--icone: url('/img/user.svg')"></span>
     </a>

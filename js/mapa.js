@@ -46,7 +46,6 @@
   let ultimoPar = null; // última origem/destino pedida
   let mapaOsm = null;
   let camadasOsm = [];
-  let carregandoLeaflet = null;
 
   const ll = (p) => ({
     lat: typeof p.lat === "function" ? p.lat() : p.lat,
@@ -420,29 +419,12 @@
     carregarCondicoes(caminho, pedido);
   }
 
-  /* ---------- OpenStreetMap (Leaflet), sem chave ---------- */
-  const LEAFLET_CSS = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
-  const LEAFLET_JS = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
-
+  /* ---------- OpenStreetMap (Leaflet), sem chave ----------
+     O carregamento fica em /js/leaflet.js (o mesmo da Gestão de Cargas) */
   function carregarLeaflet() {
-    if (window.L && window.L.map) return Promise.resolve();
-    if (!carregandoLeaflet) {
-      carregandoLeaflet = new Promise((ok, erro) => {
-        const css = document.createElement("link");
-        css.rel = "stylesheet";
-        css.href = LEAFLET_CSS;
-        document.head.appendChild(css);
-        const js = document.createElement("script");
-        js.src = LEAFLET_JS;
-        js.onload = ok;
-        js.onerror = () => {
-          carregandoLeaflet = null;
-          erro(new Error("não foi possível carregar o Leaflet"));
-        };
-        document.head.appendChild(js);
-      });
-    }
-    return carregandoLeaflet;
+    if (!window.VelozLeaflet)
+      return Promise.reject(new Error("carregue /js/leaflet.js antes do mapa.js"));
+    return window.VelozLeaflet.carregar();
   }
 
   const cacheCoord = new Map();

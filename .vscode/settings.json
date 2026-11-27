@@ -1,0 +1,6 @@
+{
+  // os partials (/partials/*.tpl) são HTML: mesmas cores e formatação do HTML
+  "files.associations": {
+    "*.tpl": "html"
+  }
+}
