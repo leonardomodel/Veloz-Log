@@ -47,7 +47,7 @@
 .rt-breadcrumb a {
   color: #a73a00;
   text-decoration: none;
-  transition: color 0.2s;
+  transition: color var(--transicao);
 }
 
 .rt-breadcrumb a:hover {
@@ -92,8 +92,8 @@
   text-decoration: none;
   white-space: nowrap;
   transition:
-    border-color 0.2s,
-    color 0.2s;
+    border-color var(--transicao),
+    color var(--transicao);
 }
 
 .rt-btn-voltar:hover {
@@ -571,8 +571,8 @@
   text-align: center;
   text-decoration: none;
   transition:
-    filter 0.2s,
-    transform 0.2s;
+    filter var(--transicao),
+    transform var(--transicao);
 }
 
 .rt-suporte-btn:hover {
@@ -624,7 +624,7 @@
 .rt-rodape-links a {
   color: var(--rt-texto-suave);
   text-decoration: none;
-  transition: color 0.2s;
+  transition: color var(--transicao);
 }
 
 .rt-rodape-links a:hover {

@@ -47,10 +47,10 @@ body {
   white-space: nowrap;
   cursor: pointer;
   transition:
-    background 0.2s,
-    color 0.2s,
-    border-color 0.2s,
-    transform 0.15s;
+    background var(--transicao),
+    color var(--transicao),
+    border-color var(--transicao),
+    transform var(--transicao);
 }
 .fr-btn:active {
   transform: translateY(1px);
@@ -140,8 +140,8 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition:
-    border-color 0.2s,
-    color 0.2s;
+    border-color var(--transicao),
+    color var(--transicao);
 }
 .fr-link:hover {
   border-color: var(--fr-laranja);
@@ -344,9 +344,9 @@ body {
   border-radius: var(--fr-raio);
   box-shadow: var(--fr-sombra);
   transition:
-    border-color 0.2s,
-    box-shadow 0.2s,
-    background 0.2s;
+    border-color var(--transicao),
+    box-shadow var(--transicao),
+    background var(--transicao);
 }
 .fr-modal:hover .fr-modal-corpo {
   border-color: #f6b48c;
@@ -683,6 +683,51 @@ body {
   grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
+
+/* parcelamento no cartão (aparece só com "Cartão" marcado) */
+.fr-parcelas {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid var(--fr-laranja-borda, #fcd9c2);
+  border-radius: 10px;
+  background: var(--fr-laranja-claro);
+  animation: fr-parcelas-surge 0.3s ease both;
+}
+.fr-parcelas-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.fr-parcelas-topo label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--fr-azul);
+}
+.fr-parcelas-selo {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #dcfce7;
+  font-size: 11px;
+  font-weight: 700;
+  color: #15803d;
+}
+.fr-parcelas select {
+  font-weight: 600;
+}
+.fr-parcelas-total {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--fr-cinza-texto);
+}
+@keyframes fr-parcelas-surge {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
 .fr-pag span {
   display: flex;
   align-items: center;
@@ -696,9 +741,9 @@ body {
   font-weight: 600;
   color: var(--fr-cinza-texto);
   transition:
-    border-color 0.2s,
-    color 0.2s,
-    background 0.2s;
+    border-color var(--transicao),
+    color var(--transicao),
+    background var(--transicao);
 }
 .fr-pag small {
   margin-left: 3px;
@@ -988,8 +1033,8 @@ body:has(dialog[open]) {
   color: var(--fr-cinza-texto);
   cursor: pointer;
   transition:
-    background 0.2s,
-    color 0.2s;
+    background var(--transicao),
+    color var(--transicao);
 }
 .fr-dialog-fechar:hover {
   background: var(--fr-cinza-fundo);
@@ -1062,10 +1107,11 @@ body:has(dialog[open]) {
   font-size: 14px;
   color: var(--fr-texto);
   transition:
-    border-color 0.2s,
-    box-shadow 0.2s;
+    border-color var(--transicao),
+    box-shadow var(--transicao);
 }
-.fr-input.sem-icone input {
+.fr-input.sem-icone input,
+.fr-input.sem-icone select {
   padding-left: 12px;
 }
 .fr-input select {
@@ -1213,7 +1259,8 @@ body:has(dialog[open]) {
   grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
   gap: 8px;
 }
-.fr-input-kg input {
+.fr-input-kg input,
+.fr-input-cm input {
   padding-right: 34px;
 }
 .fr-input-sufixo {
@@ -1322,9 +1369,9 @@ body:has(dialog[open]) {
   text-align: left;
   cursor: pointer;
   transition:
-    border-color 0.2s,
-    background 0.2s,
-    transform 0.15s;
+    border-color var(--transicao),
+    background var(--transicao),
+    transform var(--transicao);
 }
 .fr-opcao[hidden] {
   display: none;

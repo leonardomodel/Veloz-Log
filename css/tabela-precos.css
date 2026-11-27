@@ -49,8 +49,8 @@
   text-decoration: none;
   cursor: pointer;
   transition:
-    background 0.2s,
-    border-color 0.2s;
+    background var(--transicao),
+    border-color var(--transicao);
 }
 .tp-pagina-botao:hover {
   border-color: #cbd5e1;

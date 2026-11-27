@@ -10,41 +10,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="icon" href="/img/icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/css/style.css">
-  <script src="/js/layout.js"></script>
   <script src="/js/script.js" defer></script>
   <script src="/js/cotacao-form.js"></script>
   <script src="/js/precos.js" defer></script>
   <script src="/js/tabela-precos.js" defer></script>
   <script src="/js/whatsapp.js" defer></script>
+  <script src="/js/depoimentos.js" defer></script>
 </head>
 
 <body>
-  <!--NAVBAR-->
+  <!-- NAV (partials/nav.html) -->
   <div class="primeira-tela">
-    <header class="topo">
-      <a class="logo" href="#inicio" aria-label="VelozLog – página inicial">
-        <span class="logo-icone" aria-hidden="true">
-          <img src="/img/logo.svg" alt="Logo VelozLog">
-        </span>
-      </a>
-      <nav class="Principal">
-        <ul class="menu">
-          <li><a href="#servicos">Serviços</a></li>
-          <li><a href="#rastreamento">Rastreamento</a></li>
-          <li><a href="#cotacao">Cotação de Frete</a></li>
-          <li><a href="/sobre.html">Sobre</a></li>
-          <li><a href="#contato">contato</a></li>
-        </ul>
-      </nav>
-
-      <div class="acoes">
-        <a class="btn-area" href="#area-cliente">Área do Cliente</a>
-        <a class="btn-cotacao" href="#cotacao">Cotação Rápida</a>
-        <div class="avatar">
-          <span class="icone-mask" style="--icone: url('/img/user.svg')"></span>
-        </div>
-      </div>
-    </header>
+    <div data-include="nav"></div>
     <!--COMEÇO DA HERO-->
     <main>
       <section id="inicio" class="hero">
@@ -469,34 +446,125 @@
         </h2>
       </header>
 
-      <div class="depoimentos-grade">
-        <figure class="depoimento-card">
-          <div class="depoimento-estrelas" role="img" aria-label="5 de 5 estrelas">★★★★★</div>
-          <blockquote class="depoimento-texto">
-            "Reduzimos nosso índice de extravio e atraso a zero nos envios de São Paulo para o Sul do país. A visibilidade do rastreio em tempo real transmite total tranquilidade aos nossos compradores corporativos."
-          </blockquote>
-          <figcaption class="depoimento-autor">
-            <span class="depoimento-avatar" aria-hidden="true">RA</span>
-            <div>
-              <strong>Rodrigo Alcantara</strong>
-              <small>Diretor de Logística, OmniVarejo Brasil</small>
-            </div>
-          </figcaption>
-        </figure>
+      <!-- CARROSSEL (/js/depoimentos.js). Para incluir um depoimento, copie um <figure> inteiro. -->
+      <div class="depoimentos-carrossel" aria-roledescription="carrossel" aria-label="Depoimentos de clientes">
+        <div class="depoimentos-janela">
+          <div class="depoimentos-trilho">
 
-        <figure class="depoimento-card">
-          <div class="depoimento-estrelas" role="img" aria-label="5 de 5 estrelas">★★★★★</div>
-          <blockquote class="depoimento-texto">
-            "O suporte dedicado no WhatsApp nos atende em segundos sempre que precisamos de uma saída urgente de carga lotação. Uma parceria sólida e sem a burocracia desnecessária das transportadoras antigas."
-          </blockquote>
-          <figcaption class="depoimento-autor">
-            <span class="depoimento-avatar" aria-hidden="true">CF</span>
-            <div>
-              <strong>Camila Ferreira</strong>
-              <small>Gerente de Operações, EletroForte Indústria</small>
-            </div>
-          </figcaption>
-        </figure>
+            <figure class="depoimento-card">
+              <div class="depoimento-estrelas" role="img" aria-label="5 de 5 estrelas">★★★★★</div>
+              <blockquote class="depoimento-texto">
+                "Reduzimos nosso índice de extravio e atraso a zero nos envios de São Paulo para o Sul do país. A visibilidade do rastreio em tempo real transmite total tranquilidade aos nossos compradores corporativos."
+              </blockquote>
+              <figcaption class="depoimento-autor">
+                <span class="depoimento-avatar" aria-hidden="true">RA</span>
+                <div>
+                  <strong>Rodrigo Alcantara</strong>
+                  <small>Diretor de Logística, OmniVarejo Brasil</small>
+                </div>
+              </figcaption>
+            </figure>
+
+            <figure class="depoimento-card">
+              <div class="depoimento-estrelas" role="img" aria-label="5 de 5 estrelas">★★★★★</div>
+              <blockquote class="depoimento-texto">
+                "O suporte dedicado no WhatsApp nos atende em segundos sempre que precisamos de uma saída urgente de carga lotação. Uma parceria sólida e sem a burocracia desnecessária das transportadoras antigas."
+              </blockquote>
+              <figcaption class="depoimento-autor">
+                <span class="depoimento-avatar" aria-hidden="true">CF</span>
+                <div>
+                  <strong>Camila Ferreira</strong>
+                  <small>Gerente de Operações, EletroForte Indústria</small>
+                </div>
+              </figcaption>
+            </figure>
+
+            <figure class="depoimento-card">
+              <div class="depoimento-estrelas" role="img" aria-label="5 de 5 estrelas">★★★★★</div>
+              <blockquote class="depoimento-texto">
+                "Migramos toda a distribuição farmacêutica do Sudeste para a VelozLog. O controle de temperatura e os laudos por viagem chegam junto com o canhoto digital, o que simplificou nossas auditorias da ANVISA."
+              </blockquote>
+              <figcaption class="depoimento-autor">
+                <span class="depoimento-avatar" aria-hidden="true">MS</span>
+                <div>
+                  <strong>Marina Saldanha</strong>
+                  <small>Head de Supply Chain, VitaPharma Distribuidora</small>
+                </div>
+              </figcaption>
+            </figure>
+
+            <figure class="depoimento-card">
+              <div class="depoimento-estrelas" role="img" aria-label="5 de 5 estrelas">★★★★★</div>
+              <blockquote class="depoimento-texto">
+                "A integração via API com o nosso ERP eliminou a digitação de notas e o retrabalho de cotação. Hoje emitimos mais de 400 CT-e por dia sem precisar abrir um chamado sequer."
+              </blockquote>
+              <figcaption class="depoimento-autor">
+                <span class="depoimento-avatar" aria-hidden="true">LM</span>
+                <div>
+                  <strong>Lucas Moretti</strong>
+                  <small>Coordenador de TI, Moretti Autopeças</small>
+                </div>
+              </figcaption>
+            </figure>
+
+            <figure class="depoimento-card">
+              <div class="depoimento-estrelas" role="img" aria-label="5 de 5 estrelas">★★★★★</div>
+              <blockquote class="depoimento-texto">
+                "Na Black Friday triplicamos o volume e não tivemos um único atraso nas capitais. O time de cross-docking trabalhou junto com o nosso CD como se fosse uma extensão da empresa."
+              </blockquote>
+              <figcaption class="depoimento-autor">
+                <span class="depoimento-avatar" aria-hidden="true">BN</span>
+                <div>
+                  <strong>Beatriz Nogueira</strong>
+                  <small>Gerente de E-commerce, Casa &amp; Estilo Online</small>
+                </div>
+              </figcaption>
+            </figure>
+
+            <figure class="depoimento-card">
+              <div class="depoimento-estrelas" role="img" aria-label="5 de 5 estrelas">★★★★★</div>
+              <blockquote class="depoimento-texto">
+                "Transportar insumos químicos exige rigor, e a homologação SASSMAQ da VelozLog fez diferença. Motoristas treinados, documentação impecável e zero ocorrências em dois anos de contrato."
+              </blockquote>
+              <figcaption class="depoimento-autor">
+                <span class="depoimento-avatar" aria-hidden="true">PT</span>
+                <div>
+                  <strong>Paulo Tavares</strong>
+                  <small>Gerente de EHS, QuimiSul Insumos</small>
+                </div>
+              </figcaption>
+            </figure>
+
+            <figure class="depoimento-card">
+              <div class="depoimento-estrelas" role="img" aria-label="5 de 5 estrelas">★★★★★</div>
+              <blockquote class="depoimento-texto">
+                "O faturamento quinzenal e a tabela progressiva reduziram nosso custo de frete em 18% já no primeiro trimestre. Previsibilidade de custo é tudo para quem trabalha com margem apertada."
+              </blockquote>
+              <figcaption class="depoimento-autor">
+                <span class="depoimento-avatar" aria-hidden="true">JR</span>
+                <div>
+                  <strong>Juliana Rezende</strong>
+                  <small>Diretora Financeira, Grupo Atacadão Serrano</small>
+                </div>
+              </figcaption>
+            </figure>
+
+            <figure class="depoimento-card">
+              <div class="depoimento-estrelas" role="img" aria-label="5 de 5 estrelas">★★★★★</div>
+              <blockquote class="depoimento-texto">
+                "Precisávamos de um veículo dedicado de Curitiba a Recife em menos de 72 horas. A VelozLog confirmou a coleta no mesmo dia e entregou com 6 horas de antecedência."
+              </blockquote>
+              <figcaption class="depoimento-autor">
+                <span class="depoimento-avatar" aria-hidden="true">AF</span>
+                <div>
+                  <strong>André Figueiredo</strong>
+                  <small>Gerente de Logística, Metalúrgica Paraná Aços</small>
+                </div>
+              </figcaption>
+            </figure>
+
+          </div>
+        </div>
       </div>
     </section>
 
@@ -554,72 +622,10 @@
       </div>
     </section>
   </div>
-  <!-- RODAPÉ -->
-  <footer class="rodape">
-    <div class="rodape-topo">
+  <!-- RODAPÉ (partials/footer.html) -->
+  <div data-include="footer"></div>
 
-      <div class="rodape-marca">
-        <a class="logo" href="#inicio" aria-label="VelozLog – página inicial">
-          <img src="/img/logo.svg" alt="Logo VelozLog">
-        </a>
-        <p>Líder em soluções de transporte fracionado, carga dedicada e logística expressa interligando as principais capitais e polos industriais do país com máxima segurança e pontualidade.</p>
-        <ul class="rodape-selos">
-          <li>ANTT Certificada</li>
-          <li>ISO 9001:2015</li>
-          <li>SASSMAQ Homologado</li>
-        </ul>
-      </div>
-
-      <nav class="rodape-coluna" aria-label="Navegação do rodapé">
-        <h3>Navegação</h3>
-        <ul>
-          <li><a href="#inicio">Início</a></li>
-          <li><a href="#servicos">Serviços</a></li>
-          <li><a href="#rastreamento">Rastreamento</a></li>
-          <li><a href="#cotacao">Cotação de Frete</a></li>
-          <li><a href="/sobre.html">Sobre Nós</a></li>
-          <li><a href="#contato">Contato e Filiais</a></li>
-        </ul>
-      </nav>
-
-      <nav class="rodape-coluna" aria-label="Serviços de carga">
-        <h3>Serviços de Carga</h3>
-        <ul>
-          <li><a href="#servicos">Carga Fracionada Expressa</a></li>
-          <li><a href="#servicos">Carga Lotação / Fechada</a></li>
-          <li><a href="#servicos">Logística Reversa</a></li>
-          <li><a href="#servicos">Distribuição Urbana E-commerce</a></li>
-          <li><a href="#servicos">Armazenagem &amp; Cross-Docking</a></li>
-        </ul>
-      </nav>
-
-      <div class="rodape-coluna">
-        <h3>Matriz &amp; Suporte</h3>
-        <address>
-          <p>Rodovia Presidente Dutra, KM 218 - Cumbica, Guarulhos - SP, CEP 07178-580</p>
-          <p>
-            Central 24h: <a href="tel:08007008900">0800 700 8900</a><br>
-            <a href="mailto:atendimento@velozlog.com.br">atendimento@velozlog.com.br</a>
-          </p>
-          <p class="rodape-cnpj">CNPJ: 14.890.342/0001-90</p>
-        </address>
-      </div>
-    </div>
-
-    <div class="rodape-base">
-      <p>© 2025 VelozLog Transportes e Logística Ltda. Todos os direitos reservados.</p>
-      <p class="rodape-assinatura">
-        Desenvolvido por
-        <a class="lmtech" href="#"><span class="lmtech-lm">LM</span><span class="lmtech-tech">TECH</span> <span class="lmtech-devweb">DEVWEB</span></a>
-      </p>
-
-      <ul class="rodape-legal">
-        <li><a href="#">Termos de Transporte</a></li>
-        <li><a href="#">Política de Privacidade e LGPD</a></li>
-        <li><a href="#">Gerenciamento de Risco</a></li>
-      </ul>
-    </div>
-  </footer>
+  <script src="/js/layout.js"></script>
 </body>
 
 </html>

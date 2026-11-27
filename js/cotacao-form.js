@@ -200,7 +200,10 @@
       const op = c.tipo.options ? c.tipo.options[c.tipo.selectedIndex] : null;
       q.set("t", tipoDoTexto(op ? op.textContent : c.tipo.value));
     }
-    location.href = "/frete.html?" + q.toString();
+    const destino = "/frete.html?" + q.toString();
+    // com transição suave entre páginas (layout.js); sem ele, vai direto
+    if (window.VelozLayout) window.VelozLayout.irPara(destino);
+    else location.href = destino;
   }
 
   // captura o clique no botão e o envio do formulário (funciona mesmo com outros scripts na página)

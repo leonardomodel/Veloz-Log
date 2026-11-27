@@ -15,6 +15,7 @@
     SEGURO_POR_MIL,
     DESCONTO_PERCENTUAL,
     DESCONTO_PIX_PERCENTUAL,
+    PARCELAS_SEM_JUROS,
     CUBAGEM_POR_VOLUME,
     KM_PADRAO,
     PEDAGIO_FRACAO,
@@ -44,10 +45,15 @@
     ],
     // peso real (kg) de cada volume, na mesma ordem das medidas
     pesos: [11.25, 11.25, 11.25, 11.25],
-    nf: 15000,
+    nf: 15000, // valor de referência para a estimativa inicial (não é do cliente)
     tipo: "manufaturados",
     km: null, // distância da rota (vem do mapa); null = ainda não calculada
   };
+
+  // a NF só aparece preenchida no modal depois que o cliente informar o valor
+  // (pela página inicial, pela URL ou salvando o modal); antes disso o campo
+  // fica vazio, mostrando só o exemplo
+  let nfInformada = false;
 
   /* ================= UTILITÁRIOS ================= */
   const $ = (seletor, raiz = document) => raiz.querySelector(seletor);
@@ -326,8 +332,45 @@
         definir("#v-pix", `– ${brl(t.pix)}`, animar);
         definir("#v-final", brl(t.final), animar);
         definir(".fr-painel-topo .fr-selo", m.nome);
+        atualizarParcelas(t.final);
       }
     }
+  }
+
+  /* ----- parcelamento no cartão (até PARCELAS_SEM_JUROS, sem juros) ----- */
+  const selectParcelas = $("#parcelas");
+  const valorParcela = (centavos, n) => Math.round(centavos / n);
+
+  function atualizarParcelas(finalCentavos) {
+    const bloco = $("#bloco-parcelas");
+    if (!bloco || !selectParcelas) return;
+    bloco.hidden = pagamentoAtual() !== "cartao";
+
+    // remonta as opções com o total atual, mantendo a escolha (padrão: o máximo)
+    const escolhida = Number(selectParcelas.value) || PARCELAS_SEM_JUROS;
+    selectParcelas.innerHTML = Array.from(
+      { length: PARCELAS_SEM_JUROS },
+      (_, i) => {
+        const n = i + 1;
+        const texto =
+          n === 1
+            ? `1x de ${brl(finalCentavos)} (à vista)`
+            : `${n}x de ${brl(valorParcela(finalCentavos, n))} sem juros`;
+        return `<option value="${n}">${texto}</option>`;
+      },
+    ).join("");
+    selectParcelas.value = String(escolhida);
+    selectParcelas.dataset.final = finalCentavos; // usado no texto da proposta
+    $("#parcelas-total").textContent = `Total no cartão: ${brl(finalCentavos)} — sem acréscimo`;
+  }
+
+  // texto da condição de pagamento usado na proposta, no PDF, no WhatsApp e no e-mail
+  function textoParcelamento() {
+    const n = Number(selectParcelas && selectParcelas.value) || PARCELAS_SEM_JUROS;
+    const final = Number(selectParcelas && selectParcelas.dataset.final) || 0;
+    return n === 1
+      ? "Cartão de crédito à vista"
+      : `Cartão de crédito em ${n}x${final ? ` de ${brl(valorParcela(final, n))}` : ""} sem juros`;
   }
 
   /* ----- prazos de entrega conforme a distância ----- */
@@ -523,13 +566,15 @@
     const marcada = $('input[name="modalidade"]:checked');
     const selId = marcada ? marcada.value : "express";
     const pag = $('input[name="pagamento"]:checked');
-    const pagamento = pag
-      ? pag
-          .closest(".fr-pag")
-          .querySelector("span")
-          .textContent.replace(/\s+/g, " ")
-          .trim()
-      : "—";
+    const pagamento = !pag
+      ? "—"
+      : pag.value === "cartao"
+        ? textoParcelamento() // ex.: "Cartão de crédito em 10x de R$ 36,53 sem juros"
+        : pag
+            .closest(".fr-pag")
+            .querySelector("span")
+            .textContent.replace(/\s+/g, " ")
+            .trim();
 
     const modalidades = Object.entries(MODALIDADES).map(([id, m]) => {
       const card = $(`input[name="modalidade"][value="${id}"]`).closest(
@@ -1307,7 +1352,9 @@
         ? estado.pesos.map(pesoParaCampo)
         : [],
     );
-    $("#p-nf").value = formatarMoeda(String(Math.round(estado.nf * 100)));
+    $("#p-nf").value = nfInformada
+      ? formatarMoeda(String(Math.round(estado.nf * 100)))
+      : "";
     $("#p-tipo").value = estado.tipo;
   }
 
@@ -1372,9 +1419,10 @@
         <div class="fr-dim-item">
           ${varios ? `<label for="${id}">Volume ${i + 1}</label>` : ""}
           <div class="fr-dim-linha">
-            <div class="fr-input">
+            <div class="fr-input fr-input-cm">
               ${iconeRegua}
               <input id="${id}" class="fr-dim" data-volume="${i + 1}" type="text" inputmode="numeric" maxlength="15" placeholder="A x L x P" autocomplete="off" aria-label="Dimensões do volume ${i + 1} (cm)">
+              <span class="fr-input-sufixo" aria-hidden="true">cm</span>
             </div>
             ${
               varios
@@ -1392,8 +1440,8 @@
 
     grade.classList.toggle("varios-volumes", varios);
     $("#l-dims").textContent = varios
-      ? `Medidas e peso por volume · ${n} volumes`
-      : "Dimensões (A x L x P) cm";
+      ? `Medidas (cm) e peso (kg) por volume · ${n} volumes`
+      : "Dimensões (A x L x P) em cm";
     botaoCopiar.hidden = !varios;
     botaoDividir.hidden = !varios;
     sincronizarPesos();
@@ -1485,8 +1533,8 @@
     ) {
       dica.textContent = campoDims.classList.contains("pendente")
         ? varios
-          ? "Faltam as medidas e o peso de cada volume."
-          : "Faltam as medidas da carga."
+          ? "Faltam as medidas (cm) e o peso (kg) de cada volume."
+          : "Faltam as medidas da carga (em cm)."
         : "";
     } else {
       dica.textContent = partes.join(" · ");
@@ -1695,7 +1743,7 @@
           nomes.slice(0, 4).join(", ") + (nomes.length > 4 ? "…" : "");
         $("#e-p-dims").textContent =
           cDims.length === 1
-            ? "Informe A x L x P, ex.: 40 x 30 x 30"
+            ? "Informe A x L x P em cm, ex.: 40 x 30 x 30"
             : `Preencha medidas e peso do${nomes.length > 1 ? "s volumes" : " volume"} ${lista}`;
         erros.push(ruins[0].id);
       }
@@ -1743,6 +1791,7 @@
       estado.peso = peso;
     }
     estado.nf = nf;
+    nfInformada = true;
     estado.tipo = $("#p-tipo").value;
 
     campoDims.classList.remove("pendente");
@@ -1811,7 +1860,10 @@
     if (ini) {
       if (ini.peso) estado.peso = ini.peso;
       if (ini.volumes) estado.volumes = ini.volumes;
-      if (ini.nf) estado.nf = ini.nf;
+      if (ini.nf) {
+        estado.nf = ini.nf;
+        nfInformada = true;
+      }
       if (ini.tipo) estado.tipo = ini.tipo;
       // a página inicial não pede dimensões: começa sem elas (vale o peso real) e pede no modal
       estado.medidas = ini.medidas || [];

@@ -21,6 +21,38 @@
   --lavanda-forte: #e8edff;
   --sombra: 0 10px 30px rgba(21, 27, 54, 0.08);
   --altura-topo: 87px; /* altura do menu */
+  /* tempo/curva padrão dos efeitos (hover, foco, troca de cor) em todo o site */
+  --transicao: 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* ---------- TRANSIÇÃO ENTRE PÁGINAS ----------
+   Feita pelo navegador (View Transitions): a página antiga continua na tela
+   e a nova surge por cima dela — nunca aparece uma tela branca no meio.
+   Chrome, Edge e Safari recentes; nos outros, a troca é normal (instantânea). */
+@view-transition {
+  navigation: auto;
+}
+
+/* a antiga fica parada, servindo de fundo… */
+::view-transition-old(root) {
+  animation: none;
+}
+
+/* …e a nova aparece suavemente por cima */
+::view-transition-new(root) {
+  animation: vl-pagina-surge 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+@keyframes vl-pagina-surge {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
 }
 
 html {
@@ -32,9 +64,18 @@ html.rolando {
   scroll-snap-type: none;
 }
 
+/* snap só liga depois que nav e footer entram na página (layout.js marca
+   data-layout-pronto). Antes disso o "imã" grudava no hero e, quando o menu
+   aparecia em cima, a página ficava rolada com o menu escondido. */
+html:not([data-layout-pronto]) {
+  scroll-snap-type: none;
+}
+
 body {
   width: 100%;
-  min-width: 920px; /* limite de redução da janela no desktop */
+  /* responsivo para computador, meia janela e tablet (a partir de 768px);
+     o celular terá uma versão própria */
+  min-width: 768px;
   min-height: 100vh;
   font-family: "Plus Jakarta Sans", system-ui, sans-serif;
   background-color: var(--fundo);
@@ -153,8 +194,8 @@ select:focus-visible {
   color: var(--cor-texto);
   white-space: nowrap;
   transition:
-    background-color 0.15s,
-    color 0.15s;
+    background-color var(--transicao),
+    color var(--transicao);
 }
 
 .menu a.ativo {
@@ -194,7 +235,7 @@ select:focus-visible {
   font-weight: 700;
   line-height: 1.2;
   text-decoration: none;
-  transition: background 0.15s;
+  transition: background var(--transicao);
   white-space: nowrap; /* texto em uma linha só */
 }
 
@@ -212,7 +253,7 @@ select:focus-visible {
   font-weight: 700;
   line-height: 1.2;
   text-decoration: none;
-  transition: background 0.15s;
+  transition: background var(--transicao);
   white-space: nowrap; /* texto em uma linha só */
 }
 
@@ -230,7 +271,7 @@ select:focus-visible {
   display: grid;
   place-items: center;
   cursor: pointer;
-  transition: background-color 0.15s;
+  transition: background-color var(--transicao);
 }
 
 .avatar .icone-mask {
@@ -239,7 +280,7 @@ select:focus-visible {
   background-color: #fff;
   -webkit-mask: var(--icone) center / contain no-repeat;
   mask: var(--icone) center / contain no-repeat;
-  transition: background-color 0.15s;
+  transition: background-color var(--transicao);
 }
 
 /* ---------- HERO ---------- */
@@ -325,7 +366,7 @@ main > .hero {
   box-shadow: 0 1px 4px rgba(21, 27, 54, 0.08);
   font-size: 13px;
   font-weight: 600;
-  transition: box-shadow 0.15s;
+  transition: box-shadow var(--transicao);
 }
 
 .hero .hero-selos li:hover {
@@ -532,8 +573,8 @@ main > .hero {
   border-radius: 12px;
   background: #f3f5ff;
   transition:
-    box-shadow 0.2s,
-    background-color 0.2s;
+    box-shadow var(--transicao),
+    background-color var(--transicao);
 }
 
 .campo-busca:focus-within {
@@ -606,7 +647,7 @@ main > .hero {
   font-weight: 700;
   color: #fff;
   cursor: pointer;
-  transition: background-color 0.15s;
+  transition: background-color var(--transicao);
 }
 
 .btn-rastrear:hover {
@@ -933,9 +974,9 @@ main > .hero {
   font-size: 15px;
   color: var(--cor-texto);
   transition:
-    border-color 0.2s,
-    background-color 0.2s,
-    box-shadow 0.2s;
+    border-color var(--transicao),
+    background-color var(--transicao),
+    box-shadow var(--transicao);
 }
 
 .simular-campo input::placeholder {
@@ -963,8 +1004,8 @@ main > .hero {
   color: #fff;
   cursor: pointer;
   transition:
-    background-color 0.2s,
-    transform 0.2s;
+    background-color var(--transicao),
+    transform var(--transicao);
 }
 
 .btn-simular:hover {
@@ -1036,7 +1077,7 @@ main > .hero {
   background-color: var(--cor-texto);
   -webkit-mask: var(--icone) center / contain no-repeat;
   mask: var(--icone) center / contain no-repeat;
-  transition: background-color 0.15s;
+  transition: background-color var(--transicao);
 }
 
 /* ---------- INDICADORES ---------- */
@@ -1150,7 +1191,7 @@ main > .hero {
   border-radius: 12px;
   background: #fff;
   box-shadow: 0 1px 3px rgba(15, 31, 61, 0.06);
-  transition: border-color 0.15s;
+  transition: border-color var(--transicao);
 }
 
 .servicos .card-topo {
@@ -1167,8 +1208,8 @@ main > .hero {
   background: #dbe7ff;
   border-radius: 10px;
   transition:
-    background-color 0.15s,
-    color 0.15s;
+    background-color var(--transicao),
+    color var(--transicao);
 }
 
 .servicos .icone img {
@@ -1311,7 +1352,7 @@ main > .hero {
   border: 2px solid transparent;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(15, 31, 61, 0.06);
-  transition: border-color 0.15s;
+  transition: border-color var(--transicao);
 }
 
 .seguranca-icone {
@@ -1323,7 +1364,7 @@ main > .hero {
   margin-bottom: 20px;
   background: #dbe7ff;
   border-radius: 10px;
-  transition: background-color 0.15s;
+  transition: background-color var(--transicao);
 }
 
 .seguranca-card h3 {
@@ -1463,8 +1504,8 @@ main > .hero {
   border-radius: 14px;
   box-shadow: 0 4px 14px rgba(21, 27, 54, 0.05);
   transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+    transform var(--transicao),
+    box-shadow var(--transicao);
 }
 
 .cotacao-b2b:hover {
@@ -1569,9 +1610,9 @@ main > .hero {
   border: 1px solid transparent;
   border-radius: 10px;
   transition:
-    border-color 0.2s ease,
-    background 0.2s ease,
-    box-shadow 0.2s ease;
+    border-color var(--transicao),
+    background var(--transicao),
+    box-shadow var(--transicao);
 }
 
 .cotacao-campo input::placeholder {
@@ -1652,8 +1693,8 @@ main > .hero {
   border-radius: 10px;
   cursor: pointer;
   transition:
-    background 0.2s ease,
-    transform 0.2s ease;
+    background var(--transicao),
+    transform var(--transicao);
 }
 
 .cotacao-botao:hover {
@@ -1712,17 +1753,79 @@ main > .hero {
   color: var(--cor-texto);
 }
 
-.depoimentos-grade {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
+/* ---------- CARROSSEL DE DEPOIMENTOS (/js/depoimentos.js) ---------- */
+.depoimentos-carrossel {
+  --depo-gap: 24px;
+  --depo-por-vez: 2; /* cards visíveis ao mesmo tempo */
+}
+
+.depoimentos-carrossel:focus-visible {
+  outline: 3px solid var(--laranja);
+  outline-offset: 8px;
+  border-radius: 12px;
+}
+
+/* janela: mostra só os cards da vez. O padding vertical deixa o "levantar"
+   e a sombra do hover aparecerem; sem padding lateral, para o card vizinho
+   não aparecer na beirada */
+.depoimentos-janela {
+  margin: -16px 0 -32px;
+  padding: 16px 0 32px;
+  overflow-x: auto; /* sem JS: faixa com rolagem horizontal */
+  scroll-snap-type: x mandatory;
+}
+
+.depoimentos-carrossel.ativo .depoimentos-janela {
+  overflow: hidden;
+  scroll-snap-type: none;
+  touch-action: pan-y; /* rolagem vertical continua; o arraste lateral é do carrossel */
+  cursor: grab;
+}
+
+.depoimentos-carrossel.arrastando .depoimentos-janela {
+  cursor: grabbing;
+}
+
+.depoimentos-carrossel.arrastando .depoimento-card {
+  user-select: none;
+}
+
+.depoimentos-trilho {
+  display: flex;
+  gap: var(--depo-gap);
+  will-change: transform;
 }
 
 .depoimento-card {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0
+    calc((100% - (var(--depo-por-vez) - 1) * var(--depo-gap)) / var(--depo-por-vez));
   padding: 40px;
   border-radius: 12px;
   background: #fff;
   box-shadow: 0 1px 3px rgba(15, 31, 61, 0.06);
+  scroll-snap-align: start;
+  transition:
+    transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1),
+    box-shadow 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* sombra "para baixo" (spread negativo): não vaza pelas laterais da janela */
+.depoimento-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 28px -12px rgba(15, 31, 61, 0.18);
+}
+
+/* autor sempre no pé do card, mesmo com textos de tamanhos diferentes */
+.depoimento-card .depoimento-autor {
+  margin-top: auto;
+}
+
+@media (max-width: 760px) {
+  .depoimentos-carrossel {
+    --depo-por-vez: 1;
+  }
 }
 
 .depoimento-estrelas {
@@ -1757,6 +1860,17 @@ main > .hero {
   font-size: 14px;
   font-weight: 700;
   color: var(--cor-texto);
+  transition:
+    background-color var(--transicao),
+    color var(--transicao),
+    transform var(--transicao);
+}
+
+/* hover no card: iniciais com fundo laranja e letra branca */
+.depoimento-card:hover .depoimento-avatar {
+  background: var(--laranja);
+  color: #fff;
+  transform: scale(1.06);
 }
 
 .depoimento-autor strong {
@@ -1868,8 +1982,8 @@ main > .hero {
   line-height: 1.2;
   color: #fff;
   transition:
-    background-color 0.15s,
-    transform 0.15s;
+    background-color var(--transicao),
+    transform var(--transicao);
 }
 
 .contato-botao:hover,
@@ -1989,7 +2103,7 @@ main > .hero {
 }
 
 .rodape-coluna a {
-  transition: color 0.15s;
+  transition: color var(--transicao);
 }
 
 .rodape-coluna a:hover,
@@ -2098,12 +2212,64 @@ main > .hero {
   }
 }
 
-@media (max-width: 992px) {
-  .topo {
-    column-gap: 16px;
-    padding: 12px 20px;
+/* ---------- Meia janela / tablet (até 1024px) ---------- */
+@media (max-width: 1024px) {
+  :root {
+    --altura-topo: 128px; /* menu em duas linhas */
   }
 
+  /* menu em duas linhas: logo + botões em cima, links centralizados embaixo
+     (assim cabem todos os links, inclusive "contato") */
+  .topo {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "logo acoes"
+      "menu menu";
+    row-gap: 6px;
+    padding: 10px 24px 6px;
+  }
+
+  .topo .logo {
+    grid-area: logo;
+  }
+
+  .topo .acoes {
+    grid-area: acoes;
+    gap: 8px;
+  }
+
+  .topo .Principal {
+    grid-area: menu;
+    padding-top: 6px;
+    border-top: 1px solid var(--borda);
+  }
+
+  .menu {
+    justify-content: center;
+    gap: 4px;
+    margin-right: 0;
+  }
+
+  .menu li:last-child {
+    display: list-item; /* "contato" volta: agora há espaço */
+  }
+
+  .menu a {
+    padding: 10px 16px;
+  }
+
+  /* números do topo: 2 por linha (em 4 o "R$ 50M+" não cabe) */
+  .indicadores ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .depoimento-card {
+    padding: 28px;
+  }
+}
+
+@media (max-width: 992px) {
   .hero {
     display: flex;
     flex-direction: column;
@@ -2146,32 +2312,77 @@ main > .hero {
     order: 6;
   }
 
-  .menu {
-    justify-self: center; /* centraliza entre a logo e os botões */
-    justify-content: center;
-    gap: 4px;
-    margin-right: 0; /* sem os 84px, senão ele sai do centro */
+  /* card escuro de contato: texto em cima, botões embaixo ocupando a largura */
+  .contato-container {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .menu a {
-    padding: 16px 20px;
+  .contato-info {
+    flex: none;
+    max-width: none;
   }
 
-  .acoes {
-    gap: 8px;
+  .contato-acoes {
+    flex: none;
+    flex-direction: row;
   }
 
-  .btn-area,
-  .btn-cotacao {
-    white-space: nowrap;
+  .contato-acoes > * {
+    flex: 1 1 0;
   }
+
+  /* rodapé: marca numa faixa de largura total (texto à esquerda, selos à
+     direita) e, abaixo, as 3 colunas lado a lado com a mesma largura */
   .rodape-topo {
-    grid-template-columns: 1fr 1fr;
-    gap: 32px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px 24px;
   }
 
   .rodape-marca {
     grid-column: 1 / -1;
+    display: grid;
+    /* a coluna dos selos tem o tamanho exato dos 3 lado a lado; o texto fica com o resto */
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 32px;
+    align-items: end;
+    padding-bottom: 28px;
+    border-bottom: 1px solid rgba(21, 27, 54, 0.1);
+  }
+
+  .rodape-marca .logo {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .rodape-marca p {
+    max-width: none;
+    margin: 14px 0 0;
+  }
+
+  .rodape-selos {
+    flex-wrap: nowrap; /* os 3 selos sempre na mesma linha */
+    justify-content: flex-end;
+  }
+
+  .rodape-selos li {
+    white-space: nowrap;
+  }
+
+  /* faixa de baixo: separada por uma linha; direitos à esquerda, assinatura
+     à direita e os links legais na linha de baixo, alinhados à esquerda */
+  .rodape-base {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px 24px;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(21, 27, 54, 0.1);
+  }
+
+  .rodape-legal {
+    grid-column: 1 / -1;
+    gap: 8px 24px;
   }
 }
 

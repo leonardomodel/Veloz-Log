@@ -1,97 +1,3 @@
-/* =========================================================
-   SCROLL SUAVE (links da nav e do rodapé)
-   ========================================================= */
-(function () {
-  const html = document.documentElement;
-
-  // duração proporcional à distância: entre 600ms e 1400ms
-  const duracaoPara = (distancia) =>
-    Math.min(1400, Math.max(600, Math.abs(distancia) * 0.9));
-
-  // easing suave: começa e termina devagar
-  const easeInOutQuart = (t) =>
-    t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
-
-  // só desconta o menu se ele for fixo/sticky (o seu rola junto com a página)
-  const topo = document.querySelector(".topo");
-  const alturaTopo = () => {
-    if (!topo) return 0;
-    const pos = getComputedStyle(topo).position;
-    return pos === "fixed" || pos === "sticky" ? topo.offsetHeight : 0;
-  };
-
-  // posição (em px) do topo de um elemento, já descontando o menu se for fixo
-  const posicaoDe = (el) =>
-    el.getBoundingClientRect().top + window.scrollY - alturaTopo();
-
-  // links que rolam para um ponto diferente do próprio elemento
-  const DESTINOS = {
-    "#inicio": () => 0,
-    "#rastreamento": () => posicaoDe(document.querySelector(".hero")),
-    "#contato": () => posicaoDe(document.querySelector(".terceira-tela")),
-  };
-
-  let animacao = null;
-
-  function pararAnimacao() {
-    cancelAnimationFrame(animacao);
-  }
-
-  // o snap só volta quando o usuário assume o controle da rolagem
-  function devolverControle() {
-    pararAnimacao();
-    html.classList.remove("rolando");
-  }
-
-  function rolarPara(destinoY) {
-    pararAnimacao();
-    html.classList.add("rolando"); // desliga o snap durante a animação
-
-    const maximo = html.scrollHeight - window.innerHeight;
-    const alvoY = Math.min(Math.max(0, destinoY), maximo);
-
-    const inicioY = window.scrollY;
-    const distancia = alvoY - inicioY;
-    const duracao = duracaoPara(distancia);
-    const inicioTempo = performance.now();
-
-    function passo(agora) {
-      const progresso = Math.min((agora - inicioTempo) / duracao, 1);
-      window.scrollTo({
-        top: inicioY + distancia * easeInOutQuart(progresso),
-        behavior: "instant",
-      });
-
-      if (progresso < 1) {
-        animacao = requestAnimationFrame(passo);
-      }
-      // no final NÃO religa o snap: evita o puxão
-    }
-    animacao = requestAnimationFrame(passo);
-  }
-
-  // mouse, toque, teclado ou barra de rolagem: para a animação e religa o snap
-  ["wheel", "touchstart", "keydown", "pointerdown"].forEach((evento) =>
-    window.addEventListener(evento, devolverControle, { passive: true }),
-  );
-
-  // Cliques em links âncora (#servicos, #cotacao, etc.)
-  document.addEventListener("click", (e) => {
-    const link = e.target.closest('a[href*="#"]');
-    if (!link) return;
-
-    const url = new URL(link.href, location.href);
-    if (url.pathname !== location.pathname || !url.hash) return;
-
-    const alvo = document.querySelector(url.hash);
-    if (!alvo) return;
-
-    e.preventDefault();
-    const calcular = DESTINOS[url.hash];
-    rolarPara(calcular ? calcular() : posicaoDe(alvo));
-    history.pushState(null, "", url.hash);
-  });
-})();
 
 /* =========================================================
    CONTADORES
@@ -370,6 +276,19 @@
   });
 
   // ----- ESTADO INICIAL -----
+  // a página sempre abre (e recarrega no F5) em "Rastrear Pedido"
+  const ABA_SIMULAR = "#painel-simular";
   mostrarAba("rastrear", false);
   mostrarEstado("vazio", false);
+
+  // links da nav (aqui ou vindo de outra página) escolhem a aba do card:
+  // "Cotação Rápida" → Simular Frete · "Rastreamento" → Rastrear Pedido
+  const ABA_POR_ANCORA = {
+    [ABA_SIMULAR]: "simular",
+    "#rastreamento": "rastrear",
+  };
+  document.addEventListener("vl:ancora", (e) => {
+    const aba = ABA_POR_ANCORA[e.detail.hash];
+    if (aba && abas.dataset.ativa !== aba) mostrarAba(aba);
+  });
 })();
