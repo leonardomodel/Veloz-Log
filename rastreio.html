@@ -30,7 +30,7 @@
         <span>/</span>
         <a href="/index.html#rastreamento" data-rt="trilha-2">Rastreamento</a>
         <span>/</span>
-        <span class="rt-breadcrumb-atual" data-rt="codigo">VLZ-849102-SP</span>
+        <span class="rt-breadcrumb-atual" data-rt="codigo">VLZ-893910-SP</span>
       </nav>
 
       <!-- Cabeçalho da página -->
@@ -49,7 +49,7 @@
         <div class="rt-resumo-topo">
           <div>
             <span class="rt-rotulo">Código de rastreamento</span>
-            <strong class="rt-codigo" data-rt="codigo">VLZ-849102-SP</strong>
+            <strong class="rt-codigo" data-rt="codigo">VLZ-893910-SP</strong>
           </div>
           <div class="rt-tags">
             <span class="rt-tag rt-tag-transito" data-rt="status"><i></i> Em Trânsito</span>
@@ -73,9 +73,20 @@
           </div>
 
           <div class="rt-previsao">
-            <span class="rt-rotulo">Previsão de entrega</span>
+            <span class="rt-rotulo" data-rt="previsao-rotulo">Previsão de entrega</span>
             <strong data-rt="previsao">Hoje, até 18:30</strong>
             <small data-rt="previsao-nota">Acompanhe as próximas atualizações.</small>
+            <!-- só aparece quando o pedido foi entregue (rastreio.js) -->
+            <div class="rt-comp-acoes" data-rt="comprovante" hidden>
+              <button type="button" class="rt-comp-btn" data-pod-ver aria-label="Visualizar comprovante de entrega">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" /></svg>
+                Visualizar
+              </button>
+              <button type="button" class="rt-comp-btn rt-comp-btn-claro" data-pod-baixar aria-label="Baixar comprovante de entrega em PDF">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="M7 10l5 5 5-5M12 15V3" /></svg>
+                Baixar PDF
+              </button>
+            </div>
           </div>
         </div>
 
@@ -183,8 +194,8 @@
           <section class="rt-suporte">
             <span class="rt-suporte-rotulo">Suporte dedicado 24/7</span>
             <h2>Precisa de ajuda com esta entrega?</h2>
-            <p>Fale com nossa equipe e informe o código <span data-rt="codigo">VLZ-849102-SP</span>.</p>
-            <a href="/index.html#contato" class="rt-suporte-btn">Falar com atendimento →</a>
+            <p>Fale com nossa equipe e informe o código <span data-rt="codigo">VLZ-893910-SP</span>.</p>
+            <a href="/index.html#contato" class="rt-suporte-btn" data-whatsapp>Falar com atendimento →</a>
           </section>
         </aside>
 
@@ -209,8 +220,32 @@
     </div>
   </footer>
 
+  <!-- ===================== COMPROVANTE DE ENTREGA (POD) =====================
+       Conteúdo montado pelo rastreio.js. "Baixar PDF" imprime só esta janela
+       (no destino da impressão, escolha "Salvar como PDF"). -->
+  <dialog class="rt-pod" id="rt-pod" aria-labelledby="rt-pod-titulo">
+    <header class="rt-pod-topo">
+      <div>
+        <span class="rt-rotulo">Comprovante de entrega (POD)</span>
+        <h2 id="rt-pod-titulo">VLZ-000000-UF</h2>
+      </div>
+      <button type="button" class="rt-pod-fechar" data-pod-fechar aria-label="Fechar comprovante">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+      </button>
+    </header>
+    <div class="rt-pod-corpo" id="rt-pod-corpo"></div>
+    <footer class="rt-pod-acoes">
+      <button type="button" class="rt-comp-btn rt-comp-btn-claro" data-pod-fechar>Fechar</button>
+      <button type="button" class="rt-comp-btn" data-pod-baixar>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="M7 10l5 5 5-5M12 15V3" /></svg>
+        Baixar PDF
+      </button>
+    </footer>
+  </dialog>
+
   <script src="/js/layout.js"></script>
   <script src="/js/manifestos.js"></script>
+  <script src="/js/whatsapp.js"></script>
   <script src="/js/rastreio.js"></script>
 </body>
 

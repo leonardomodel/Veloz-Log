@@ -155,7 +155,7 @@
 
   /* ---------- ligar os botões ---------- */
   function iniciar() {
-    document.querySelectorAll("[data-whatsapp]").forEach((a) => {
+    document.querySelectorAll("a[data-whatsapp]").forEach((a) => {
       const texto = a.dataset.whatsapp || MENSAGEM_PADRAO;
       a.href = links(texto).oficial; // funciona mesmo sem este script
       a.target = "_blank";
@@ -166,14 +166,36 @@
       const a = e.target.closest("[data-whatsapp]");
       if (!a) return;
       const texto = a.dataset.whatsapp || MENSAGEM_PADRAO;
-      if (ehCelular()) return; // segue o link: o celular abre direto o app
+      if (ehCelular()) {
+        // link: segue o link (o celular abre direto o app) · botão: abre o mesmo link
+        if (a.tagName !== "A") window.open(links(texto).oficial, "_blank", "noopener");
+        else a.href = links(texto).oficial; // a mensagem pode ter mudado depois de carregar
+        return;
+      }
       e.preventDefault();
-      const salva = escolhaSalva();
-      // Shift + clique sempre mostra o menu (para trocar a escolha lembrada)
-      if (salva && !e.shiftKey) abrir(salva, texto, a);
-      else mostrarMenu(a, texto);
+      conversar(texto, a, e.shiftKey);
     });
   }
+
+  // abre a conversa (pergunta app ou navegador no computador; lembra a escolha)
+  function conversar(texto, botao, perguntar = false) {
+    texto = texto || MENSAGEM_PADRAO;
+    if (ehCelular()) {
+      window.open(links(texto).oficial, "_blank", "noopener");
+      return;
+    }
+    const salva = escolhaSalva();
+    // Shift + clique sempre mostra o menu (para trocar a escolha lembrada)
+    if (salva && !perguntar) abrir(salva, texto, botao);
+    else mostrarMenu(botao, texto);
+  }
+
+  // único lugar com o número: as outras páginas (cotação, portal) usam daqui
+  window.VelozWhatsApp = Object.freeze({
+    NUMERO,
+    link: (texto) => links(texto || MENSAGEM_PADRAO).oficial,
+    conversar,
+  });
 
   if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", iniciar);

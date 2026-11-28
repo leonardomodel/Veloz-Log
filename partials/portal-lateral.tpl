@@ -46,7 +46,7 @@
     <div class="pt-suporte">
       <strong>Suporte Dedicado B2B</strong>
       <small>Torre de Controle 24/7</small>
-      <a href="tel:1938409099">(19) 3840-9099</a>
+      <a href="tel:08007008900,9099">0800 700 8900 · R. 9099</a>
     </div>
     <div class="pt-versao">
       <span class="pt-lmtech"><b>LM</b>TECH</span>

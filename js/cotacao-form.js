@@ -144,11 +144,22 @@
     campo.style.outlineOffset = "1px";
     campo.setAttribute("aria-invalid", "true");
     campo.title = mensagem;
+    // mensagem visível abaixo do campo (no celular não existe "passar o mouse")
+    const caixa = campo.parentElement;
+    let aviso = caixa.querySelector(".vl-erro-campo");
+    if (!aviso) {
+      aviso = document.createElement("small");
+      aviso.className = "vl-erro-campo";
+      aviso.setAttribute("role", "alert");
+      caixa.appendChild(aviso);
+    }
+    aviso.textContent = mensagem;
     const limpar = () => {
       campo.style.outline = "";
       campo.style.outlineOffset = "";
       campo.removeAttribute("aria-invalid");
       campo.removeAttribute("title");
+      aviso.remove();
       campo.removeEventListener("input", limpar);
       campo.removeEventListener("change", limpar);
     };

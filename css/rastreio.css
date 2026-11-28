@@ -198,8 +198,18 @@
 }
 
 .rt-tag-segura {
-  background: #ccffcc;
-  color: #008000;
+  background: var(--rt-laranja);
+  color: #fff;
+}
+
+/* pedido entregue: data e hora da entrega sempre numa linha (24/11/26 • 14:28) */
+.rt-previsao strong.rt-uma-linha {
+  white-space: nowrap;
+}
+
+/* pedido entregue: barra de progresso verde */
+.rt-barra-preenchida.rt-barra-entregue {
+  background: #16a34a;
 }
 
 @keyframes rt-pulsar {
@@ -215,11 +225,13 @@
 }
 
 /* Rota (origem → destino + previsão) */
+/* origem → destino juntos à esquerda (mesmo espaço dos dois lados da seta);
+   o quadro da previsão fica na direita */
 .rt-rota {
   display: grid;
-  grid-template-columns: 1fr auto 1fr minmax(220px, 300px);
+  grid-template-columns: minmax(0, max-content) auto minmax(0, max-content) minmax(0, 1fr);
   align-items: center;
-  gap: clamp(12px, 2vw, 24px);
+  gap: clamp(16px, 2.6vw, 36px);
   margin-bottom: clamp(18px, 2vw, 24px);
 }
 
@@ -243,6 +255,9 @@
 }
 
 .rt-previsao {
+  justify-self: end;
+  width: 100%;
+  max-width: 320px;
   background: #fff0e8;
   border-radius: var(--rt-raio-p);
   padding: 16px 18px;
@@ -581,7 +596,8 @@
   display: block; /* sem o espaço de linha de texto embaixo: centra de verdade */
   width: 14px;
   height: 14px;
-  margin-top: -1px; /* compensa o "peso" visual da base do triângulo */
+  /* o "centro" visual do triângulo fica abaixo do meio da caixa: sobe 1,5px */
+  transform: translateY(-1.5px);
   fill: none;
   stroke: currentColor;
   stroke-width: 2.2;
@@ -604,7 +620,14 @@
 }
 
 .rt-evento-ocorrencia .rt-evento-icone {
-  background: #dc2626;
+  /* mesmo padrão do hover das ocorrências: ícone vermelho sobre fundo branco */
+  background: var(--rt-branco);
+  color: #dc2626;
+  box-shadow: 0 0 0 1px #fecaca;
+}
+
+.rt-evento-ocorrencia .rt-evento-texto h3 {
+  color: #b91c1c;
 }
 
 .rt-evento-ocorrencia .rt-evento-local,
@@ -777,10 +800,12 @@
 /* ---------- Responsivo ---------- */
 @media (max-width: 1100px) {
   .rt-rota {
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: minmax(0, max-content) auto minmax(0, 1fr);
   }
   .rt-previsao {
     grid-column: 1 / -1;
+    justify-self: stretch;
+    max-width: none;
   }
 }
 
@@ -818,4 +843,535 @@
   .rt-tag-transito i {
     animation: none;
   }
+}
+
+/* =========================================================
+   COMPROVANTE DE ENTREGA (POD) — botões no quadro "Entregue em" + janela
+   ========================================================= */
+/* os dois botões sempre lado a lado, dividindo a largura do quadro */
+.rt-comp-acoes {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.rt-comp-acoes .rt-comp-btn {
+  flex: 1 1 0;
+  justify-content: center;
+  min-width: 0;
+  padding: 8px 10px;
+  white-space: nowrap;
+}
+
+.rt-comp-acoes[hidden] {
+  display: none;
+}
+
+.rt-comp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid var(--rt-laranja);
+  border-radius: var(--rt-raio-p);
+  background: var(--rt-laranja);
+  color: #fff;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.2s ease, background 0.2s ease;
+}
+
+.rt-comp-btn:hover {
+  filter: brightness(0.95);
+}
+
+.rt-comp-btn:focus-visible {
+  outline: 2px solid var(--rt-laranja-escuro);
+  outline-offset: 2px;
+}
+
+.rt-comp-btn svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.rt-comp-btn-claro {
+  background: var(--rt-branco);
+  color: var(--rt-laranja-escuro);
+}
+
+.rt-comp-btn-claro:hover {
+  background: var(--rt-laranja-claro);
+  filter: none;
+}
+
+/* janela */
+.rt-pod {
+  /* centralizada: o reset global (* { margin: 0 }) tira a margem automática do <dialog> */
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(640px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0; /* o clique no fundo escuro fecha: o conteúdo cobre a janela inteira */
+  border: 0;
+  border-radius: var(--rt-raio);
+  background: var(--rt-branco);
+  color: var(--rt-texto);
+  font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
+}
+
+.rt-pod::backdrop {
+  background: rgba(11, 26, 44, 0.55);
+}
+
+.rt-pod-topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px 14px;
+  border-bottom: 1px solid var(--rt-borda);
+}
+
+.rt-pod-topo h2 {
+  margin: 4px 0 0;
+  font-size: 20px;
+  letter-spacing: 0.02em;
+}
+
+.rt-pod-fechar {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--rt-borda);
+  border-radius: var(--rt-raio-p);
+  background: var(--rt-branco);
+  color: var(--rt-texto-suave);
+  cursor: pointer;
+}
+
+.rt-pod-fechar svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.rt-pod-corpo {
+  padding: 18px 24px;
+}
+
+/* canhoto — MESMO padrão do Portal (css/gestao.css: Comprovante Digital POD).
+   Copiado aqui com escopo .rt-pod: a página de rastreio não carrega o CSS do portal. */
+.rt-pod .gs-pod-secao-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.rt-pod .rt-pod-sub {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--rt-texto);
+}
+
+.rt-pod .gs-autenticado {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #dcfce7;
+  font-size: 12px;
+  font-weight: 600;
+  color: #15803d;
+}
+
+.rt-pod .gs-autenticado svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.rt-pod .gs-canhoto-moldura {
+  position: relative;
+  height: 230px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: radial-gradient(120% 90% at 50% 40%, #6b6f78 0%, #2f323a 70%, #1c1e24 100%);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.5);
+  transition: height 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.rt-pod .gs-canhoto-moldura.ampliado {
+  height: 420px;
+}
+
+.rt-pod .gs-canhoto {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  width: 330px;
+  padding: 12px 14px 14px 30px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.03), transparent 30%), #f7f6f1;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 8.5px;
+  color: #2a2f3a;
+  transform: translateX(-50%) rotate(-1.8deg);
+  transform-origin: top center;
+  transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.rt-pod .gs-canhoto-moldura.ampliado .gs-canhoto {
+  transform: translateX(-50%) rotate(-1.8deg) scale(1.42);
+}
+
+/* furos do formulário contínuo */
+.rt-pod .gs-canhoto::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 9px;
+  width: 7px;
+  background: radial-gradient(circle, #3a3d45 2.2px, transparent 2.6px) 0 0 / 7px 16px repeat-y;
+  opacity: 0.55;
+}
+
+.rt-pod .gs-canhoto-topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #c9ccd3;
+}
+
+.rt-pod .gs-canhoto-marca {
+  font-family: "Plus Jakarta Sans", Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  font-style: italic;
+  color: #1f3a8a;
+}
+
+.rt-pod .gs-canhoto-marca small {
+  display: block;
+  font-size: 6px;
+  font-style: normal;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.rt-pod .gs-canhoto-doc {
+  text-align: right;
+}
+
+.rt-pod .gs-canhoto-doc b {
+  display: block;
+  font-size: 7.5px;
+}
+
+.rt-pod .gs-canhoto-doc span {
+  display: inline-block;
+  margin-top: 3px;
+  padding: 1px 4px;
+  border: 1px solid #9ca3af;
+}
+
+.rt-pod .gs-canhoto-linha {
+  margin-top: 5px;
+  padding: 3px 5px;
+  border: 1px solid #c9ccd3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rt-pod .gs-canhoto-assinatura {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  margin-top: 7px;
+}
+
+.rt-pod .gs-canhoto-assinatura i {
+  font-family: "Brush Script MT", "Segoe Script", "Lucida Handwriting", cursive;
+  font-size: 17px;
+  line-height: 1;
+  color: #1e3a8a;
+}
+
+.rt-pod .gs-canhoto-rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.rt-pod .gs-carimbo-retangulo {
+  padding: 3px 6px;
+  border: 1.5px solid #1e3a8a;
+  border-radius: 2px;
+  font-size: 7px;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: center;
+  color: #1e3a8a;
+  transform: rotate(-3deg);
+  opacity: 0.85;
+}
+
+.rt-pod .gs-carimbo-retangulo b {
+  display: block;
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+}
+
+.rt-pod .gs-carimbo-conferente {
+  font-family: "Brush Script MT", "Segoe Script", cursive;
+  font-size: 12px;
+  color: #1e3a8a;
+}
+
+.rt-pod .gs-carimbo-redondo {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border: 2px solid #1e3a8a;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 4px #f7f6f1, inset 0 0 0 5.5px #1e3a8a;
+  font-family: "Courier New", monospace;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+  color: #1e3a8a;
+  transform: rotate(12deg);
+  opacity: 0.8;
+}
+
+.rt-pod .gs-canhoto-vols {
+  margin-top: 6px;
+  font-size: 7.5px;
+  color: #6b7280;
+}
+
+.rt-pod .gs-blockchain {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 1;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(10, 12, 18, 0.85);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.rt-pod .gs-zoom {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: rgba(10, 12, 18, 0.55);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.rt-pod .gs-zoom:hover {
+  background: var(--rt-laranja);
+}
+
+.rt-pod .gs-zoom svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+/* dados da baixa */
+.rt-pod-dados {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 20px;
+  margin: 18px 0 0;
+}
+
+.rt-pod-dados div {
+  min-width: 0;
+}
+
+.rt-pod-dados dt {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--rt-texto-suave);
+}
+
+.rt-pod-dados dd {
+  margin: 2px 0 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.rt-pod-nota {
+  margin: 16px 0 0;
+  font-size: 12px;
+  color: var(--rt-texto-suave);
+}
+
+.rt-pod-acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 24px 20px;
+  border-top: 1px solid var(--rt-borda);
+}
+
+@media (max-width: 520px) {
+  .rt-pod-dados {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* "Baixar PDF": imprime só o comprovante */
+@media print {
+  body.rt-imprimindo > *:not(.rt-pod) {
+    display: none !important;
+  }
+
+  body.rt-imprimindo {
+    background: #fff;
+  }
+
+  body.rt-imprimindo .rt-pod {
+    position: static;
+    display: block;
+    width: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    box-shadow: none;
+    overflow: visible;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body.rt-imprimindo .rt-pod::backdrop {
+    display: none;
+  }
+
+  body.rt-imprimindo .rt-pod-fechar,
+  body.rt-imprimindo .rt-pod-acoes {
+    display: none;
+  }
+}
+
+/* ---------- Histórico: destaque da movimentação sob o mouse ----------
+   comum: mesmo laranja claro do evento atual · ocorrência: vermelho claro,
+   com o ícone de alerta vermelho sobre fundo branco */
+.rt-evento {
+  /* raio só no hover: as linhas divisórias continuam retas */
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.rt-evento-icone {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.rt-evento:not(.rt-evento-atual):hover {
+  border-radius: var(--rt-raio-p);
+  background: var(--rt-laranja-claro);
+  box-shadow: inset 0 0 0 1px var(--rt-laranja-borda);
+}
+
+.rt-evento:not(.rt-evento-atual):not(.rt-evento-alerta):hover .rt-evento-icone {
+  background: var(--rt-laranja);
+  color: var(--rt-branco);
+}
+
+.rt-evento.rt-evento-alerta:hover {
+  background: #fef2f2;
+  box-shadow: inset 0 0 0 1px #fecaca;
+}
+
+
+/* ocorrência sob o mouse (no topo ou mais abaixo): fundo vermelho claro e
+   ícone de alerta com fundo vermelho e linha branca — o mesmo comportamento
+   do laranja nas movimentações comuns */
+.rt-evento.rt-evento-alerta:hover .rt-evento-icone,
+.rt-evento.rt-evento-ocorrencia:hover .rt-evento-icone {
+  background: #dc2626;
+  color: var(--rt-branco);
+  box-shadow: none;
+}
+
+.rt-evento.rt-evento-ocorrencia:hover {
+  background: #fee2e2;
+}
+
+/* o destaque segue o mouse: ao passar sobre OUTRA movimentação, a mais recente
+   (destacada) volta ao estado normal — sem fundo; ocorrência só com o texto em vermelho */
+.rt-linha-tempo:has(.rt-evento:not(.rt-evento-atual):hover) .rt-evento-atual {
+  background: transparent;
+  border-color: transparent;
+}
+
+.rt-linha-tempo:has(.rt-evento:not(.rt-evento-atual):hover) .rt-evento-atual .rt-evento-icone {
+  width: 24px;
+  height: 24px;
+  background: var(--rt-laranja-claro);
+  color: var(--rt-laranja-escuro);
+  box-shadow: none;
+}
+
+.rt-linha-tempo:has(.rt-evento:not(.rt-evento-atual):hover) .rt-evento-atual.rt-evento-ocorrencia .rt-evento-icone {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.rt-linha-tempo:has(.rt-evento:not(.rt-evento-atual):hover) .rt-evento-atual:not(.rt-evento-ocorrencia) .rt-evento-local {
+  color: var(--rt-texto);
 }

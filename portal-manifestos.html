@@ -44,6 +44,15 @@
             </span>
             <h1>Gestão de Envios, Cargas e Comprovantes</h1>
             <p>Monitoramento ativo de despachos, telemetria veicular e custódia digital de canhotos (POD).</p>
+            <!-- aviso: aqui também se registram ocorrências (/js/ocorrencias.js) -->
+            <p class="gs-oc-aviso">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /><path d="M12 9v4M12 17h0" /></svg>
+              <span>
+                Teve avaria, falta de volumes, atraso ou recusa? Registre uma ocorrência pelo ícone de alerta na linha da carga
+                ou <button type="button" class="gs-oc-aviso-link" data-oc-nova>clique aqui para registrar</button>.
+                Acompanhe em <a href="#gs-ocorrencias">Ocorrências Registradas</a>.
+              </span>
+            </p>
           </div>
 
           <ul class="gs-numeros" aria-label="Resumo do período">
@@ -108,7 +117,7 @@
                   <th>Modalidade</th>
                   <th>Status Operacional</th>
                   <th>Previsão / Entrega</th>
-                  <th><span class="pt-oculto">Ações</span></th>
+                  <th>Rastreio &amp; Ocorrências</th>
                 </tr>
               </thead>
               <!-- linhas montadas pelo /js/gestao.js -->
@@ -126,9 +135,219 @@
           </footer>
         </section>
 
+        <!-- ===== OCORRÊNCIAS REGISTRADAS PELO CLIENTE (/js/ocorrencias.js) ===== -->
+        <section class="pt-cartao gs-oc-cartao" id="gs-ocorrencias" aria-labelledby="gs-oc-titulo">
+          <header class="gs-oc-topo">
+            <div>
+              <h2 id="gs-oc-titulo">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /><path d="M12 9v4M12 17h0" /></svg>
+                Ocorrências Registradas
+              </h2>
+              <p>Avaria, falta de volumes, atraso ou recusa: registre aqui e a Torre de Controle responde em até 2 horas úteis.</p>
+            </div>
+            <button type="button" class="gs-exportar" data-oc-nova>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+              Registrar Ocorrência
+            </button>
+          </header>
+          <div class="gs-rolagem">
+            <table class="gs-tabela gs-oc-tabela">
+              <thead>
+                <tr>
+                  <th>Protocolo &amp; Data</th>
+                  <th>Carga</th>
+                  <th>Tipo</th>
+                  <th>Descrição</th>
+                  <th>Status</th>
+                  <th><span class="pt-oculto">Ações</span></th>
+                </tr>
+              </thead>
+              <tbody id="gs-oc-linhas"></tbody>
+            </table>
+          </div>
+          <p class="gs-oc-vazio" id="gs-oc-vazio">
+            Nenhuma ocorrência registrada. Use <b>Registrar Ocorrência</b> ou o ícone de alerta na linha da carga.
+          </p>
+        </section>
+
       </main>
     </div>
   </div>
+
+  <!-- ===================== JANELA: TRATAR OCORRÊNCIA =====================
+       Resumo + andamento + próxima etapa. Cada etapa atualiza a situação da carga
+       (rastreio, card da home, tabela e Visão Geral) — ver /js/manifestos.js -->
+  <dialog class="gs-oc-janela" id="gs-trat-janela" aria-labelledby="gs-trat-titulo">
+    <form id="gs-trat-form" novalidate>
+      <header class="gs-oc-janela-topo">
+        <span class="gs-oc-janela-icone gs-trat-icone" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4V3h6v1M9 12l2 2 4-4.5M9 17h6" /></svg>
+        </span>
+        <div>
+          <h2 id="gs-trat-titulo">Tratar Ocorrência <span class="gs-trat-protocolo" id="gs-trat-protocolo"></span></h2>
+          <p id="gs-trat-sub">Registre o que foi feito. Cada etapa atualiza o rastreio da carga na hora.</p>
+        </div>
+        <button type="button" class="gs-oc-fechar" data-trat-fechar aria-label="Fechar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        </button>
+      </header>
+
+      <div class="gs-oc-corpo">
+        <!-- resumo da ocorrência (montado pelo ocorrencias.js) -->
+        <dl class="gs-oc-largo gs-trat-resumo" id="gs-trat-resumo"></dl>
+
+        <div class="gs-oc-largo">
+          <span class="gs-oc-rotulo">Andamento</span>
+          <ol class="gs-trat-linha" id="gs-trat-linha"></ol>
+        </div>
+
+        <div class="gs-oc-campo gs-oc-largo" data-trat-form>
+          <label for="gs-trat-acao">Próxima etapa</label>
+          <select id="gs-trat-acao" required></select>
+          <small class="gs-oc-erro" hidden>Escolha a próxima etapa.</small>
+        </div>
+
+        <div class="gs-oc-campo" data-trat-recebedor hidden>
+          <label for="gs-trat-recebedor">Recebido por</label>
+          <input type="text" id="gs-trat-recebedor" placeholder="Nome de quem recebeu" autocomplete="off">
+          <small class="gs-oc-erro" hidden>Informe quem recebeu a carga.</small>
+        </div>
+
+        <div class="gs-oc-campo" data-trat-recebedor hidden>
+          <label for="gs-trat-doc">Documento <span>(opcional)</span></label>
+          <input type="text" id="gs-trat-doc" placeholder="RG, CPF ou matrícula" autocomplete="off">
+        </div>
+
+        <div class="gs-oc-campo gs-oc-largo" data-trat-form>
+          <label for="gs-trat-obs">O que foi feito <span id="gs-trat-obs-opcional">(opcional)</span></label>
+          <textarea id="gs-trat-obs" rows="3" maxlength="600" placeholder="Ex.: Endereço corrigido com o cliente (Rua das Indústrias, 450). Nova tentativa agendada para amanhã."></textarea>
+          <small class="gs-oc-erro" hidden>Descreva o que foi feito (mínimo de 10 caracteres).</small>
+        </div>
+
+        <p class="gs-oc-largo gs-trat-fim" id="gs-trat-encerrada" hidden></p>
+      </div>
+
+      <footer class="gs-oc-rodape">
+        <button type="button" class="gs-oc-btn-texto" data-trat-fechar>Fechar</button>
+        <button type="submit" class="gs-exportar" id="gs-trat-enviar">Atualizar Ocorrência</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- ===================== JANELA: REGISTRAR OCORRÊNCIA ===================== -->
+  <dialog class="gs-oc-janela" id="gs-oc-janela" aria-labelledby="gs-oc-janela-titulo">
+    <form id="gs-oc-form" novalidate>
+      <header class="gs-oc-janela-topo">
+        <span class="gs-oc-janela-icone" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /><path d="M12 9v4M12 17h0" /></svg>
+        </span>
+        <div>
+          <h2 id="gs-oc-janela-titulo">Registrar Ocorrência</h2>
+          <p>Conte o que aconteceu com a carga. Quanto mais detalhes e fotos, mais rápida a análise.</p>
+        </div>
+        <button type="button" class="gs-oc-fechar" data-oc-fechar aria-label="Fechar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        </button>
+      </header>
+
+      <div class="gs-oc-corpo">
+        <div class="gs-oc-campo gs-oc-largo">
+          <label for="gs-oc-carga">Carga (código de rastreio)</label>
+          <select id="gs-oc-carga" required></select>
+          <small class="gs-oc-erro" hidden>Escolha a carga da ocorrência.</small>
+        </div>
+
+        <div class="gs-oc-campo">
+          <label for="gs-oc-tipo">Tipo de ocorrência</label>
+          <select id="gs-oc-tipo" required>
+            <option value="">Selecione…</option>
+            <optgroup label="Entrega">
+              <option>Destinatário ausente</option>
+              <option>Estabelecimento fechado</option>
+              <option>Recusa pelo destinatário</option>
+              <option>Atraso na entrega</option>
+              <option>Entrega em local diferente do combinado</option>
+            </optgroup>
+            <optgroup label="Endereço e contato">
+              <option>Endereço errado ou incompleto</option>
+              <option>Número do endereço errado</option>
+              <option>Destinatário não localizado / mudou-se</option>
+              <option>Telefone de contato errado</option>
+            </optgroup>
+            <optgroup label="Carga e volumes">
+              <option>Avaria na mercadoria</option>
+              <option>Embalagem violada</option>
+              <option>Falta de volumes</option>
+              <option>Quantidade de volumes divergente</option>
+              <option>Volume trocado (mercadoria de outro cliente)</option>
+              <option>Extravio / carga não recebida</option>
+            </optgroup>
+            <optgroup label="Documentos">
+              <option>Divergência na NF-e</option>
+              <option>NF-e ausente ou cancelada</option>
+              <option>Canhoto não devolvido / POD pendente</option>
+            </optgroup>
+            <optgroup label="Coleta">
+              <option>Coleta não realizada</option>
+              <option>Coleta com atraso</option>
+              <option>Veículo inadequado para a carga</option>
+            </optgroup>
+            <optgroup label="Devolução (logística reversa)">
+              <option>Devolução não coletada</option>
+              <option>Devolução com avaria</option>
+              <option>Devolução com volumes faltando</option>
+              <option>Devolução sem NF-e de retorno</option>
+              <option>Devolução recusada no recebimento</option>
+              <option>Atraso no retorno da devolução</option>
+            </optgroup>
+            <optgroup label="Outros">
+              <option>Outro</option>
+            </optgroup>
+          </select>
+          <small class="gs-oc-erro" hidden>Escolha o tipo de ocorrência.</small>
+        </div>
+
+        <div class="gs-oc-campo">
+          <label for="gs-oc-quando">Quando foi constatada</label>
+          <input type="datetime-local" id="gs-oc-quando" required>
+          <small class="gs-oc-erro" hidden>Informe a data e a hora.</small>
+        </div>
+
+        <div class="gs-oc-campo">
+          <label for="gs-oc-volumes">Volumes afetados <span>(opcional)</span></label>
+          <input type="number" id="gs-oc-volumes" min="1" inputmode="numeric" placeholder="Ex.: 2">
+          <small class="gs-oc-erro" hidden>Use um número de 1 até o total da carga.</small>
+        </div>
+
+        <div class="gs-oc-campo">
+          <label for="gs-oc-contato">Contato para retorno</label>
+          <input type="text" id="gs-oc-contato" autocomplete="name tel" value="Roberto Mendes • (19) 99841-3310" required>
+          <small class="gs-oc-erro" hidden>Informe nome e telefone para a Torre retornar.</small>
+        </div>
+
+        <div class="gs-oc-campo gs-oc-largo">
+          <label for="gs-oc-descricao">O que aconteceu?</label>
+          <textarea id="gs-oc-descricao" rows="4" maxlength="800" placeholder="Ex.: 2 caixas chegaram amassadas e com a fita violada. O recebedor anotou no canhoto." required></textarea>
+          <small class="gs-oc-erro" hidden>Descreva a ocorrência (mínimo de 10 caracteres).</small>
+        </div>
+
+        <div class="gs-oc-campo gs-oc-largo">
+          <span class="gs-oc-rotulo">Fotos <span>(opcional, até 5)</span></span>
+          <label class="gs-oc-fotos">
+            <input type="file" id="gs-oc-arquivos" accept="image/*" multiple class="pt-oculto">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="15" rx="2" /><circle cx="12" cy="12.5" r="3.5" /><path d="M8 5l1.5-2h5L16 5" /></svg>
+            <span>Adicionar fotos da carga, da embalagem ou do canhoto</span>
+          </label>
+          <ul class="gs-oc-miniaturas" id="gs-oc-miniaturas" aria-label="Fotos anexadas"></ul>
+        </div>
+      </div>
+
+      <footer class="gs-oc-rodape">
+        <button type="button" class="gs-oc-btn-texto" data-oc-fechar>Cancelar</button>
+        <button type="submit" class="gs-exportar" id="gs-oc-enviar">Registrar Ocorrência</button>
+      </footer>
+    </form>
+  </dialog>
 
   <!-- ===================== PAINEL DO COMPROVANTE (POD) ===================== -->
   <div class="gs-fundo" id="gs-fundo" hidden></div>
@@ -221,6 +440,7 @@
   <script src="/js/manifestos.js"></script>
   <script src="/js/portal-base.js"></script>
   <script src="/js/gestao.js"></script>
+  <script src="/js/ocorrencias.js"></script>
 </body>
 
 </html>

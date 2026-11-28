@@ -50,7 +50,7 @@
             <p class="pt-perfil-linha">
               <span>Indústrias Metalúrgicas ABC Ltda</span>
               <span class="pt-mono">CNPJ: 12.345.678/0001-90</span>
-              <span class="pt-perfil-tabela">Tabela Negociada: SP-SUL-2024.B</span>
+              <span class="pt-perfil-tabela">Tabela Negociada: <span data-ano-tabela>SP-SUL-2026</span>.B</span>
             </p>
           </div>
           <div class="pt-sync">
@@ -75,11 +75,11 @@
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 6h12v10H2z" /><path d="M14 9h4l3 3.5V16h-7" /><circle cx="6" cy="17.5" r="1.8" /><circle cx="17" cy="17.5" r="1.8" /></svg>
                 </span>
               </div>
-              <p class="pt-kpi-valor"><strong class="pt-contador" data-valor="18" data-digitos="2">18</strong> <span>remessas ativas</span></p>
+              <p class="pt-kpi-valor"><strong class="pt-contador" id="pt-kpi-transito" data-valor="23" data-digitos="2">23</strong> <span>remessas ativas</span></p>
             </div>
             <div class="pt-kpi-pe">
-              <span><i class="pt-ponto"></i> 14 no horário previsto</span>
-              <b class="pt-laranja">4 rota final</b>
+              <span><i class="pt-ponto"></i> <span id="pt-kpi-transito-pe">20 em rota no prazo</span></span>
+              <b class="pt-laranja" id="pt-kpi-ocorrencias">3 com ocorrência</b>
             </div>
           </article>
 
@@ -91,7 +91,7 @@
                   <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4V3h6v1" /><path d="M9 13l2 2 4-4.5" /></svg>
                 </span>
               </div>
-              <p class="pt-kpi-valor"><strong class="pt-contador" data-valor="3" data-digitos="2">03</strong> <span>solicitações</span></p>
+              <p class="pt-kpi-valor"><strong class="pt-contador" id="pt-kpi-coletas" data-valor="3" data-digitos="2">03</strong> <span>solicitações</span></p>
             </div>
             <div class="pt-kpi-pe">
               <span>Janela prioritária hoje:</span>
@@ -107,14 +107,14 @@
                   <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M8.5 12l2.5 2.5 4.5-5" /></svg>
                 </span>
               </div>
-              <p class="pt-kpi-valor"><strong class="pt-contador" data-valor="247">247</strong> <span>concluídas</span></p>
+              <p class="pt-kpi-valor"><strong class="pt-contador" id="pt-kpi-entregas" data-valor="14">14</strong> <span>concluídas</span></p>
             </div>
             <div class="pt-kpi-pe">
               <span>
                 <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M8.5 12l2.5 2.5 4.5-5" /></svg>
-                Índice OTD (No Prazo):
+                Com canhoto digital (POD):
               </span>
-              <b>99.6%</b>
+              <b id="pt-kpi-pod">100%</b>
             </div>
           </article>
 
@@ -132,7 +132,7 @@
             </div>
             <div class="pt-kpi-pe">
               <span>Vencimento via DDA:</span>
-              <b>28/11/2024</b>
+              <b data-ano-vencimento>28/11/2026</b>
             </div>
           </article>
         </section>
@@ -149,23 +149,23 @@
             </span>
             <svg class="pt-acao-seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
           </a>
-          <a class="pt-acao" href="/index.html#painel-simular">
+          <a class="pt-acao" href="/frete.html?editar=1">
             <span class="pt-acao-icone">
               <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2" /><path d="M8 7h8M8 11h2M14 11h2M8 15h2M14 15h2" /></svg>
             </span>
             <span class="pt-acao-texto">
               <strong>Simular Frete B2B</strong>
-              <small>Tabela SP-SUL-2024</small>
+              <small>Cotação com tarifa B2B</small>
             </span>
             <svg class="pt-acao-seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
           </a>
-          <a class="pt-acao" href="/portal-coleta.html">
+          <a class="pt-acao" href="/portal-coleta.html#cl-secao-2">
             <span class="pt-acao-icone">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" /><path d="M14 3v6h6M12 18v-6M9 15l3-3 3 3" /></svg>
             </span>
             <span class="pt-acao-texto">
-              <strong>Importar NF-e em Lote</strong>
-              <small>Leitura XML / Danfe</small>
+              <strong>Importar NF-e (XML)</strong>
+              <small>Vincular notas à coleta</small>
             </span>
             <svg class="pt-acao-seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
           </a>
@@ -308,7 +308,7 @@
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /><path d="M8 9h8M8 13h5" /></svg>
                   WhatsApp
                 </a>
-                <a class="pt-torre-ramal" href="tel:1938409099,9099">
+                <a class="pt-torre-ramal" href="tel:08007008900,9099">
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z" /></svg>
                   Ramal 9099
                 </a>
@@ -323,12 +323,12 @@
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8h0" /></svg>
           </span>
           <div class="pt-aviso-texto">
-            <strong>Janela de Coleta Programada para Hoje (Planta Vinhedo - SP)</strong>
-            <p>Carreta Sider Placa: GHR-9102 com motorista Marcos Vinícius liberada na portaria. Previsão de carregamento 15:30.</p>
+            <strong>Coleta <span data-protocolo-aviso>COL-2026-8841</span> a caminho (Planta Vinhedo - SP)</strong>
+            <p>VUC Sider placa PL-9921 com o motorista Edson Carvalho a caminho da portaria. Previsão de carregamento 15:30.</p>
           </div>
           <div class="pt-aviso-botoes">
-            <a class="pt-botao-claro" href="/portal-faturas.html?aba=pod">Ver Canhoto Digital</a>
-            <button type="button" class="pt-botao-escuro" data-em-breve="Autorização de docas">Autorizar Docas</button>
+            <a class="pt-botao-claro" href="/portal-coleta.html#cl-historico">Acompanhar Coleta</a>
+            <button type="button" class="pt-botao-escuro" id="pt-autorizar-doca">Autorizar Doca</button>
           </div>
         </section>
 

@@ -158,6 +158,22 @@
   const MODO_DEMONSTRACAO = true;
   const PAGINA_PORTAL = "/portal.html";
 
+  // login pedido por outra tela (ex.: "Contratar Coleta Imediata" da cotação):
+  // depois de entrar, vai direto para lá com os dados da carga (só destinos conhecidos)
+  const DESTINOS = { coleta: "/portal-coleta.html" };
+  const pedido = new URLSearchParams(location.search);
+  const destino = DESTINOS[pedido.get("destino")] || null;
+  function paginaDepoisDoLogin() {
+    if (!destino) return PAGINA_PORTAL;
+    const q = new URLSearchParams();
+    ["v", "p"].forEach((k) => pedido.get(k) && q.set(k, pedido.get(k)));
+    return q.toString() ? `${destino}?${q}` : destino;
+  }
+  if (destino) {
+    const sub = $(".lg-sub");
+    if (sub) sub.textContent = "Entre com o CNPJ ou e-mail da sua empresa para agendar a coleta da sua cotação.";
+  }
+
   function autenticar(login) {
     return new Promise((ok) =>
       setTimeout(
@@ -177,7 +193,7 @@
     } catch {
       /* sem sessionStorage: o portal abre mesmo assim */
     }
-    location.href = PAGINA_PORTAL;
+    location.href = paginaDepoisDoLogin();
   }
 
   form.addEventListener("submit", async (e) => {

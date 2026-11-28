@@ -398,14 +398,14 @@
           <td class="tl-proximo"><strong>${esc(v.proximo)}</strong><small>Previsão: ${esc(v.previsao)}</small></td>
           <td class="tl-acoes">
             <button type="button" class="tl-ver" data-ver="${esc(v.placa)}" aria-pressed="${sel}">Ver Telemetria</button>
-            <button type="button" class="tl-fone" data-fone="${esc(v.placa)}" aria-label="Falar com o motorista de ${esc(v.placa)}">${svg("fone")}</button>
+            <button type="button" class="tl-fone" data-fone="${esc(v.placa)}" aria-label="Falar com a Torre sobre ${esc(v.placa)}" title="Falar com a Torre sobre ${esc(v.placa)}">${svg("fone")}</button>
           </td>
         </tr>`;
       })
       .join("");
 
     $("#tl-exibindo").textContent =
-      `Exibindo ${lista.length} carretas de alta prioridade corporativa com CTe ativo vinculado à Indústrias Metalúrgicas ABC`;
+      `Exibindo ${lista.length} de ${FROTA.length} carretas (${REGIOES[regiao].nome}) com CT-e ativo da Indústrias Metalúrgicas ABC`;
   }
 
   linhas.addEventListener("click", (e) => {
@@ -417,7 +417,7 @@
     const fone = e.target.closest("[data-fone]");
     if (fone) {
       const v = FROTA.find((x) => x.placa === fone.dataset.fone);
-      avisar("Chamada para a cabine", `Conectando com ${v.motorista} (${v.placa}) pela Torre de Controle…`);
+      falarComTorre(v, fone);
     }
   });
 
@@ -586,20 +586,21 @@
   });
 
   /* ---------------- botões ---------------- */
-  $("#tl-intervencao").addEventListener("click", () =>
-    avisar(
-      "Intervenção da Torre solicitada",
-      `Um operador da Torre de Controle assumiu o acompanhamento de ${atual.placa} e entrará em contato com a cabine.`,
-    ),
-  );
+  // o cliente não fala direto com o motorista nem comanda o veículo:
+  // tudo passa pela Torre de Controle (WhatsApp da torre dedicada)
+  function falarComTorre(v, botao) {
+    const texto = `Olá, Torre VelozLog! Sou da Indústrias Metalúrgicas ABC e preciso de apoio com o veículo ${v.placa} (CT-e ${v.cte}, ${v.de} → ${v.para}).`;
+    if (window.VelozWhatsApp) window.VelozWhatsApp.conversar(texto, botao);
+    else avisar("Torre de Controle", "Ligue 0800 700 8900, ramal 9099, e informe a placa " + v.placa + ".");
+  }
+
+  $("#tl-intervencao").addEventListener("click", (e) => falarComTorre(atual, e.currentTarget));
 
   $("#tl-mais").addEventListener("click", () =>
     avisar(atual.placa, "Histórico completo do veículo e manutenção preventiva estarão disponíveis em breve."),
   );
 
-  $("#tl-ligar").addEventListener("click", () =>
-    avisar("Chamada para a cabine", `Conectando com ${atual.motorista} (${atual.placa}) pela Torre de Controle…`),
-  );
+  $("#tl-ligar").addEventListener("click", (e) => falarComTorre(atual, e.currentTarget));
 
   $('[data-tl="cte"]').addEventListener("click", (e) => {
     if (e.currentTarget.getAttribute("href") === "#") {
@@ -608,7 +609,7 @@
     }
   });
 
-  // comando remoto de trava: confirma dentro do próprio painel
+  // reportar ocorrência à Torre: confirma dentro do próprio painel
   const confirmar = $("#tl-confirmar");
   function fecharConfirmacao() {
     confirmar.hidden = true;
@@ -620,7 +621,7 @@
   $("#tl-trava-cancelar").addEventListener("click", fecharConfirmacao);
   $("#tl-trava-enviar").addEventListener("click", () => {
     fecharConfirmacao();
-    avisar("Comando enviado", `Travamento remoto confirmado pelo módulo do baú de ${atual.placa}.`);
+    avisar("Ocorrência reportada", `A Torre de Controle recebeu seu aviso sobre ${atual.placa} e retorna em até 10 minutos.`);
   });
 
   // relatório: planilha (CSV) da frota da região — abre no Excel com acentos
@@ -682,6 +683,12 @@
   }, 1000);
 
   /* ---------------- início ---------------- */
+  // números contados da própria frota: KPI, abas e tabela sempre batem
+  $("#tl-kpi-veiculos").textContent = FROTA.length;
+  abas.forEach((b) => {
+    const r = REGIOES[b.dataset.regiao];
+    if (r) b.textContent = `${r.nome} (${FROTA.filter((v) => v.regiao === b.dataset.regiao).length})`;
+  });
   montarTabela();
   preencherVeiculo(atual);
   iniciarMapa();

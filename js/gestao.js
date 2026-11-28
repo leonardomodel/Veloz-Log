@@ -13,7 +13,8 @@
     console.error("gestao.js: carregue /js/manifestos.js antes deste arquivo");
     return;
   }
-  const CARGAS = dados.cargas;
+  // situação atual de cada carga (com as ocorrências tratadas aplicadas)
+  let CARGAS = dados.cargas.map(dados.efetivo);
   const POR_PAGINA = 5;
 
   const $ = (s, el = document) => el.querySelector(s);
@@ -28,12 +29,22 @@
   const avisar = (t, x) => window.VelozPortal && window.VelozPortal.avisar(t, x);
   const kg = (n) => n.toLocaleString("pt-BR");
 
-  /* ---------- números do topo ---------- */
-  Object.entries(dados.totais).forEach(([chave, valor]) =>
-    $$(`[data-gs="${chave}"]`).forEach(
-      (el) => (el.textContent = chave === "novos" ? `+${valor}` : valor),
-    ),
-  );
+  /* ---------- período (despachos dos últimos N dias) ---------- */
+  const selectPeriodo = $("#gs-periodo");
+  const doPeriodo = () => {
+    const dias = Number(selectPeriodo.value) || 30;
+    return CARGAS.filter((m) => m.dias >= -dias);
+  };
+
+  /* ---------- números do topo e dos filtros: contados da lista do período ---------- */
+  function mostrarTotais() {
+    Object.entries(dados.calcularTotais(doPeriodo())).forEach(([chave, valor]) =>
+      $$(`[data-gs="${chave}"]`).forEach(
+        (el) => (el.textContent = chave === "novos" ? `+${valor}` : valor),
+      ),
+    );
+  }
+  mostrarTotais();
 
   /* ---------- ícones ---------- */
   const ICONES = {
@@ -54,7 +65,7 @@
   const busca = $("#gs-busca");
   let filtro = "todos";
   let pagina = 1;
-  let lista = CARGAS;
+  let lista = doPeriodo();
 
   const modalidadeHTML = (m) => {
     const [l1, ...resto] = m.mod.split(" ");
@@ -85,16 +96,46 @@
       </td>
       <td class="gs-data"><strong>${esc(m.despacho)}</strong><small>${esc(m.despachoHora)}</small></td>
       <td>${modalidadeHTML(m)}</td>
-      <td><span class="gs-status gs-status-${m.status}">${ICONES[m.status]}${esc(m.rotulo)}</span></td>
-      <td class="gs-prev ${m.status}"><strong>${esc(m.prev)}</strong><small>${esc(m.prevNota)}</small></td>
-      <td>${acao}</td>
+      <td>
+        <div class="gs-status-col">
+          <span class="gs-status gs-status-${dados.grupo(m)}">${ICONES[dados.grupo(m)]}${esc(m.rotulo)}</span>
+          ${etiquetaOcorrencia(m)}
+        </div>
+      </td>
+      <td class="gs-prev ${dados.grupo(m)}"><strong>${esc(m.prev)}</strong><small>${esc(m.prevNota)}</small></td>
+      <td>
+        <div class="gs-acoes">
+          ${acao}
+          <button type="button" class="gs-acao gs-acao-oc" data-ocorrencia="${m.cte}" aria-label="Registrar ocorrência em ${codigo}" title="Registrar ocorrência">${ICONES.ocorrencia}</button>
+        </div>
+      </td>
     </tr>`;
   }
 
+  // carga com ocorrência registrada pelo cliente: etiqueta com o protocolo, abaixo do status
+  // só ocorrências ainda em tratamento (encerradas/canceladas não marcam a linha)
+  function etiquetaOcorrencia(m) {
+    const emAberto = (dados.ocorrenciasCliente ? dados.ocorrenciasCliente(m.cte) : []).filter(
+      (o) => dados.ESTADOS_OC[o.estado].fase !== "encerrada",
+    );
+    if (!emAberto.length) return "";
+    const o = emAberto[0];
+    const mais = emAberto.length > 1 ? ` +${emAberto.length - 1}` : "";
+    const fase = dados.ESTADOS_OC[o.estado].fase; // aberta (vermelho) · andamento (âmbar)
+    return `<a class="gs-oc-tag gs-oc-tag-${fase}" href="#gs-ocorrencias" title="${esc(o.tipo)} — ${esc(o.status)}">${ICONES.ocorrencia}<span>${esc(o.protocolo)}${mais}</span></a>`;
+  }
+
+  // ocorrência registrada ou tratada: recalcula a situação das cargas, os números e a tabela
+  document.addEventListener("vl:ocorrencias", () => {
+    CARGAS = dados.cargas.map(dados.efetivo);
+    mostrarTotais();
+    filtrar();
+  });
+
   function filtrar() {
     const termo = norm(busca.value.trim());
-    lista = CARGAS.filter((m) => {
-      if (filtro !== "todos" && m.status !== filtro) return false;
+    lista = doPeriodo().filter((m) => {
+      if (filtro !== "todos" && dados.grupo(m) !== filtro) return false;
       if (!termo) return true;
       const texto = norm(
         [codigoDe(m), `cte-${m.cte}`, m.cte, m.chave, m.chave.replace(/\s/g, ""), m.nf, m.dest, m.pedido, m.cidade, m.uf, m.bairro].join(" "),
@@ -157,9 +198,11 @@
     render();
   });
 
-  $("#gs-periodo").addEventListener("change", (e) => {
+  selectPeriodo.addEventListener("change", (e) => {
     const texto = e.target.options[e.target.selectedIndex].textContent;
-    avisar("Período aplicado", `${texto}. Na demonstração, a lista é a mesma.`);
+    mostrarTotais();
+    filtrar();
+    avisar("Período aplicado", `${texto}: ${lista.length} manifesto${lista.length === 1 ? "" : "s"} na lista.`);
   });
 
   /* ---------- exportar CSV (Excel) ---------- */
@@ -310,6 +353,8 @@
 
   // abrir: botão "Ver POD" ou clique na linha de uma carga entregue
   corpo.addEventListener("click", (e) => {
+    // ícone de ocorrência e etiqueta: tratados pelo /js/ocorrencias.js (não abrem o POD)
+    if (e.target.closest("[data-ocorrencia], .gs-oc-tag")) return;
     const alvo = e.target.closest("[data-pod-abrir]");
     if (!alvo || e.target.closest("a")) return;
     abrirPod(alvo.dataset.podAbrir);

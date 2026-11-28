@@ -28,11 +28,12 @@
     <nav class="rodape-coluna" aria-label="Serviços de carga">
       <h3>Serviços de Carga</h3>
       <ul>
-        <li><a href="/index.html#servicos">Carga Fracionada Expressa</a></li>
-        <li><a href="/index.html#servicos">Carga Lotação / Fechada</a></li>
+        <!-- os mesmos 4 serviços dos cards da página inicial -->
+        <li><a href="/index.html#servicos">Carga Fechada (Lotação)</a></li>
+        <li><a href="/index.html#servicos">Carga Fracionada</a></li>
+        <li><a href="/index.html#servicos">Express (Same / Next-Day)</a></li>
         <li><a href="/index.html#servicos">Logística Reversa</a></li>
-        <li><a href="/index.html#servicos">Distribuição Urbana E-commerce</a></li>
-        <li><a href="/index.html#servicos">Armazenagem &amp; Cross-Docking</a></li>
+        <li><a href="/tabela-precos.html">Tabela de Preços Referencial</a></li>
       </ul>
     </nav>
 
@@ -50,7 +51,7 @@
   </div>
 
   <div class="rodape-base">
-    <p>© 2025 VelozLog Transportes e Logística Ltda. Todos os direitos reservados.</p>
+    <p>© <span data-ano-atual>2026</span> VelozLog Transportes e Logística Ltda. Todos os direitos reservados.</p>
     <p class="rodape-assinatura">
       Desenvolvido por
       <a class="lmtech" href="#"><span class="lmtech-lm">LM</span><span class="lmtech-tech">TECH</span> <span class="lmtech-devweb">DEVWEB</span></a>

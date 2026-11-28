@@ -53,7 +53,7 @@
             </button>
             <button type="button" class="tl-btn tl-btn-laranja" id="tl-intervencao">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5a7 7 0 0 1 14 0M8.5 12.5a3.5 3.5 0 0 1 7 0" /><circle cx="12" cy="12.5" r="1" /><path d="M12 13.5V21M9 21h6" /></svg>
-              <span>Intervenção Torre</span>
+              <span>Acionar Torre de Controle</span>
             </button>
           </div>
         </section>
@@ -67,7 +67,7 @@
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 6h12v10H2zM14 9h4l3 3.5V16h-7" /><circle cx="6" cy="17.5" r="1.8" /><circle cx="17" cy="17.5" r="1.8" /></svg>
               </span>
             </div>
-            <p class="tl-kpi-valor"><strong id="tl-kpi-veiculos">18</strong> <span>carretas</span></p>
+            <p class="tl-kpi-valor"><strong id="tl-kpi-veiculos">9</strong> <span>carretas</span></p>
             <p class="tl-kpi-nota"><i class="tl-bola tl-bola-verde"></i> 100% da frota dedicada com Iridium ativo</p>
           </article>
 
@@ -119,16 +119,16 @@
 
               <div class="tl-mapa-topo">
                 <div class="tl-regioes" role="tablist" aria-label="Região monitorada" id="tl-regioes">
-                  <button type="button" role="tab" aria-selected="true" data-regiao="sul">Sul &amp; Sudeste (14)</button>
-                  <button type="button" role="tab" aria-selected="false" data-regiao="centro">Centro-Oeste (4)</button>
-                  <button type="button" role="tab" aria-selected="false" data-regiao="portos">Corredor Portos (6)</button>
+                  <button type="button" role="tab" aria-selected="true" data-regiao="sul">Sul &amp; Sudeste (4)</button>
+                  <button type="button" role="tab" aria-selected="false" data-regiao="centro">Centro-Oeste (2)</button>
+                  <button type="button" role="tab" aria-selected="false" data-regiao="portos">Corredor Portos (3)</button>
                 </div>
                 <div class="tl-sinal">
                   <span class="tl-verde">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l5-5M7 11l6 6M9.5 8.5l6 6 4-4-6-6zM16 4l4 4" /></svg>
                     Sinal 100% (Iridium + 4G)
                   </span>
-                  <button type="button" class="tl-camada" id="tl-camada" aria-pressed="true">
+                  <button type="button" class="tl-camada" id="tl-camada" aria-pressed="true" title="Mostra a velocidade de cada veículo no mapa">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5z" /><path d="M3 13l9 5 9-5" /></svg>
                     Camada CAN
                   </button>
@@ -187,7 +187,7 @@
             </header>
 
             <dl class="tl-ficha">
-              <div><dt>Condutor Escalar:</dt><dd data-tl="condutor">Marcos Vinicius (Cat. E)</dd></div>
+              <div><dt>Motorista:</dt><dd data-tl="condutor">Marcos Vinicius (Cat. E)</dd></div>
               <div><dt>CTe Emitido:</dt><dd><a class="tl-mono tl-cte" data-tl="cte" href="#">00894012 - Série 1</a></dd></div>
               <div><dt>Carga Transportada:</dt><dd data-tl="carga">Bobinas de Aço &amp; Inox</dd></div>
             </dl>
@@ -243,19 +243,19 @@
             <div class="tl-veiculo-botoes">
               <button type="button" class="tl-btn tl-btn-lavanda" id="tl-ligar">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2" /></svg>
-                <span>Ligar p/ Cabine</span>
+                <span>Falar com a Torre</span>
               </button>
               <button type="button" class="tl-btn tl-btn-escuro" id="tl-trava">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /><rect x="9" y="11" width="6" height="5" rx="1" /><path d="M10.5 11V9.5a1.5 1.5 0 0 1 3 0V11" /></svg>
-                <span>Comando Trava</span>
+                <span>Reportar Ocorrência</span>
               </button>
             </div>
             <!-- confirmação do comando remoto (sem alert/confirm do navegador) -->
             <div class="tl-confirmar" id="tl-confirmar" hidden>
-              <p>Enviar comando de <b>travamento remoto</b> do baú para <b data-tl="placa">GHR-9102</b>?</p>
+              <p>Avisar a <b>Torre de Controle</b> sobre uma ocorrência com a carga do veículo <b data-tl="placa">GHR-9102</b>? Um analista retorna em até 10 minutos.</p>
               <div>
                 <button type="button" class="tl-btn tl-btn-claro" id="tl-trava-cancelar">Cancelar</button>
-                <button type="button" class="tl-btn tl-btn-laranja" id="tl-trava-enviar">Enviar comando</button>
+                <button type="button" class="tl-btn tl-btn-laranja" id="tl-trava-enviar">Enviar aviso</button>
               </div>
             </div>
             </div>

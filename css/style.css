@@ -834,11 +834,15 @@ main > .hero {
   stroke: var(--laranja);
 }
 
+/* mesma etiqueta da página de rastreio: fundo laranja, texto branco */
 .segurada {
   margin-left: auto;
-  font-size: 14px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: #ff6b1a;
+  font-size: 12px;
   font-weight: 700;
-  color: var(--laranja-escuro);
+  color: #fff;
   white-space: nowrap;
 }
 
@@ -908,6 +912,11 @@ main > .hero {
   height: 100%;
   border-radius: 99px;
   background: var(--laranja);
+}
+
+/* pedido entregue: barra verde (mesmo verde da data de entrega) */
+.barra-preenchimento.entregue {
+  background: #16a34a;
 }
 
 .estado-resultado > footer {
@@ -2512,4 +2521,14 @@ main > .hero {
   .cotacao-texto {
     font-size: 16px;
   }
+}
+
+/* mensagem de erro dos formulários de cotação da home (criada pelo cotacao-form.js) */
+.vl-erro-campo {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #dc2626;
 }

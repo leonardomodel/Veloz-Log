@@ -92,10 +92,8 @@
   const acond = () => $('input[name="acond"]:checked').value;
 
   /* ---------------- notas fiscais ---------------- */
-  let notas = [
-    { numero: "004.891", valor: 84200 },
-    { numero: "004.892", valor: 41500 },
-  ];
+  // começa sem notas: o cliente vincula as NF-e desta coleta (XML ou chave de acesso)
+  let notas = [];
   const listaNotas = $("#cl-notas");
   const erroChave = $("#cl-chave-erro");
 
@@ -384,6 +382,24 @@
       avisar(b.dataset.detalhe, "A Torre de Controle está alocando o veículo. Você recebe o motorista e a placa em instantes.");
   });
 
+  /* ---------------- coletas confirmadas (guardadas neste navegador) ---------------- */
+  const CHAVE_COLETAS = "velozlog:coletas"; // a mesma lida pelo /js/manifestos.js
+  function lerColetas() {
+    try {
+      const l = JSON.parse(localStorage.getItem(CHAVE_COLETAS) || "[]");
+      return Array.isArray(l) ? l : [];
+    } catch {
+      return [];
+    }
+  }
+  function guardarColeta(c) {
+    try {
+      localStorage.setItem(CHAVE_COLETAS, JSON.stringify([{ ...c, criada: Date.now() }, ...lerColetas()].slice(0, 20)));
+    } catch {
+      /* sem armazenamento: fica só nesta visita */
+    }
+  }
+
   /* ---------------- confirmar ---------------- */
   const botaoConfirmar = $("#cl-confirmar");
   const rotuloConfirmar = $("span", botaoConfirmar);
@@ -427,6 +443,7 @@
       };
       historico.unshift(nova);
       mostrarHistorico(nova);
+      guardarColeta(nova); // aparece de novo ao voltar e conta em "Coletas agendadas" da Visão Geral
 
       confirmado = true;
       marcarEtapas();
@@ -501,9 +518,12 @@
   });
 
   /* ---------------- ajuda ---------------- */
-  $("#cl-chamar").addEventListener("click", () =>
-    avisar("Gestor de conta acionado", "Seu gestor de conta vai ligar no telefone do pátio em até 10 minutos."),
-  );
+  // mesmo canal dos outros "Chamar" do site: WhatsApp do gestor de conta
+  $("#cl-chamar").addEventListener("click", (e) => {
+    const texto = `Olá, Tatiane! Sou da ${EMPRESA} e tenho uma dúvida de cubagem na coleta da ${planta().curto} (${volumes() || 0} ${UNIDADES[acond()].curta}, ${milhar(pesoKg())} kg).`;
+    if (window.VelozWhatsApp) window.VelozWhatsApp.conversar(texto, e.currentTarget);
+    else avisar("Gestor de conta", "Fale com a Tatiane Moreira: 0800 700 8900, ramal 9099.");
+  });
 
   /* ---------------- início ---------------- */
   let restaurou = false;
@@ -516,6 +536,31 @@
   } catch {
     /* sem rascunho */
   }
+
+  // veio da cotação ("Contratar Coleta Imediata"): já traz volumes e peso
+  const daCotacao = new URLSearchParams(location.search);
+  const vCot = parseInt(daCotacao.get("v"), 10);
+  const pCot = parseFloat(daCotacao.get("p"));
+  if (!restaurou && vCot >= 1 && pCot > 0) {
+    campos.volumes.value = Math.min(vCot, 60);
+    campos.peso.value = milhar(Math.ceil(pCot));
+    const caixas = $('input[name="acond"][value="caixas"]');
+    if (caixas) caixas.checked = true;
+    setTimeout(() => avisar("Dados da cotação aplicados", "Volumes e peso vieram da sua cotação. Agora vincule as NF-e e confirme."), 400);
+  }
+
+  // coletas já confirmadas neste navegador continuam no histórico
+  const salvas = window.VelozManifestos ? window.VelozManifestos.coletasSolicitadas() : lerColetas();
+  const hojeTexto = new Date().toDateString();
+  salvas.forEach((c) => {
+    // "Hoje, 14:20" só vale no mesmo dia; depois mostra a data
+    if (c.criada && new Date(c.criada).toDateString() !== hojeTexto) {
+      const d = new Date(c.criada);
+      c.data = `${d.toLocaleDateString("pt-BR")}, ${d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`;
+    }
+  });
+  historico.unshift(...salvas);
+
   mostrarNotas();
   mostrarHistorico();
   if (restaurou) setTimeout(() => avisar("Rascunho restaurado", "Continuamos a solicitação que você salvou."), 400);

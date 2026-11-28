@@ -85,12 +85,12 @@
 
           <article class="pt-cartao fa-kpi">
             <div class="fa-kpi-topo">
-              <h2>Faturas Liquidadas (Mês)</h2>
+              <h2>Faturas Liquidadas (30 dias)</h2>
               <span class="fa-kpi-icone">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 2.1 3.2-.4.9 3.1 2.8 1.6-1.1 3 1.1 3-2.8 1.6-.9 3.1-3.2-.4L12 22l-2.4-2.1-3.2.4-.9-3.1-2.8-1.6 1.1-3-1.1-3 2.8-1.6.9-3.1 3.2.4z" /><path d="M8.5 12l2.5 2.5 4.5-5" /></svg>
               </span>
             </div>
-            <p class="fa-kpi-valor">R$ 184.200<small>,00</small></p>
+            <p class="fa-kpi-valor" id="fa-kpi-liquidadas">R$ 161.550<small>,00</small></p>
             <p class="fa-kpi-nota">
               <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M8.5 12l2.5 2.5 4.5-5" /></svg>
               <span>Conciliação bancária 100% deferida</span>
@@ -104,7 +104,7 @@
                 <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M7 17l4-5 3 3.5 2-2.5 2 4z" /><circle cx="15.5" cy="8.5" r="1.5" /></svg>
               </span>
             </div>
-            <p class="fa-kpi-valor">204 <span class="fa-kpi-unidade">PODs</span></p>
+            <p class="fa-kpi-valor"><span id="fa-kpi-canhotos">14</span> <span class="fa-kpi-unidade">PODs</span></p>
             <p class="fa-kpi-nota">
               <svg class="fa-laranja" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /></svg>
               <span>100% com geolocalização e carimbo</span>
@@ -197,7 +197,7 @@
                 <p>Comprovantes com assinatura manuscrita digitalizada, dados do recebedor e coordenadas GPS de entrega registradas pelo app do motorista.</p>
               </div>
               <button type="button" class="fa-ver-todos" data-ir-aba="pod">
-                Ver todos os 204 canhotos
+                <span id="fa-ver-canhotos">Ver todos os canhotos</span>
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
               </button>
             </header>
@@ -214,7 +214,7 @@
               <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" /></svg>
               <input type="search" id="fa-pod-busca" placeholder="Buscar por CTe, recebedor ou cidade..." aria-label="Buscar canhoto por CT-e, recebedor ou cidade">
             </label>
-            <span class="fa-pod-total" id="fa-pod-total">9 canhotos nesta página • 204 no repositório</span>
+            <span class="fa-pod-total" id="fa-pod-total">canhotos no repositório</span>
             <button type="button" class="fa-btn fa-btn-claro fa-btn-baixo" id="fa-pod-zip">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="M7 10l5 5 5-5M12 15V3" /></svg>
               Baixar Metadados (JSON)

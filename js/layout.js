@@ -109,8 +109,28 @@
     return Promise.all(pendentes);
   }
 
+  // já entrou no portal nesta sessão? "Área do Cliente" vira "Meu Portal" (sem pedir login de novo)
+  function sessaoAtiva() {
+    try {
+      return !!sessionStorage.getItem("velozlog:sessao");
+    } catch {
+      return false;
+    }
+  }
+  function ajustarAreaCliente() {
+    if (!sessaoAtiva()) return;
+    document.querySelectorAll(".acoes .btn-area, .acoes .avatar").forEach((link) => {
+      link.setAttribute("href", "/portal.html");
+      if (link.classList.contains("btn-area")) link.textContent = "Meu Portal";
+      else link.setAttribute("aria-label", "Meu Portal");
+    });
+  }
+
   // marca como ativo o link da página atual (só links sem #)
   function marcarAtivos() {
+    ajustarAreaCliente();
+    // ano do rodapé sempre atual
+    document.querySelectorAll("[data-ano-atual]").forEach((el) => (el.textContent = new Date().getFullYear()));
     document.querySelectorAll(".menu a, .acoes .btn-area, .pt-menu a").forEach((link) => {
       // "#" (itens "em breve") aponta para a própria página: não conta como ativo
       const href = link.getAttribute("href") || "";

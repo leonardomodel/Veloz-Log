@@ -79,6 +79,139 @@
 
   // 3) dados do manifesto
   if (manifesto) preencher(manifesto);
+  else naoEncontrado();
+
+  // "Falar com atendimento": WhatsApp já com o código da carga
+  const atendimento = $(".rt-suporte-btn");
+  if (atendimento) {
+    const cod = manifesto ? window.VelozManifestos.codigo(manifesto) : codigo;
+    atendimento.dataset.whatsapp = cod
+      ? `Olá! Preciso de ajuda com a entrega de código ${cod}.`
+      : "Olá! Preciso de ajuda para rastrear uma entrega.";
+  }
+
+  /* ---------- comprovante de entrega (POD): ver e baixar ----------
+     Só para pedidos entregues. A janela mostra o canhoto assinado e os dados da baixa;
+     "Baixar PDF" imprime só a janela (o navegador oferece "Salvar como PDF"). */
+  function prepararComprovante(m) {
+    const acoes = $('[data-rt="comprovante"]');
+    const janela = $("#rt-pod");
+    if (!acoes || !janela || !m.pod) return;
+    acoes.hidden = false;
+
+    const p = m.pod;
+    const cod = window.VelozManifestos.codigo(m);
+    const [, dia, mes, ano, hora] = /(\d{2})\/(\d{2})\/(\d{4}) às (\d{2}:\d{2}:\d{2})/.exec(p.carimbo) || [];
+    const MESES = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
+    const dataCarimbo = dia ? `${dia} ${MESES[Number(mes) - 1]} ${ano}` : p.carimbo;
+    const linha = (dt, dd) => `<div><dt>${esc(dt)}</dt><dd>${esc(dd)}</dd></div>`;
+
+    $("#rt-pod-titulo").textContent = cod;
+    // canhoto no MESMO padrão do Portal (Manifestos & CTEs → Comprovante Digital)
+    const [d2, m2, a2] = dia ? [dia, MESES[Number(mes) - 1], ano] : ["", "", ""];
+    $("#rt-pod-corpo").innerHTML = `
+      <div class="gs-pod-secao-topo">
+        <h3 class="rt-pod-sub">Digitalização do Canhoto Assinado</h3>
+        <span class="gs-autenticado">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M8.5 12l2.5 2.5 4.5-5" /></svg>
+          Autenticado
+        </span>
+      </div>
+      <div class="gs-canhoto-moldura" role="img" aria-label="Canhoto assinado por ${esc(p.recebedor)} em ${esc(p.carimbo)}">
+        <div class="gs-canhoto">
+          <div class="gs-canhoto-topo">
+            <span class="gs-canhoto-marca">VELOZLOG<small>Gestão de Cargas</small></span>
+            <span class="gs-canhoto-doc">
+              <b>COMPROVANTE DE ENTREGA - VELOZLOG</b>
+              <span>Nº NF: ${esc(m.nf)}</span> <span>Data: ${dia ? `${dia}/${mes}/${ano}` : ""}</span>
+            </span>
+          </div>
+          <div class="gs-canhoto-linha">Cliente: ${esc(m.dest || `${m.cidade} (${m.uf})`)}</div>
+          <div class="gs-canhoto-linha">Destinatário: Recebido por ${esc(p.recebedor)}</div>
+          <div class="gs-canhoto-assinatura">Entregue por: <i>${esc(p.entregador || "Equipe VelozLog")}</i></div>
+          <div class="gs-canhoto-rodape">
+            <span class="gs-carimbo-retangulo">ENTREGUE EM:<b>${esc(dataCarimbo)}</b>VELOZLOG - LOGÍSTICA</span>
+            <span class="gs-carimbo-conferente">${esc(p.conferente || "")}</span>
+            <span class="gs-carimbo-redondo">RECEBIDO<br>${esc(d2)} ${esc(m2)}<br>${esc(a2)}</span>
+          </div>
+          <div class="gs-canhoto-vols">Volumes: ${esc(m.vols || "—")} • Peso: ${m.kg ? esc(m.kg.toLocaleString("pt-BR")) : "—"} kg • ${esc(m.pedido || "")}</div>
+        </div>
+        <span class="gs-blockchain">Registro Imutável Blockchain <b>${esc(p.registro)}</b></span>
+        <button type="button" class="gs-zoom" data-pod-zoom aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4M11 8v6M8 11h6" /></svg>
+          <span>Zoom</span>
+        </button>
+      </div>
+      <dl class="rt-pod-dados">
+        ${linha("Data e hora da entrega", dia ? `${dia}/${mes}/${ano.slice(2)} • ${hora}` : p.carimbo)}
+        ${linha("Recebedor", p.recebedor)}
+        ${linha("Documento", p.doc)}
+        ${linha("Local da baixa", p.local)}
+        ${linha("Coordenadas (GPS)", `${p.lat.toFixed(6)}, ${p.lng.toFixed(6)} (± ${p.raio} m)`)}
+        ${linha("Origem", ORIGEM.nome)}
+        ${linha("Destino", `${m.cidade} (${m.uf})`)}
+        ${linha("Volumes e peso", `${m.vols || "—"} vol. • ${m.kg ? m.kg.toLocaleString("pt-BR") : "—"} kg`)}
+        ${linha("Registro do comprovante", p.registro)}
+      </dl>
+      <p class="rt-pod-nota">Comprovante digital autenticado: assinatura, data, hora e posição GPS registradas pelo aplicativo do motorista no momento da entrega.</p>`;
+
+    const abrir = () => {
+      if (typeof janela.showModal === "function") {
+        if (!janela.open) janela.showModal();
+      } else janela.setAttribute("open", "");
+    };
+    const fechar = () => (typeof janela.close === "function" ? janela.close() : janela.removeAttribute("open"));
+
+    function baixar() {
+      const estavaAberta = janela.open;
+      abrir();
+      document.body.classList.add("rt-imprimindo");
+      const titulo = document.title;
+      document.title = `Comprovante-Entrega-${cod}`; // nome sugerido para o PDF
+      window.print();
+      document.title = titulo;
+      document.body.classList.remove("rt-imprimindo");
+      if (!estavaAberta) fechar();
+    }
+
+    document.addEventListener("click", (e) => {
+      const zoom = e.target.closest("[data-pod-zoom]");
+      if (zoom) {
+        // amplia o canhoto (igual ao portal)
+        const ampliado = zoom.closest(".gs-canhoto-moldura").classList.toggle("ampliado");
+        zoom.setAttribute("aria-pressed", String(ampliado));
+        zoom.querySelector("span").textContent = ampliado ? "Reduzir" : "Zoom";
+      } else if (e.target.closest("[data-pod-ver]")) abrir();
+      else if (e.target.closest("[data-pod-baixar]")) baixar();
+      else if (e.target.closest("[data-pod-fechar]")) fechar();
+      else if (e.target === janela) fechar(); // clique no fundo escuro
+    });
+  }
+
+  // sem código, ou código que não existe: não mostra dados de exemplo
+  function naoEncontrado() {
+    document.title = "Rastreio não encontrado | VelozLog";
+    const texto = codigo
+      ? `Não encontramos nenhuma carga com o código <strong>${esc(codigo)}</strong>. Confira o código no seu CT-e ou no e-mail de despacho (formato VLZ-000000-UF) e tente de novo.`
+      : "Nenhum código informado. Volte e digite o código de rastreio ou o número do CT-e.";
+    const resumo = $(".rt-resumo");
+    if (resumo)
+      resumo.innerHTML = `
+        <div class="rt-resumo-topo">
+          <div>
+            <span class="rt-rotulo">Código de rastreamento</span>
+            <strong class="rt-codigo">${esc(codigo || "—")}</strong>
+          </div>
+          <div class="rt-tags"><span class="rt-tag" data-situacao="ocorrencia"><i></i> Não encontrado</span></div>
+        </div>
+        <p class="rt-subtitulo">${texto}</p>`;
+    // histórico e informações seriam de exemplo: some com eles (fica só o suporte)
+    const historico = $(".rt-historico");
+    if (historico) historico.hidden = true;
+    const info = $(".rt-info");
+    if (info) info.hidden = true;
+    definir("codigo", codigo || "—");
+  }
 
   function preencher(m) {
     const info = window.VelozManifestos.situacao(m); // etiqueta, % e etapa
@@ -88,18 +221,37 @@
 
     document.title = `${window.VelozManifestos.codigo(m)} — ${destino} | VelozLog`;
 
-    // etiqueta de status
+    // ocorrência do cliente AINDA ABERTA (em análise / aguardando cliente).
+    // Depois de tratada, quem manda é a situação da carga (m já vem com ela aplicada).
+    const comOcorrenciaCliente = !!(
+      window.VelozManifestos.ocorrenciaAberta && window.VelozManifestos.ocorrenciaAberta(m.cte)
+    );
+
+    // etiqueta de status (com ocorrência do cliente: "Ocorrência registrada", em vermelho)
     const etiqueta = $('[data-rt="status"]');
-    etiqueta.innerHTML = `<i></i> ${esc(info.tag)}`;
-    etiqueta.dataset.situacao = m.status; // cor: verde entregue, vermelho ocorrência… (rastreio.css)
+    etiqueta.innerHTML = `<i></i> ${esc(comOcorrenciaCliente ? "Ocorrência registrada" : info.tag)}`;
+    etiqueta.dataset.situacao = comOcorrenciaCliente ? "ocorrencia" : m.status; // cor (rastreio.css)
 
     // rota e previsão
     definir("origem", ORIGEM.nome);
     definir("origem-sub", ORIGEM.sub);
     definir("destino", destino);
     definir("destino-sub", ESTADOS[m.uf] || m.uf);
-    definir("previsao", m.eta);
+    // entregue: só a data (ano com 2 dígitos) e a hora, numa linha — ex.: 24/11/26 • 14:28
+    const pod = m.status === "entregue" && m.pod && /(\d{2})\/(\d{2})\/\d{2}(\d{2}) às (\d{2}:\d{2})/.exec(m.pod.carimbo);
+    if (pod) {
+      definir("previsao-rotulo", m.devolvido ? "Devolvido em" : "Entregue em");
+      definir("previsao", `${pod[1]}/${pod[2]}/${pod[3]} • ${pod[4]}`);
+      $$('[data-rt="previsao"]').forEach((el) => el.classList.add("rt-uma-linha"));
+      prepararComprovante(m);
+    } else {
+      // ocorrência em tratamento: mostra só a fase (Despacho, Nova tentativa de entrega…)
+      if (m.emTratamento) definir("previsao-rotulo", "Situação da entrega");
+      definir("previsao", m.eta);
+    }
     definir("previsao-nota", m.obs);
+    // sem descrição (ex.: fases do tratamento): some com a linha de baixo
+    $$('[data-rt="previsao-nota"]').forEach((el) => (el.hidden = !m.obs));
     definir("local", m.local);
 
     // barra de progresso
@@ -118,37 +270,162 @@
       ocorrencia ? "Ocorrência na entrega" : entregaHoje ? "Saiu para entrega" : "Em trânsito",
       "Entregue",
     ];
-    // ícone da etapa: ✓ nas já alcançadas (inclusive a atual) · alerta se a atual for ocorrência
+    // etapa marcada com alerta: a atual (ou a última, se já entregue) quando há ocorrência
+    // registrada pelo cliente; senão, a atual quando a própria carga está em ocorrência
+    const etapaAlerta = comOcorrenciaCliente
+      ? Math.min(info.etapa, nomesEtapas.length - 1)
+      : ocorrencia
+        ? info.etapa
+        : -1;
+    if (comOcorrenciaCliente) nomesEtapas[etapaAlerta] = "Ocorrência registrada";
+    // ocorrência em tratamento: a etapa atual ganha o nome da nova fase
+    // (ex.: "Em despacho (nova tentativa)", "Saiu para entrega (nova tentativa)")
+    else if (m.etapaNome && info.etapa < nomesEtapas.length) nomesEtapas[info.etapa] = m.etapaNome;
+    if (m.devolvido) nomesEtapas[nomesEtapas.length - 1] = "Devolvido ao remetente";
+
+    // ícone da etapa: ✓ nas já alcançadas (inclusive a atual) · alerta na etapa com ocorrência
     // · número só nas que ainda vão acontecer
     const iconeEtapa = (i) =>
-      i < info.etapa ? "✓" : i === info.etapa ? (ocorrencia ? ALERTA : "✓") : String(i + 1).padStart(2, "0");
+      i === etapaAlerta ? ALERTA : i <= info.etapa ? "✓" : String(i + 1).padStart(2, "0");
 
     $('[data-rt="etapas"]').innerHTML = nomesEtapas
       .map((nome, i) => {
         let classe = i < info.etapa ? " rt-feita" : i === info.etapa ? " rt-atual" : "";
-        if (i === info.etapa && ocorrencia) classe += " rt-ocorrencia";
+        if (i === etapaAlerta) classe += " rt-ocorrencia";
         return `<li class="rt-etapa${classe}"><span class="rt-etapa-icone">${iconeEtapa(i)}</span> ${esc(nome)}</li>`;
       })
       .join("");
 
+    // a barra acompanha as ETAPAS (não o % do trajeto): termina na etapa atual
+    // e só fica cheia quando a carga for entregue
+    // entregue: barra verde (rastreio.css)
+    barra.classList.toggle("rt-barra-entregue", m.status === "entregue");
+    const ajustarBarra = () => {
+      if (info.etapa >= nomesEtapas.length) {
+        barra.style.width = "100%";
+        return;
+      }
+      const itens = [...$$('[data-rt="etapas"] .rt-etapa')];
+      const atual = itens[info.etapa];
+      const trilho = $(".rt-barra");
+      const t = trilho && trilho.getBoundingClientRect();
+      if (!atual || !t || !t.width) return;
+      let pct;
+      if (atual.offsetTop !== itens[0].offsetTop) {
+        // etapas quebradas em 2 linhas (celular): proporção pela posição da etapa
+        pct = ((info.etapa + 0.5) / nomesEtapas.length) * 100;
+      } else {
+        // fim do texto da etapa atual, com uma pequena folga
+        const faixa = document.createRange();
+        faixa.selectNodeContents(atual);
+        pct = ((faixa.getBoundingClientRect().right - t.left + 8) / t.width) * 100;
+      }
+      barra.style.width = Math.min(100, Math.max(4, pct)) + "%";
+    };
+    ajustarBarra();
+    // a fonte do site pode chegar depois e mudar a largura do texto: mede de novo
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajustarBarra);
+    let timerBarra = null;
+    window.addEventListener("resize", () => {
+      clearTimeout(timerBarra);
+      timerBarra = setTimeout(ajustarBarra, 120);
+    });
+
     // histórico (mais recentes primeiro) — o evento atual usa o mesmo ícone da etapa atual;
     // ocorrências anteriores (tipo "ocorrencia") ganham o ícone de alerta
-    const eventos = historico(m, destino);
+    // movimentações da operação: sempre da carga ORIGINAL (o tratamento da
+    // ocorrência entra abaixo, como eventos próprios, sem duplicar a entrega)
+    const original = m.original || m;
+    const eventos = historico(original, destino);
+    // o evento que representa a situação atual da carga
+    const eventoAtual = eventos[0];
+
+    // data e hora de cada movimentação (ts, em ms). Sem horário real nos dados de
+    // demonstração: distribui do despacho (08:00) até a movimentação mais recente —
+    // a entrega (comprovante) ou hoje de manhã, nunca no futuro.
+    if (!eventos.some((ev) => ev.quando)) {
+      const datas = window.VelozManifestos.datas;
+      const agora = Date.now();
+      const emDia = (n, h, min) => {
+        const d = datas.dia(n);
+        d.setHours(h, min, 0, 0);
+        return d.getTime();
+      };
+      const pod = original.pod && /(\d{2})\/(\d{2})\/(\d{4}) às (\d{2}):(\d{2})/.exec(original.pod.carimbo);
+      let recente = pod
+        ? new Date(+pod[3], +pod[2] - 1, +pod[1], +pod[4], +pod[5]).getTime()
+        : emDia(0, 7, 40);
+      // com ocorrência do cliente, a operação parou antes do 1º registro dela
+      const primeiraOc = Math.min(
+        ...(window.VelozManifestos.ocorrenciasCliente ? window.VelozManifestos.ocorrenciasCliente(m.cte) : []).map((o) => o.criada),
+        agora,
+      );
+      recente = Math.min(recente, agora - 40 * 60000, primeiraOc - 20 * 60000);
+      let antigo = Math.min(emDia(Math.min(original.dias || 0, 0), 8, 0), recente - 60 * 60000);
+      const passo = eventos.length > 1 ? (recente - antigo) / (eventos.length - 1) : 0;
+      eventos.forEach((ev, i) => (ev.ts = Math.round(recente - passo * i)));
+    }
+    const dataHora = (ms) => {
+      const d = new Date(ms);
+      return `${d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })} ${d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`;
+    };
+    // "Agora" só nos primeiros 30 minutos; depois, a data e a hora
+    const quandoDe = (ev) =>
+      ev.ts ? (Date.now() - ev.ts < 30 * 60000 ? "Agora" : dataHora(ev.ts)) : ev.quando || "Concluído";
+    // ocorrências registradas pelo cliente no portal: são o fato mais recente,
+    // então entram no TOPO (mais recentes primeiro), acima da situação atual
+    const doCliente = window.VelozManifestos.ocorrenciasCliente
+      ? window.VelozManifestos.ocorrenciasCliente(m.cte)
+      : [];
+    if (doCliente.length) {
+      const VM = window.VelozManifestos;
+      const daOcorrencia = [];
+      doCliente.forEach((o) => {
+        // o registro feito pelo cliente
+        daOcorrencia.push({
+          titulo: `Ocorrência registrada pelo cliente: ${o.tipo}`,
+          local: `Protocolo ${o.protocolo}`,
+          texto: o.descricao,
+          ts: o.criada, // data e hora em que o cliente lançou
+          tipo: "ocorrencia",
+          doCliente: true,
+        });
+        // cada passo do tratamento (pendência solucionada, nova tentativa, entrega…)
+        (o.historico || []).forEach((h) => {
+          const fase = VM.ESTADOS_OC[h.estado] ? VM.ESTADOS_OC[h.estado].fase : "aberta";
+          const recebido = h.recebedor ? `Recebido por ${h.recebedor}${h.doc ? ` (doc. ${h.doc})` : ""}.` : "";
+          daOcorrencia.push({
+            titulo: (VM.EVENTOS_OC && VM.EVENTOS_OC[h.estado]) || h.estado,
+            local: `Protocolo ${o.protocolo} • ${VM.ESTADOS_OC[h.estado] ? VM.ESTADOS_OC[h.estado].rotulo : ""}`,
+            texto: [h.obs, recebido].filter(Boolean).join(" ") || "Atualização registrada pela Torre de Controle.",
+            ts: h.ts,
+            // fases abertas (análise / aguardando cliente) seguem em alerta; as demais são avanço normal
+            tipo: fase === "aberta" ? "ocorrencia" : "andamento",
+            doCliente: true,
+          });
+        });
+      });
+      daOcorrencia.sort((a, b) => b.ts - a.ts); // mais recentes primeiro
+      eventos.unshift(...daOcorrencia);
+    }
+
     const listaHistorico = $('[data-rt="historico"]');
     listaHistorico.innerHTML = eventos
       .map((ev, i) => {
-        const atual = i === 0;
-        const alertaAntigo = !atual && ev.tipo === "ocorrencia";
+        // destaque só na movimentação MAIS RECENTE (a 1ª da lista); as outras ficam normais
+        const destaque = i === 0;
+        const ehOcorrencia = ev.tipo === "ocorrencia" || (ev === eventoAtual && ocorrencia);
         const classes = [
           "rt-evento",
-          atual && "rt-evento-atual",
-          atual && ocorrencia && "rt-evento-ocorrencia",
-          alertaAntigo && "rt-evento-alerta",
+          destaque && "rt-evento-atual",
+          destaque && ehOcorrencia && "rt-evento-ocorrencia",
+          !destaque && ehOcorrencia && "rt-evento-alerta",
         ]
           .filter(Boolean)
           .join(" ");
-        const icone = atual && info.etapa < 4 ? iconeEtapa(info.etapa) : alertaAntigo ? ALERTA : "✓";
-        const status = atual ? (info.etapa === 4 ? "Finalizado" : "Agora") : ev.quando || "Concluído";
+        const icone = ehOcorrencia ? ALERTA : "✓";
+        // entregue: a última movimentação mostra "Finalizado" (com a data no texto do comprovante)
+        const status = destaque && ev === eventoAtual && info.etapa === 4 && !ev.ts ? "Finalizado" : quandoDe(ev);
         return `
         <li class="${classes}">
           <span class="rt-evento-icone">${icone}</span>
@@ -253,7 +530,8 @@
 
   function historico(m, destino) {
     // pedido com histórico próprio (ex.: VLZ-0089377-SP): usa como está
-    if (Array.isArray(m.eventos) && m.eventos.length) return m.eventos;
+    // cópia: as ocorrências do cliente entram na lista sem alterar os dados originais
+    if (Array.isArray(m.eventos) && m.eventos.length) return [...m.eventos];
 
     const coleta = {
       titulo: "Coleta realizada",

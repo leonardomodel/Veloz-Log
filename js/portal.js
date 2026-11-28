@@ -11,7 +11,37 @@
 
   /* ---------- manifestos (demonstração) ----------
      A lista fica em /js/manifestos.js: a mesma que a página de rastreio usa */
-  const MANIFESTOS = (window.VelozManifestos && window.VelozManifestos.lista) || [];
+  // remessas ativas = em rota ou com ocorrência (mesma base e mesma conta do indicador
+  // "Cargas em trânsito"; coletas ainda não saíram e ficam no indicador de coletas)
+  const DADOS = window.VelozManifestos;
+  const MANIFESTOS = DADOS
+    ? DADOS.todos
+        .map(DADOS.efetivo) // situação atual (ocorrências tratadas aplicadas)
+        .filter((m) => ["transito", "ocorrencia"].includes(DADOS.grupo(m)))
+    : [];
+
+  /* ---------- indicadores: contados da mesma lista ---------- */
+  if (DADOS) {
+    const t = DADOS.totais;
+    const novas = DADOS.coletasSolicitadas().length; // agendadas pelo cliente nesta conta
+    const definirKpi = (sel, valor) => {
+      const el = document.querySelector(sel);
+      if (el) {
+        el.dataset.valor = valor;
+        el.textContent = String(valor).padStart(Number(el.dataset.digitos || 0), "0");
+      }
+    };
+    definirKpi("#pt-kpi-transito", t.emRota + t.ocorrencias);
+    definirKpi("#pt-kpi-coletas", t.coletas + novas);
+    definirKpi("#pt-kpi-entregas", t.entregas);
+    const texto = (sel, valor) => {
+      const el = document.querySelector(sel);
+      if (el) el.textContent = valor;
+    };
+    texto("#pt-kpi-transito-pe", `${t.emRota} em rota no prazo`);
+    texto("#pt-kpi-ocorrencias", `${t.ocorrencias} com ocorrência`);
+    texto("#pt-kpi-pod", t.pctPod);
+  }
 
   const ICONE_STATUS = {
     entrega:
@@ -21,6 +51,8 @@
     hub: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2.5" /><circle cx="12" cy="3.5" r="1.8" /><circle cx="12" cy="20.5" r="1.8" /><circle cx="3.5" cy="12" r="1.8" /><circle cx="20.5" cy="12" r="1.8" /><path d="M12 5.3v4.2M12 14.5v4.2M5.3 12h4.2M14.5 12h4.2" /></svg>',
     coleta:
       '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>',
+    ocorrencia:
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /><path d="M12 9v4M12 17h0" /></svg>',
   };
   const ICONE_ALVO =
     '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.5" /></svg>';
@@ -45,7 +77,7 @@
     const codigo = codigoDe(m);
     return `<tr class="pt-entrando">
       <td class="pt-cte"><strong>${codigo}</strong><small>CT-e ${esc(m.cte)} • NF ${esc(m.nf)}</small></td>
-      <td class="pt-destino"><strong>${esc(m.cidade)} / ${esc(m.uf)}</strong><small>De: Ind. ABC (Campinas SP)</small></td>
+      <td class="pt-destino"><strong>${esc(m.cidade)} / ${esc(m.uf)}</strong><small>De: ${esc(DADOS.origem(m).nome)}</small></td>
       <td><span class="pt-modalidade">${esc(m.mod)}</span></td>
       <td><span class="pt-status pt-status-${m.status}">${ICONE_STATUS[m.status]}${esc(m.rotulo)}</span></td>
       <td class="pt-eta${m.hoje ? " hoje" : ""}"><strong>${esc(m.eta)}</strong><small>${esc(m.obs)}</small></td>
@@ -67,7 +99,7 @@
     $("#pt-contagem").textContent = `${total} ${total === 1 ? "remessa" : "remessas"}`;
     $("#pt-mostrando").textContent = busca.value.trim()
       ? `Mostrando ${itens.length} de ${total} resultado${total === 1 ? "" : "s"} da busca`
-      : `Mostrando ${itens.length} de ${total} manifestos em trânsito`;
+      : `Mostrando ${itens.length} de ${total} remessas ativas`;
 
     $("#pt-paginas").innerHTML = Array.from({ length: paginas }, (_, i) => {
       const n = i + 1;
@@ -135,6 +167,24 @@
       window.VelozPortal.avisar("Sincronização concluída", "SEFAZ e Siga-Route atualizados com sucesso.");
     }, 1400);
   });
+
+  /* ---------- datas e protocolos sempre do ano atual ---------- */
+  const ANO = new Date().getFullYear();
+  document.querySelectorAll("[data-ano-tabela]").forEach((el) => (el.textContent = `SP-SUL-${ANO}`));
+  document.querySelectorAll("[data-ano-vencimento]").forEach((el) => (el.textContent = `28/11/${ANO}`));
+  document.querySelectorAll("[data-protocolo-aviso]").forEach((el) => (el.textContent = `COL-${ANO}-8841`));
+
+  /* ---------- autorizar a entrada do motorista na doca da planta ---------- */
+  const botaoDoca = $("#pt-autorizar-doca");
+  if (botaoDoca)
+    botaoDoca.addEventListener("click", () => {
+      botaoDoca.disabled = true;
+      botaoDoca.textContent = "Doca Autorizada";
+      window.VelozPortal.avisar(
+        "Doca autorizada",
+        "A portaria da Planta Vinhedo foi avisada e o motorista Edson Carvalho (PL-9921) pode encostar na doca.",
+      );
+    });
 
   /* ---------- contadores dos indicadores ---------- */
   if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {

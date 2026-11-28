@@ -1814,6 +1814,10 @@
     });
     if (estado.volumes > 1) q.set("w", estado.pesos.join("-"));
     history.replaceState(null, "", `${location.pathname}?${q}`);
+    // salvou o modal: deixa de ser exemplo e vira a cotação do cliente
+    marcarCotacao(true);
+    const quando = $(".fr-status-info span:nth-child(2)");
+    if (quando) quando.textContent = "Recalculada agora com os seus dados";
   }
 
   // trocar de modalidade atualiza a composição da tarifa
@@ -1890,10 +1894,57 @@
     }
     renderTudo(false);
     atualizarMapa();
+    marcarCotacao(!!ini);
     // veio da página inicial (sem medidas/pesos por volume): já abre o modal pedindo o que falta
     const faltaDetalhe =
       ini && (!ini.medidas || (estado.volumes > 1 && !ini.pesos));
     if (faltaDetalhe) abrirModal(true);
+    // ?editar=1 (ex.: "Simular Frete B2B" do portal): abre direto a edição dos dados
+    else if (new URLSearchParams(location.search).get("editar") === "1") abrirModal(false);
   }
+
+  /* ===== barra de status: número da cotação e se é exemplo ou dados do cliente ===== */
+  function marcarCotacao(doCliente) {
+    const tag = $(".fr-status-info .fr-tag");
+    const quando = $(".fr-status-info span:nth-child(2)");
+    if (!doCliente) {
+      // sem dados do cliente: deixa claro que os valores são um exemplo
+      if (tag) tag.textContent = "Cotação de exemplo";
+      if (quando) quando.textContent = "São Paulo → Curitiba • edite os parâmetros da sua carga";
+      return;
+    }
+    // número estável para os mesmos dados (recarregar a página mantém o número)
+    const base = `${estado.origem.cep}${estado.destino.cep}${estado.peso}${estado.volumes}${estado.nf}`;
+    let h = 0;
+    for (const c of base) h = (h * 31 + c.charCodeAt(0)) % 90000;
+    if (tag) tag.textContent = `Cotação #VLZ-${10000 + h}`;
+    if (quando) quando.textContent = "Gerada agora com os seus dados";
+  }
+
+  /* ===== Contratar Coleta Imediata ===== */
+  // com login ativo: vai para "Solicitar Coleta" já com volumes e peso;
+  // sem login: entra primeiro e depois segue para a coleta
+  const botaoContratar = $("#btn-contratar");
+  if (botaoContratar)
+    botaoContratar.addEventListener("click", () => {
+      const q = new URLSearchParams({ v: String(estado.volumes), p: String(estado.peso) }); // peso real da carga
+      let logado = false;
+      try {
+        logado = !!sessionStorage.getItem("velozlog:sessao");
+      } catch {
+        /* sem sessionStorage */
+      }
+      location.href = logado
+        ? `/portal-coleta.html?${q}`
+        : `/login.html?destino=coleta&${q}`;
+    });
+
+  /* ===== "Dúvidas com a cotação? Chamar": WhatsApp com o resumo desta cotação ===== */
+  const botaoDuvida = $(".fr-duvida [data-whatsapp]");
+  if (botaoDuvida)
+    botaoDuvida.addEventListener("click", () => {
+      botaoDuvida.dataset.whatsapp = `Olá! Tenho uma dúvida sobre esta cotação:\n\n${resumoTexto()}`;
+    });
+
   iniciar();
 })();

@@ -1225,3 +1225,673 @@
     animation: none;
   }
 }
+
+/* =========================================================
+   OCORRÊNCIAS REGISTRADAS PELO CLIENTE (/js/ocorrencias.js)
+   ========================================================= */
+
+/* ações da linha: botão principal + ícone de ocorrência lado a lado */
+.gs-acoes {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gs-acao-oc {
+  padding: 7px 9px;
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.gs-acao-oc:hover {
+  background: #b91c1c;
+  color: #fff;
+}
+
+
+/* cartão abaixo da tabela */
+.gs-oc-cartao {
+  margin-top: 24px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.gs-oc-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px;
+  border-bottom: 1px solid var(--pt-borda);
+}
+
+.gs-oc-topo h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--pt-texto);
+}
+
+.gs-oc-topo h2 svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: #b91c1c;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.gs-oc-topo p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--pt-texto-suave);
+}
+
+.gs-oc-topo .gs-exportar svg,
+.gs-oc-rodape .gs-exportar svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+
+.gs-oc-tabela td strong {
+  display: block;
+  font-size: 13px;
+  color: var(--pt-texto);
+}
+
+.gs-oc-tabela td small {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--pt-texto-suave);
+}
+
+.gs-oc-protocolo {
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+
+.gs-oc-desc {
+  max-width: 320px;
+  font-size: 13px;
+  color: var(--pt-texto-suave);
+}
+
+.gs-oc-tabela tr.gs-oc-nova td {
+  background: var(--pt-laranja-claro);
+}
+
+.gs-oc-vazio {
+  margin: 0;
+  padding: 26px 22px;
+  font-size: 14px;
+  text-align: center;
+  color: var(--pt-texto-suave);
+}
+
+.gs-oc-vazio[hidden] {
+  display: none;
+}
+
+/* janela "Registrar Ocorrência" */
+.gs-oc-janela {
+  /* centralizada: o reset global (* { margin: 0 }) tira a margem automática do <dialog> */
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(720px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0;
+  border: 0;
+  border-radius: var(--pt-raio);
+  background: #fff;
+  color: var(--pt-texto);
+  font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  box-shadow: 0 24px 60px rgba(21, 27, 54, 0.3);
+}
+
+.gs-oc-janela::backdrop {
+  background: rgba(21, 27, 54, 0.55);
+}
+
+.gs-oc-janela-topo {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 20px 22px 16px;
+  border-bottom: 1px solid var(--pt-borda);
+}
+
+.gs-oc-janela-topo h2 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.gs-oc-janela-topo p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--pt-texto-suave);
+}
+
+.gs-oc-janela-icone {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.gs-oc-janela-icone svg,
+.gs-oc-fechar svg,
+.gs-oc-fotos svg,
+.gs-oc-miniaturas button svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.gs-oc-janela-icone svg {
+  width: 22px;
+  height: 22px;
+}
+
+.gs-oc-fechar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  margin-left: auto;
+  border: 1px solid var(--pt-borda);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--pt-texto-suave);
+  cursor: pointer;
+}
+
+.gs-oc-fechar svg {
+  width: 16px;
+  height: 16px;
+}
+
+.gs-oc-corpo {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  padding: 20px 22px;
+}
+
+.gs-oc-largo {
+  grid-column: 1 / -1;
+}
+
+.gs-oc-campo {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.gs-oc-campo label,
+.gs-oc-rotulo {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--pt-texto);
+}
+
+.gs-oc-campo label span,
+.gs-oc-rotulo span {
+  font-weight: 500;
+  color: var(--pt-texto-suave);
+}
+
+.gs-oc-campo input,
+.gs-oc-campo select,
+.gs-oc-campo textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: var(--pt-lavanda);
+  font: inherit;
+  font-size: 14px;
+  color: var(--pt-texto);
+  transition:
+    border-color var(--transicao),
+    background-color var(--transicao),
+    box-shadow var(--transicao);
+}
+
+.gs-oc-campo textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.gs-oc-campo input:focus,
+.gs-oc-campo select:focus,
+.gs-oc-campo textarea:focus {
+  outline: none;
+  border-color: var(--pt-laranja);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(242, 106, 27, 0.15);
+}
+
+.gs-oc-invalido input,
+.gs-oc-invalido select,
+.gs-oc-invalido textarea {
+  border-color: #dc2626;
+  background: #fff5f5;
+}
+
+.gs-oc-erro {
+  font-size: 12px;
+  font-weight: 600;
+  color: #dc2626;
+}
+
+.gs-oc-erro[hidden] {
+  display: none;
+}
+
+/* fotos */
+.gs-oc-fotos {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  border: 1.5px dashed #c7cde0;
+  border-radius: 10px;
+  background: var(--pt-fundo);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--pt-texto-suave);
+  cursor: pointer;
+  transition: border-color var(--transicao), color var(--transicao);
+}
+
+.gs-oc-fotos:hover,
+.gs-oc-fotos:focus-within {
+  border-color: var(--pt-laranja);
+  color: var(--pt-laranja-escuro);
+}
+
+.gs-oc-fotos svg {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+}
+
+.gs-oc-miniaturas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gs-oc-miniaturas:empty {
+  display: none;
+}
+
+.gs-oc-miniaturas li {
+  position: relative;
+  width: 72px;
+  height: 72px;
+}
+
+.gs-oc-miniaturas img {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.gs-oc-miniaturas button {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--pt-navy);
+  color: #fff;
+  cursor: pointer;
+}
+
+.gs-oc-miniaturas button svg {
+  width: 12px;
+  height: 12px;
+}
+
+.gs-oc-rodape {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 22px 20px;
+  border-top: 1px solid var(--pt-borda);
+}
+
+.gs-oc-btn-texto {
+  height: 46px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--pt-texto-suave);
+  cursor: pointer;
+}
+
+.gs-oc-btn-texto:hover {
+  background: var(--pt-lavanda);
+}
+
+@media (max-width: 760px) {
+  .gs-oc-topo {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .gs-oc-corpo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* aviso no topo da tela: também dá para registrar ocorrências aqui */
+.gs-titulo .gs-oc-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 640px;
+  margin-top: 14px;
+  padding: 10px 14px;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  background: #fff5f5;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--pt-texto);
+}
+
+.gs-oc-aviso svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  fill: none;
+  stroke: #b91c1c;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.gs-oc-aviso a,
+.gs-oc-aviso-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 700;
+  color: #b91c1c;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.gs-oc-aviso a:hover,
+.gs-oc-aviso-link:hover {
+  color: #7f1d1d;
+}
+
+/* status + etiqueta de ocorrência, um embaixo do outro, alinhados à esquerda */
+.gs-status-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+/* etiqueta "OCR-…" (ocorrência registrada pelo cliente): mesma pílula do status */
+.gs-oc-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #fee2e2;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: #b91c1c;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color var(--transicao), color var(--transicao);
+}
+
+.gs-oc-tag svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.gs-oc-tag:hover {
+  background: #b91c1c;
+  color: #fff;
+}
+
+/* =========================================================
+   TRATAR OCORRÊNCIA (/js/ocorrencias.js)
+   ========================================================= */
+
+/* botão "Tratar" na lista: laranja (ação principal da linha) */
+.gs-acao-tratar {
+  background: var(--pt-laranja);
+  color: #fff;
+}
+
+.gs-acao-tratar:hover {
+  background: var(--pt-laranja-hover);
+  color: #fff;
+}
+
+.gs-oc-atualizado {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--pt-texto-suave);
+}
+
+/* etiqueta da linha da carga: em análise (vermelho) · em andamento (âmbar) */
+.gs-oc-tag.gs-oc-tag-andamento {
+  background: #fef3c7;
+  color: #a16207;
+}
+
+.gs-oc-tag.gs-oc-tag-andamento:hover {
+  background: #a16207;
+  color: #fff;
+}
+
+/* janela */
+.gs-trat-icone {
+  background: var(--pt-laranja-claro);
+  color: var(--pt-laranja);
+}
+
+.gs-trat-protocolo {
+  margin-left: 6px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--pt-lavanda);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--pt-texto);
+  vertical-align: middle;
+}
+
+/* resumo */
+.gs-trat-resumo {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px 18px;
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: var(--pt-fundo);
+}
+
+.gs-trat-resumo div {
+  min-width: 0;
+}
+
+.gs-trat-resumo .gs-trat-largo {
+  grid-column: 1 / -1;
+}
+
+.gs-trat-resumo dt {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--pt-texto-suave);
+}
+
+.gs-trat-resumo dd {
+  margin: 2px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--pt-texto);
+  overflow-wrap: anywhere;
+}
+
+/* andamento (linha do tempo) */
+.gs-trat-linha {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gs-trat-passo {
+  position: relative;
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+  gap: 10px;
+  padding: 8px 0 12px;
+}
+
+/* linha que liga os pontos */
+.gs-trat-passo:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  top: 22px;
+  bottom: -4px;
+  left: 8px;
+  width: 2px;
+  background: var(--pt-borda);
+}
+
+.gs-trat-ponto {
+  position: relative;
+  z-index: 1;
+  width: 14px;
+  height: 14px;
+  margin: 3px 2px 0;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: #cbd2e1;
+  box-shadow: 0 0 0 1px #cbd2e1;
+}
+
+.gs-trat-aberta .gs-trat-ponto {
+  background: #dc2626;
+  box-shadow: 0 0 0 1px #fecaca;
+}
+
+.gs-trat-andamento .gs-trat-ponto {
+  background: #f59e0b;
+  box-shadow: 0 0 0 1px #fde68a;
+}
+
+.gs-trat-encerrada .gs-trat-ponto {
+  background: #16a34a;
+  box-shadow: 0 0 0 1px #bbf7d0;
+}
+
+.gs-trat-passo strong {
+  display: block;
+  font-size: 13px;
+  color: var(--pt-texto);
+}
+
+.gs-trat-passo p {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--pt-texto-suave);
+}
+
+.gs-trat-passo small {
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--pt-texto-suave);
+}
+
+.gs-trat-atual strong {
+  color: var(--pt-laranja-escuro);
+}
+
+.gs-trat-fim {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #dcfce7;
+  font-size: 13px;
+  font-weight: 600;
+  color: #15803d;
+}
+
+.gs-trat-fim[hidden] {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .gs-trat-resumo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* "hidden" precisa vencer o display dos blocos da janela (campos e botão que
+   só aparecem em algumas etapas do tratamento) */
+.gs-oc-campo[hidden],
+.gs-oc-rodape [hidden] {
+  display: none;
+}

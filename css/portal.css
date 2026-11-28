@@ -1078,6 +1078,11 @@ body.pt-corpo {
   color: var(--pt-texto-suave);
 }
 
+.pt-status-ocorrencia {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
 .pt-eta strong {
   display: block;
   font-weight: 700;

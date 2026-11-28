@@ -58,13 +58,13 @@
             <!-- PAINEL: RASTREAR -->
             <section class="painel ativo" id="painel-rastrear" role="tabpanel" aria-labelledby="aba-rastrear">
               <form class="rastreio-form" novalidate>
-                <label for="codigo">Código de rastreamento / NF / CPF ou CNPJ</label>
+                <label for="codigo">Código de rastreamento ou número do CT-e</label>
                 <div class="campo-busca">
                   <svg viewBox="0 0 24 24" aria-hidden="true">
                     <circle cx="11" cy="11" r="7"></circle>
                     <path d="m20 20-3.5-3.5"></path>
                   </svg>
-                  <input id="codigo" type="text" placeholder="Informe o código de rastreio" autocomplete="off">
+                  <input id="codigo" type="text" placeholder="Ex.: VLZ-893910-SP" autocomplete="off">
                   <button type="submit" class="btn-rastrear">
                     <span>Rastrear</span>
                     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -86,7 +86,7 @@
                     </svg>
                   </span>
                   <h3>Acompanhe sua remessa em tempo real</h3>
-                  <p>Digite o código de rastreio, NF ou CPF/CNPJ no campo acima e clique em <strong>Rastrear</strong> para visualizar o status da entrega.</p>
+                  <p data-vazio-texto>Digite o código de rastreio (ex.: VLZ-893910-SP) ou o número do CT-e no campo acima e clique em <strong>Rastrear</strong> para visualizar o status da entrega.</p>
                   <div class="vazio-nota">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                       <path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"></path>
@@ -98,7 +98,7 @@
                 <!-- estado 2: resultado -->
                 <article class="estado estado-resultado" inert>
                   <header class="surge" style="--i:0">
-                    <h2 id="codigo-exibido">VLZ-849102-SP</h2>
+                    <h2 id="codigo-exibido">VLZ-893910-SP</h2>
                     <span class="status"><svg viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"></path>
                         <path d="M15 18H9"></path>
@@ -130,7 +130,7 @@
                         <path d="M7.8 16.2a6 6 0 0 1 0-8.4"></path>
                         <path d="M4.9 19.1a10 10 0 0 1 0-14.2"></path>
                       </svg><span class="telemetria-texto" id="home-telemetria" title="Telemetria em tempo real • BR-116 KM 84">Telemetria em tempo real • <span id="home-local">BR-116 KM 84</span></span></p>
-                    <a href="/rastreio.html?codigo=VLZ-849102-SP" id="home-detalhes">Ver Ocorrências<svg viewBox="0 0 24 24" aria-hidden="true">
+                    <a href="/rastreio.html?codigo=VLZ-893910-SP" id="home-detalhes">Ver Detalhes<svg viewBox="0 0 24 24" aria-hidden="true">
                         <path d="m9 6 6 6-6 6"></path>
                       </svg></a>
                   </footer>
@@ -175,11 +175,11 @@
         <ul>
           <li>
             <span class="icone" aria-hidden="true"><img src="/img/ic-caminhao.svg" alt=""></span>
-            <div><strong class="contador" data-valor="2.4" data-tipo="milhao">+2.4M</strong>Entregas Concluídas</div>
+            <div><strong class="contador" data-valor="2.4" data-tipo="milhao">+2,4M</strong>Entregas Concluídas</div>
           </li>
           <li>
             <span class="icone" aria-hidden="true"><img src="/img/ic-timer.svg" alt=""></span>
-            <div><strong class="contador" data-valor="99.4" data-tipo="porcentagem">99.4%</strong>Índice no Prazo (OTD)</div>
+            <div><strong class="contador" data-valor="99.4" data-tipo="porcentagem">99,4%</strong>Índice no Prazo (OTD)</div>
           </li>
           <li>
             <span class="icone" aria-hidden="true"><img src="/img/ic-mapa.svg" alt=""></span>
@@ -232,11 +232,11 @@
                 <circle cx="7" cy="18" r="2" />
               </svg>
             </span>
-            <span class="tag">Frota Dedicada</span>
+            <span class="tag">Consolidada</span>
           </div>
-          <h3>Carga Fechada (Lotação)</h3>
-          <p>Veículos exclusivos para sua indústria ou atacado. Rota direta ponto-a-ponto, sem paradas intermediárias e com lacre inviolável monitorado via satélite.</p>
-          <a href="#cotacao">Contratar Lotação</a>
+          <h3>Carga Fracionada</h3>
+          <p>Para volumes menores: sua carga viaja consolidada com a de outros embarcadores, com tarifa por peso ou cubagem, coleta agendada e rastreio de ponta a ponta.</p>
+          <a href="#cotacao">Cotar Fracionada</a>
         </article>
         <article class="card">
           <div class="card-topo">
@@ -249,7 +249,7 @@
           </div>
           <h3>Express (Same / Next-Day)</h3>
           <p>Entregas relâmpago no mesmo dia ou no dia útil seguinte em regiões metropolitanas e corredores industriais estratégicos com protocolo digital assinado.</p>
-          <a href="#cotacao">Ver Cidades Cobertas</a>
+          <a href="#cotacao">Cotar Express</a>
         </article>
         <article class="card">
           <div class="card-topo">
@@ -265,7 +265,7 @@
           </div>
           <h3>Logística Reversa</h3>
           <p>Coleta no endereço do cliente ou postos credenciados, conferência criteriosa de avarias, laudo fotográfico imediato e rápida reintrodução ao estoque.</p>
-          <a href="#cotacao">Integrar com API</a>
+          <a href="#contato">Falar com Especialista</a>
         </article>
       </div>
     </section>
@@ -403,10 +403,13 @@
           <div class="cotacao-campo">
             <label for="mercadoria">Tipo de Mercadoria</label>
             <select name="mercadoria" id="mercadoria">
-              <option value="geral">Carga Seca / Manufaturados</option>
-              <option value="fragil">Carga Frágil</option>
-              <option value="perecivel">Perecíveis</option>
-              <option value="eletronicos">Eletrônicos</option>
+              <!-- mesma lista da página de cotação (frete.html), para o tipo não mudar no caminho -->
+              <option value="manufaturados">Manufaturados / Geral</option>
+              <option value="eletronicos">Eletroeletrônicos</option>
+              <option value="alimentos">Alimentos não perecíveis</option>
+              <option value="medicamentos">Medicamentos e saúde</option>
+              <option value="vestuario">Vestuário e têxteis</option>
+              <option value="autopecas">Autopeças</option>
             </select>
           </div>
 

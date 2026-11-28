@@ -52,7 +52,7 @@
 
   // CT-es de cada fatura: a mais recente traz os manifestos do portal (busca por CT-e/NF-e funciona)
   const CIDADES = ["Curitiba (PR)", "Porto Alegre (RS)", "Joinville (SC)", "Belo Horizonte (MG)", "Londrina (PR)", "Florianópolis (SC)", "Ribeirão Preto (SP)", "Uberlândia (MG)", "Blumenau (SC)", "Maringá (PR)"];
-  const manifestos = (window.VelozManifestos && window.VelozManifestos.lista) || [];
+  const manifestos = (window.VelozManifestos && window.VelozManifestos.todos) || [];
 
   FATURAS.forEach((f, i) => {
     const base = 893700 - i * 900;
@@ -80,17 +80,35 @@
     f.lista = lista;
   });
 
-  const CANHOTOS = [
-    { cte: "3524.1109.8402", recebedor: "Carlos Eduardo Mendes de Oliveira", doc: "RG 28.910.442-X SP", data: "21/11", hora: "14:38:12", lat: -22.9056, lng: -47.0608, cidade: "Campinas/SP", foto: null },
-    { cte: "3524.1109.8398", recebedor: "Mariana Fagundes Guimarães", doc: "CPF ***.482.908-**", data: "20/11", hora: "11:15:40", lat: -23.5505, lng: -46.6333, cidade: "São Paulo/SP", foto: null },
-    { cte: "3524.1109.8370", recebedor: "Roberto Alencar (Almoxarifado)", doc: "Matrícula Funcional nº 4491", data: "19/11", hora: "16:52:03", lat: -23.1857, lng: -46.8978, cidade: "Jundiaí/SP", foto: null },
-    { cte: "3524.1109.8355", recebedor: "Juliana Prado Siqueira", doc: "RG 41.220.118-3 SP", data: "18/11", hora: "10:04:51", lat: -25.4284, lng: -49.2733, cidade: "Curitiba/PR", foto: null },
-    { cte: "3524.1109.8341", recebedor: "Anderson Luiz Tavares", doc: "CPF ***.117.640-**", data: "17/11", hora: "15:27:09", lat: -26.3045, lng: -48.8487, cidade: "Joinville/SC", foto: null },
-    { cte: "3524.1109.8322", recebedor: "Patrícia Nogueira (Recebimento)", doc: "Matrícula Funcional nº 1187", data: "14/11", hora: "09:41:33", lat: -21.1775, lng: -47.8103, cidade: "Ribeirão Preto/SP", foto: null },
-    { cte: "3524.1109.8317", recebedor: "Fábio Henrique Costa", doc: "RG 19.554.301-7 SP", data: "13/11", hora: "13:12:45", lat: -23.1791, lng: -45.8872, cidade: "São José dos Campos/SP", foto: null },
-    { cte: "3524.1109.8304", recebedor: "Sandra Regina Lopes", doc: "CPF ***.903.215-**", data: "12/11", hora: "17:55:20", lat: -30.0346, lng: -51.2177, cidade: "Porto Alegre/RS", foto: null },
-    { cte: "3524.1109.8296", recebedor: "Marcelo Antunes Ribeiro", doc: "Matrícula Funcional nº 2210", data: "11/11", hora: "08:47:16", lat: -19.9167, lng: -43.9345, cidade: "Belo Horizonte/MG", foto: null },
-  ];
+  // canhotos = as entregas com comprovante (POD) da base única do portal (/js/manifestos.js):
+  // os mesmos que aparecem em "Manifestos & CTEs" como "Entregue c/ POD"
+  const CANHOTOS = manifestos
+    .filter((m) => m.status === "entregue" && m.pod)
+    .map((m) => {
+      const [, dd, mm, hora] = /(\d{2})\/(\d{2})\/\d{4} às (\d{2}:\d{2}:\d{2})/.exec(m.pod.carimbo) || [];
+      return {
+        cte: m.cte,
+        recebedor: m.pod.recebedor,
+        doc: m.pod.doc,
+        data: `${dd}/${mm}`,
+        hora,
+        lat: m.pod.lat,
+        lng: m.pod.lng,
+        cidade: `${m.cidade}/${m.uf}`,
+        foto: null,
+        manifesto: m,
+        ordem: `${mm}${dd}${hora}`,
+      };
+    })
+    .sort((a, b) => (a.ordem < b.ordem ? 1 : -1)); // mais recentes primeiro
+
+  // números da tela contados dos dados (não ficam fixos no HTML)
+  const definirTexto = (sel, texto) => {
+    const el = document.querySelector(sel);
+    if (el) el.textContent = texto;
+  };
+  definirTexto("#fa-kpi-canhotos", CANHOTOS.length);
+  definirTexto("#fa-ver-canhotos", `Ver todos os ${CANHOTOS.length} canhotos`);
 
   /* =========================================================
      ÍCONES
@@ -349,6 +367,11 @@
     $("#fa-kpi-vencer").innerHTML = `R$ ${inteiro}<small>,${centavos}</small>`;
     $("#fa-kpi-proximo").textContent = abertas.length ? dataBr(abertas[0].venc) : "—";
     $("#fa-kpi-lotes").textContent = `${abertas.length} lote${abertas.length === 1 ? "" : "s"}`;
+    // liquidadas nos últimos 30 dias (mesmas faturas da tabela)
+    const pagas = FATURAS.filter((f) => f.status === "liquidado" && diasAte(f.venc) >= -30 && diasAte(f.venc) <= 0);
+    const [i2, c2] = moeda(pagas.reduce((s, f) => s + f.valor, 0)).split(",");
+    const kpiPagas = $("#fa-kpi-liquidadas");
+    if (kpiPagas) kpiPagas.innerHTML = `R$ ${i2}<small>,${c2}</small>`;
   }
 
   /* ---------- botões do cabeçalho ---------- */
@@ -449,7 +472,7 @@
     $("#fa-pod-vazio").hidden = canhotosVisiveis.length > 0;
     $("#fa-pod-total").textContent = q
       ? `${canhotosVisiveis.length} canhoto${canhotosVisiveis.length === 1 ? "" : "s"} encontrado${canhotosVisiveis.length === 1 ? "" : "s"}`
-      : `${CANHOTOS.length} canhotos mais recentes • 204 no repositório`;
+      : `${CANHOTOS.length} canhotos no repositório (últimos 30 dias)`;
   }
   $("#fa-pod-busca").addEventListener("input", mostrarRepositorio);
 
@@ -531,7 +554,7 @@
     mostrarEdi();
   });
   $("#fa-disputa").addEventListener("click", () =>
-    avisar("Abrir disputa", "Este espelho não tem divergências. Se precisar contestar um CT-e, a Torre Financeira atende no ramal 9099."),
+    avisar("Abrir disputa", "Este espelho não tem divergências. Se precisar contestar um CT-e, a Torre Financeira atende no 0800 700 8900, ramal 9099."),
   );
 
   /* =========================================================

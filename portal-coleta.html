@@ -56,7 +56,7 @@
           <ol id="cl-etapas">
             <li><button type="button" data-etapa="1" data-ir="cl-secao-1"><span class="cl-etapa-num" aria-hidden="true">1</span><span><small>Etapa 01</small><strong>Endereço &amp; Janela</strong></span></button></li>
             <li><button type="button" data-etapa="2" data-ir="cl-secao-2"><span class="cl-etapa-num" aria-hidden="true">2</span><span><small>Etapa 02</small><strong>Dados da Carga &amp; NFs</strong></span></button></li>
-            <li><button type="button" data-etapa="3" data-ir="cl-secao-3"><span class="cl-etapa-num" aria-hidden="true">3</span><span><small>Etapa 03</small><strong>Veículo &amp; Modalidade</strong></span></button></li>
+            <li><button type="button" data-etapa="3" data-ir="cl-secao-3"><span class="cl-etapa-num" aria-hidden="true">3</span><span><small>Etapa 03</small><strong>Requisitos Especiais</strong></span></button></li>
             <li><button type="button" data-etapa="4" data-ir="cl-resumo"><span class="cl-etapa-num" aria-hidden="true">4</span><span><small>Etapa 04</small><strong>Confirmação &amp; Protocolo</strong></span></button></li>
           </ol>
         </nav>
@@ -183,7 +183,7 @@
                 <div class="cl-campo">
                   <label for="cl-volumes">Qtd. de Volumes / Paletes</label>
                   <div class="cl-caixa">
-                    <input type="number" id="cl-volumes" name="volumes" value="8" min="1" max="60" inputmode="numeric" required class="cl-curto">
+                    <input type="number" id="cl-volumes" name="volumes" placeholder="Ex.: 8" min="1" max="60" inputmode="numeric" required class="cl-curto">
                     <span class="cl-sufixo" id="cl-volumes-unidade">Paletes PBR (1,00 x 1,20m)</span>
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5z" /><path d="M3 13l9 5 9-5" /></svg>
                   </div>
@@ -192,7 +192,7 @@
                 <div class="cl-campo">
                   <label for="cl-peso">Peso Estimado Total (Bruto)</label>
                   <div class="cl-caixa">
-                    <input type="text" id="cl-peso" name="peso" value="3.400" inputmode="numeric" required class="cl-curto cl-negrito">
+                    <input type="text" id="cl-peso" name="peso" placeholder="Ex.: 3.400" inputmode="numeric" required class="cl-curto cl-negrito">
                     <span class="cl-sufixo cl-negrito">kg</span>
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 8h11l2 12h-15z" /><circle cx="12" cy="5" r="2" /></svg>
                   </div>
@@ -347,7 +347,7 @@
         </div>
 
         <!-- ===== HISTÓRICO ===== -->
-        <section class="pt-cartao cl-historico" aria-labelledby="cl-historico-titulo">
+        <section class="pt-cartao cl-historico" id="cl-historico" aria-labelledby="cl-historico-titulo">
           <header class="cl-historico-topo">
             <h2 id="cl-historico-titulo">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5M12 7v5l3 2" /></svg>

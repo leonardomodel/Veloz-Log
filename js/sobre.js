@@ -14,7 +14,7 @@
     // inteiros com ponto de milhar (1.200); decimais com ponto (99.4 / 3.5), como no layout
     const numero =
       casas > 0
-        ? valor.toFixed(casas)
+        ? valor.toFixed(casas).replace(".", ",")
         : Math.round(valor).toLocaleString("pt-BR");
     return (el.dataset.prefixo || "") + numero + (el.dataset.sufixo || "");
   }

@@ -20,11 +20,13 @@
         const valor = valorFinal * suavizacao;
 
         if (tipo === "milhao") {
-          contador.textContent = "+" + valor.toFixed(1) + "M";
+          contador.textContent = "+" + valor.toFixed(1).replace(".", ",") + "M";
         }
 
         if (tipo === "porcentagem") {
-          contador.textContent = valor.toFixed(1).replace(".", ",") + "%";
+          // número inteiro (100%) sem casa decimal; os demais com vírgula (99,4%)
+          contador.textContent =
+            (Number.isInteger(valorFinal) ? String(Math.round(valor)) : valor.toFixed(1).replace(".", ",")) + "%";
         }
 
         if (tipo === "milhoes") {
@@ -54,7 +56,7 @@
   // ----- configurações -----
   const EXIGIR_CODIGO = true; // false = rastrear com o campo vazio usa o código de demonstração
   // formato dos códigos de rastreio: VLZ-{CT-e}-{UF} (ver /js/manifestos.js)
-  const CODIGO_DEMO = "VLZ-849102-SP";
+  const CODIGO_DEMO = "VLZ-893910-SP"; // existe em /js/manifestos.js
   const PERCENTUAL_DEMO = 75; // % do código de demonstração
   let percentual = PERCENTUAL_DEMO; // % do pedido exibido no card
   const DURACAO_BARRA = 2200; // ms que a barra leva para chegar ao percentual
@@ -243,11 +245,12 @@
   // data e hora da entrega: do comprovante (POD) "19/05/2024 às 14:28:11";
   // sem POD, do texto "Entregue em 19/05, 14:28" com o ano da previsão
   function dataDaEntrega(m) {
-    const pod = m.pod && /(\d{2}\/\d{2}\/\d{4}) às (\d{2}:\d{2})/.exec(m.pod.carimbo || "");
-    if (pod) return `${pod[1]} • ${pod[2]}`;
+    // mesmo formato da página de rastreio: ano com 2 dígitos (ex.: 24/11/26 • 14:28)
+    const pod = m.pod && /(\d{2}\/\d{2})\/\d{2}(\d{2}) às (\d{2}:\d{2})/.exec(m.pod.carimbo || "");
+    if (pod) return `${pod[1]}/${pod[2]} • ${pod[3]}`;
     const eta = /(\d{2}\/\d{2})\D+(\d{2}:\d{2})/.exec(m.eta || "");
     if (!eta) return m.eta;
-    const ano = (/\d{4}/.exec(m.prev || "") || [new Date().getFullYear()])[0];
+    const ano = String((/\d{4}/.exec(m.prev || "") || [new Date().getFullYear()])[0]).slice(2);
     return `${eta[1]}/${ano} • ${eta[2]}`;
   }
 
@@ -259,12 +262,15 @@
     percentual = PERCENTUAL_DEMO;
 
     // pedido do portal (ex.: VLZ-894012-SP): mostra os dados reais dele
+    // ocorrência registrada pelo cliente no portal: mesma etiqueta da página de rastreio
+    const comOcorrencia = !!(m && dados.ocorrenciaAberta && dados.ocorrenciaAberta(m.cte)); // só enquanto aberta
+
     if (m) {
       const sit = dados.situacao(m);
       exibido = dados.codigo(m);
       percentual = sit.progresso;
       valores = {
-        status: sit.tag,
+        status: comOcorrencia ? "Ocorrência registrada" : sit.tag,
         origem: dados.origem(m).nome,
         prazo: m.eta,
         destino: `${m.cidade} (${m.uf})`,
@@ -279,6 +285,9 @@
     codigoExibido.textContent = exibido;
     Object.entries(campos).forEach(([k, el]) => el && (el.textContent = valores[k]));
 
+    // entregue: barra verde (style.css)
+    preenchimento.classList.toggle("entregue", !!entregue);
+
     if (linhaPrazo) {
       rotuloPrazo.hidden = entregue;
       linhaPrazo.classList.toggle("entregue", entregue);
@@ -292,11 +301,30 @@
     // cor da etiqueta conforme a situação (verde = entregue, vermelho = ocorrência…)
     const etiqueta = campos.status && campos.status.closest(".status");
     if (etiqueta) {
-      if (m) etiqueta.dataset.situacao = m.status;
+      if (m) etiqueta.dataset.situacao = comOcorrencia ? "ocorrencia" : m.status;
       else delete etiqueta.dataset.situacao; // demonstração: em trânsito (laranja)
     }
     if (linkDetalhes)
       linkDetalhes.href = `/rastreio.html?codigo=${encodeURIComponent(exibido)}`;
+  }
+
+  // estado "vazio" reaproveitado para "código não encontrado" (mesmo visual)
+  const vazioTitulo = vazio.querySelector("h3");
+  const vazioTexto = vazio.querySelector("[data-vazio-texto]") || vazio.querySelector("p");
+  const VAZIO_ORIGINAL = { titulo: vazioTitulo.innerHTML, texto: vazioTexto.innerHTML };
+  const escHtml = (t) =>
+    String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
+  function avisarNaoEncontrado(codigo) {
+    vazioTitulo.textContent = "Código não encontrado";
+    vazioTexto.innerHTML = `Não encontramos nenhuma carga com <strong>${escHtml(codigo)}</strong>. Confira o código no seu CT-e ou e-mail de despacho (formato VLZ-000000-UF) e tente de novo.`;
+    if (resultado.classList.contains("ativo")) mostrarEstado("vazio");
+    sinalizarErro();
+  }
+
+  function restaurarVazio() {
+    vazioTitulo.innerHTML = VAZIO_ORIGINAL.titulo;
+    vazioTexto.innerHTML = VAZIO_ORIGINAL.texto;
   }
 
   function buscar(codigo) {
@@ -307,8 +335,15 @@
     rotuloBotao.textContent = "Buscando…";
 
     setTimeout(() => {
-      preencherResultado(codigo);
-      mostrarEstado("resultado");
+      const dados = window.VelozManifestos;
+      if (dados && !dados.buscar(codigo)) {
+        // código que não existe: avisa, em vez de mostrar dados de exemplo
+        avisarNaoEncontrado(codigo);
+      } else {
+        restaurarVazio();
+        preencherResultado(codigo);
+        mostrarEstado("resultado");
+      }
       botao.disabled = false;
       botao.classList.remove("carregando");
       rotuloBotao.textContent = "Rastrear";
@@ -334,8 +369,9 @@
   campo.addEventListener("input", () => {
     campoBusca.classList.remove("erro");
     campo.removeAttribute("aria-invalid");
-    if (campo.value.trim() === "" && resultado.classList.contains("ativo")) {
-      mostrarEstado("vazio");
+    if (campo.value.trim() === "") {
+      restaurarVazio();
+      if (resultado.classList.contains("ativo")) mostrarEstado("vazio");
     }
   });
 
