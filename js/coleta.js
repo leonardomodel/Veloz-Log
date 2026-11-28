@@ -349,11 +349,20 @@
     ok: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M8.5 12l2.5 2.5 4.5-5" /></svg>',
   };
 
-  const historico = [
-    { protocolo: `COL-${ANO}-8841`, data: "Hoje, 10:15", origem: "Planta Vinhedo - SP", doca: "Doca Central #03", veiculo: "VUC Sider (PL-9921)", motorista: "Edson Carvalho (Buonny OK)", vol: "6 Paletes", kg: 2100, status: "caminho", acao: { texto: "Acompanhar", href: "/portal-telemetria.html" } },
-    { protocolo: `COL-${ANO}-8790`, data: "Ontem, 16:40", origem: "Techno Park Campinas", doca: "Doca Externa #12", veiculo: "Truck 6x2 (EZ-4402)", motorista: "Claudio M. Bastos", vol: "14 Paletes", kg: 7800, status: "hub", acao: { texto: "Ver CTE", href: "/portal-manifestos.html" } },
-    { protocolo: `COL-${ANO}-8702`, data: dataCurta(6), origem: "Planta Vinhedo - SP", doca: "Galpão A-4", veiculo: "Toco Baú (BR-1180)", motorista: "Rogério Antunes", vol: "4 Paletes", kg: 1250, status: "concluido", acao: { texto: "Comprovante", href: "/portal-manifestos.html" } },
-  ];
+  // coletas: mesma lista do rastreio (/js/manifestos.js) — o protocolo COL-… também
+  // pode ser consultado em "Rastrear Pedido" (home) e na página de rastreio.
+  // As confirmadas neste navegador entram no início (ver "início", mais abaixo).
+  const rastreioDe = (protocolo) => `/rastreio.html?codigo=${encodeURIComponent(protocolo)}&de=coleta`;
+  const ACAO_POR_STATUS = {
+    alocacao: (c) => ({ texto: "Acompanhar", href: rastreioDe(c.protocolo) }),
+    caminho: (c) => ({ texto: "Acompanhar", href: rastreioDe(c.protocolo) }),
+    hub: () => ({ texto: "Ver CTE", href: "/portal-manifestos.html" }),
+    concluido: () => ({ texto: "Comprovante", href: "/portal-manifestos.html" }),
+  };
+  const comAcao = (c) => ({ ...c, acao: (ACAO_POR_STATUS[c.status] || ACAO_POR_STATUS.alocacao)(c) });
+  const historico = (window.VelozManifestos ? window.VelozManifestos.coletas() : [])
+    .filter((c) => !c.criada || !(window.VelozManifestos.coletasSolicitadas().some((s) => s.protocolo === c.protocolo)))
+    .map(comAcao);
 
   const linhas = $("#cl-linhas");
   function mostrarHistorico(novo = null) {
@@ -439,7 +448,7 @@
         vol: `${volumes()} ${UNIDADES[acond()].curta}`,
         kg: pesoKg(),
         status: "alocacao",
-        acao: { texto: "Detalhes" },
+        acao: { texto: "Acompanhar", href: rastreioDe(protocolo) },
       };
       historico.unshift(nova);
       mostrarHistorico(nova);
@@ -559,7 +568,7 @@
       c.data = `${d.toLocaleDateString("pt-BR")}, ${d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`;
     }
   });
-  historico.unshift(...salvas);
+  historico.unshift(...salvas.map(comAcao)); // "Acompanhar" abre o rastreio da coleta
 
   mostrarNotas();
   mostrarHistorico();

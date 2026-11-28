@@ -214,6 +214,14 @@
     },
   ];
 
+  // última posição GPS: a mesma do mapa da Visão Geral (/js/manifestos.js)
+  const FROTA_GPS = window.VelozManifestos && window.VelozManifestos.frota;
+  if (FROTA_GPS)
+    FROTA.forEach((v) => {
+      const f = FROTA_GPS.find((x) => x.placa === v.placa);
+      if (f) v.pos = f.pos;
+    });
+
   const REGIOES = {
     sul: {
       titulo: "Corredor Sudeste-Sul (SP / PR / SC)",
@@ -514,7 +522,7 @@
       mapa = L.map("tl-mapa", {
         zoomControl: false,
         attributionControl: false,
-        scrollWheelZoom: false, // a roda do mouse continua rolando a página
+        scrollWheelZoom: true, // zoom com a roda do mouse sobre o mapa (igual à cotação)
       });
       L.control.zoom({ position: "topright" }).addTo(mapa);
       L.control.attribution({ prefix: false, position: "bottomright" }).addTo(mapa);
@@ -522,9 +530,6 @@
         maxZoom: 18,
         attribution: window.VelozLeaflet.CREDITO,
       }).addTo(mapa);
-      // roda do mouse só dá zoom depois de clicar no mapa
-      mapa.on("click", () => mapa.scrollWheelZoom.enable());
-      mapa.on("mouseout", () => mapa.scrollWheelZoom.disable());
       montarMarcadores();
       enquadrar(false);
     } catch (erro) {
@@ -596,9 +601,152 @@
 
   $("#tl-intervencao").addEventListener("click", (e) => falarComTorre(atual, e.currentTarget));
 
-  $("#tl-mais").addEventListener("click", () =>
-    avisar(atual.placa, "Histórico completo do veículo e manutenção preventiva estarão disponíveis em breve."),
-  );
+  /* ---------------- histórico do veículo (três pontinhos) ----------------
+     Janela centralizada: resumo, viagens recentes, manutenção preventiva e eventos.
+     DEMONSTRAÇÃO: os dados são gerados de forma fixa a partir da placa (sempre os
+     mesmos para o mesmo veículo) e com datas relativas a hoje. Com API, troque
+     historicoDoVeiculo() pela resposta do servidor. */
+  const janelaHist = $("#tl-hist");
+  const doisDig = (n) => String(n).padStart(2, "0");
+  const diaRel = (n, h = 8, min = 0) => {
+    const d = new Date();
+    d.setDate(d.getDate() + n);
+    d.setHours(h, min, 0, 0);
+    return d;
+  };
+  const dataCurta = (d) => `${doisDig(d.getDate())}/${doisDig(d.getMonth() + 1)}`;
+  const dataHoraCurta = (d) => `${dataCurta(d)} ${doisDig(d.getHours())}:${doisDig(d.getMinutes())}`;
+
+  function historicoDoVeiculo(v) {
+    // número fixo por placa: escolhe rotas, km e eventos sempre iguais para o mesmo veículo
+    let semente = [...v.placa].reduce((s, c) => (s * 31 + c.charCodeAt(0)) % 9973, 7);
+    const sorteio = (n) => {
+      semente = (semente * 7919 + 13) % 9973;
+      return semente % n;
+    };
+    const ROTAS = [
+      ["Campinas (SP)", "Curitiba (PR)", 410],
+      ["São Paulo (SP)", "Joinville (SC)", 540],
+      ["Paulínia (SP)", "Belo Horizonte (MG)", 590],
+      ["Santos (SP)", "Campinas (SP)", 160],
+      ["Curitiba (PR)", "Porto Alegre (RS)", 710],
+      ["Campinas (SP)", "Uberlândia (MG)", 520],
+      ["Jundiaí (SP)", "Ribeirão Preto (SP)", 250],
+    ];
+    const viagens = [
+      { data: diaRel(0, 5, 40), cte: v.cte.padStart(8, "0"), de: v.de, para: v.para, km: null, situacao: "Em andamento" },
+    ];
+    let dia = -1;
+    for (let i = 0; i < 5; i++) {
+      const [de, para, km] = ROTAS[sorteio(ROTAS.length)];
+      dia -= 1 + sorteio(3);
+      viagens.push({
+        data: diaRel(dia, 6 + sorteio(10), sorteio(6) * 10),
+        cte: String(Number(v.cte) - 37 * (i + 1) - sorteio(20)).padStart(8, "0"),
+        de,
+        para,
+        km: km + sorteio(40),
+        situacao: sorteio(9) === 0 ? "Entregue c/ ocorrência" : "Entregue no prazo",
+      });
+    }
+    const kmMes = viagens.reduce((s, x) => s + (x.km || 0), 0) + 1800 + sorteio(1200);
+
+    // revisões a cada 20.000 km (a próxima a partir do odômetro atual)
+    const proxRevisao = Math.ceil((v.odometro + 1) / 20000) * 20000;
+    const manutencao = [
+      { titulo: "Próxima revisão preventiva", texto: `Aos ${milhar(proxRevisao)} km (faltam ${milhar(proxRevisao - v.odometro)} km)`, data: "Agendar", tipo: "proxima" },
+      { titulo: "Troca de óleo e filtros", texto: `Realizada aos ${milhar(proxRevisao - 20000)} km`, data: dataCurta(diaRel(-18 - sorteio(10))), tipo: "ok" },
+      { titulo: "Revisão do sistema de freios", texto: `Pastilhas e lonas verificadas • pressão ${v.freio} bar`, data: dataCurta(diaRel(-35 - sorteio(15))), tipo: "ok" },
+      { titulo: "Rodízio e calibragem dos pneus", texto: "Desgaste dentro do limite", data: dataCurta(diaRel(-50 - sorteio(20))), tipo: "ok" },
+      { titulo: "Tacógrafo aferido (INMETRO)", texto: "Certificado válido por 2 anos", data: dataCurta(diaRel(-120 - sorteio(60))), tipo: "ok" },
+    ];
+
+    const eventos = [];
+    if (v.situacao === "alerta")
+      eventos.push({ titulo: "Tráfego lento", texto: `${v.via} • média abaixo de 40 km/h por 12 min`, data: dataHoraCurta(diaRel(0, 7, 55)), tipo: "alerta" });
+    eventos.push(
+      { titulo: "Parada técnica (Lei 13.103)", texto: `Descanso de 30 min • ${v.posto}`, data: dataHoraCurta(diaRel(-1, 13, 10 + sorteio(40))), tipo: "info" },
+      { titulo: "Frenagem brusca", texto: `Desaceleração forte em ${v.via.split(" ").slice(-1)[0]} • sem ocorrência`, data: dataHoraCurta(diaRel(-2 - sorteio(3), 9 + sorteio(8), 20)), tipo: "alerta" },
+      { titulo: "Excesso de velocidade", texto: `${v.limite + 4 + sorteio(6)} km/h em via de ${v.limite} km/h por 40 s`, data: dataHoraCurta(diaRel(-4 - sorteio(4), 15, 5 + sorteio(50))), tipo: "alerta" },
+      { titulo: "Abertura de baú autorizada", texto: "Conferência no destino • lacre conferido", data: dataHoraCurta(diaRel(-6 - sorteio(3), 10, 30)), tipo: "info" },
+    );
+    const alertas = eventos.filter((e) => e.tipo === "alerta").length;
+    const conformidade = Math.max(92, 99.6 - alertas * 0.7 - sorteio(10) / 10).toFixed(1).replace(".", ",");
+
+    return { viagens, manutencao, eventos, kmMes, conformidade };
+  }
+
+  let ultimoHistorico = null;
+
+  function abrirHistorico(v) {
+    const h = historicoDoVeiculo(v);
+    ultimoHistorico = { v, h };
+    $("#tl-hist-placa").textContent = v.placa;
+    $("#tl-hist-sub").textContent = `${v.modelo} • Ano ${v.ano} • ${v.motorista} (Cat. ${v.cat})`;
+
+    $("#tl-hist-resumo").innerHTML = [
+      ["Odômetro", `${milhar(v.odometro)} km`],
+      ["Rodados no mês", `${milhar(h.kmMes)} km`],
+      ["Viagens no mês", String(h.viagens.length + 6)],
+      ["Conformidade de velocidade", `${h.conformidade}%`],
+    ]
+      .map(([rotulo, valor]) => `<li><small>${esc(rotulo)}</small><strong>${esc(valor)}</strong></li>`)
+      .join("");
+
+    $("#tl-hist-viagens").innerHTML = h.viagens
+      .map(
+        (x) => `<tr>
+          <td>${esc(dataHoraCurta(x.data))}</td>
+          <td class="tl-mono">${esc(x.cte)}</td>
+          <td>${esc(x.de)} → ${esc(x.para)}</td>
+          <td class="tl-direita">${x.km ? milhar(x.km) : "—"}</td>
+          <td><span class="tl-hist-tag ${x.situacao === "Em andamento" ? "tl-hist-tag-andamento" : /ocorr/.test(x.situacao) ? "tl-hist-tag-alerta" : ""}">${esc(x.situacao)}</span></td>
+        </tr>`,
+      )
+      .join("");
+
+    const item = (e) => `<li class="tl-hist-item tl-hist-${e.tipo}">
+        <span class="tl-hist-ponto" aria-hidden="true"></span>
+        <div><strong>${esc(e.titulo)}</strong><p>${esc(e.texto)}</p></div>
+        <small>${esc(e.data)}</small>
+      </li>`;
+    $("#tl-hist-manutencao").innerHTML = h.manutencao.map(item).join("");
+    $("#tl-hist-eventos").innerHTML = h.eventos.map(item).join("");
+
+    if (typeof janelaHist.showModal === "function") janelaHist.showModal();
+    else janelaHist.setAttribute("open", "");
+    $("[data-hist-fechar]", janelaHist).focus();
+  }
+
+  const fecharHistorico = () =>
+    typeof janelaHist.close === "function" ? janelaHist.close() : janelaHist.removeAttribute("open");
+
+  $("#tl-mais").addEventListener("click", () => abrirHistorico(atual));
+  janelaHist.addEventListener("click", (e) => {
+    if (e.target === janelaHist || e.target.closest("[data-hist-fechar]")) fecharHistorico();
+  });
+
+  // histórico em planilha (CSV, abre no Excel com acentos)
+  $("#tl-hist-csv").addEventListener("click", () => {
+    if (!ultimoHistorico) return;
+    const { v, h } = ultimoHistorico;
+    const linhasCsv = [
+      ["Tipo", "Data", "Descrição", "Detalhe"],
+      ...h.viagens.map((x) => ["Viagem", dataHoraCurta(x.data), `${x.de} → ${x.para} (CT-e ${x.cte})`, `${x.km ? x.km + " km" : "em andamento"} • ${x.situacao}`]),
+      ...h.manutencao.map((x) => ["Manutenção", x.data, x.titulo, x.texto]),
+      ...h.eventos.map((x) => ["Evento", x.data, x.titulo, x.texto]),
+    ];
+    const csv = linhasCsv.map((l) => l.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(";")).join("\r\n");
+    const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `historico-${v.placa}-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    avisar("Histórico baixado", `Planilha do veículo ${v.placa} pronta (abre no Excel).`);
+  });
 
   $("#tl-ligar").addEventListener("click", (e) => falarComTorre(atual, e.currentTarget));
 

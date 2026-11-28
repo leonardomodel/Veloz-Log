@@ -1381,3 +1381,31 @@
     animation: none;
   }
 }
+
+/* =========================================================
+   ALINHAMENTO (Etapas 1 e 2)
+   ========================================================= */
+
+/* campos lado a lado (.cl-linha): o espaço entre campos empilhados não vale
+   dentro da linha — antes a 2ª coluna descia 18px em relação à 1ª */
+.cl-linha > .cl-campo + .cl-campo {
+  margin-top: 0;
+}
+
+/* área de arrastar XML é um <label> dentro de .cl-campo: a regra geral dos
+   rótulos (display: block) desmontava o layout em coluna centralizado */
+.cl-campo > label.cl-soltar {
+  display: flex;
+  margin-bottom: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/* números curtos: cabem o valor e o exemplo ("Ex.: 3.400", "Ex.: 8") */
+.cl-caixa input.cl-curto {
+  width: 10ch;
+}
+
+.cl-caixa input[type="number"].cl-curto {
+  width: 7ch;
+}

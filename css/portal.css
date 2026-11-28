@@ -1671,3 +1671,455 @@ body.pt-corpo {
     animation: none !important;
   }
 }
+
+/* =========================================================
+   MAPA DO CORREDOR (Leaflet + OpenStreetMap, o mesmo da cotação)
+   ========================================================= */
+.pt-mapa {
+  height: 240px;
+}
+
+.pt-mapa-leaflet {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #e9eef7;
+}
+
+/* chips por cima do mapa (o Leaflet usa camadas até 400) */
+.pt-mapa-chip {
+  z-index: 500;
+  white-space: nowrap;
+}
+
+.pt-mapa-ativas {
+  max-width: none;
+}
+
+.pt-mapa-br {
+  font-size: 11px;
+}
+
+.pt-mapa-aviso {
+  position: absolute;
+  inset: auto 12px 12px;
+  z-index: 500;
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--pt-texto-suave);
+}
+
+.pt-mapa-aviso[hidden] {
+  display: none;
+}
+
+.pt-mapa .leaflet-control-attribution {
+  font-size: 9px;
+}
+
+/* quadro do posto fiscal: agora logo abaixo do mapa (não cobre mais a rota) */
+.pt-mapa-posto {
+  position: static;
+  margin-top: 10px;
+  background: var(--pt-lavanda);
+  box-shadow: none;
+}
+
+/* carretas piscando de leve, como "ao vivo" */
+.pt-carreta {
+  animation: pt-piscar 2.4s ease-in-out infinite;
+}
+
+/* "Ao Vivo" sempre numa linha */
+.pt-ao-vivo {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pt-carreta {
+    animation: none;
+  }
+}
+
+/* =========================================================
+   CARROSSEL DE CORREDORES
+   ========================================================= */
+
+/* a regra geral ".pt-app svg { width: 20px; height: 20px }" encolhia a camada
+   de desenho do Leaflet (rotas e pontos sumiam): aqui ela volta ao tamanho real */
+.pt-app .leaflet-overlay-pane svg {
+  width: auto;
+  height: auto;
+}
+
+/* título sempre numa linha (nome longo vira "…", o nome inteiro fica no title) */
+.pt-corredor-topo h2 {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.pt-corredor-topo h2 > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pt-corredor-nav {
+  display: flex;
+  flex-shrink: 0;
+  gap: 4px;
+}
+
+.pt-corredor-seta {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--pt-borda);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--pt-texto);
+  cursor: pointer;
+  transition:
+    background-color var(--transicao),
+    color var(--transicao),
+    border-color var(--transicao);
+}
+
+.pt-corredor-seta:hover {
+  border-color: var(--pt-laranja);
+  background: var(--pt-laranja);
+  color: #fff;
+}
+
+.pt-corredor-seta svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.2;
+}
+
+/* bolinhas (qual corredor está aparecendo) */
+.pt-corredor-pontos {
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+  z-index: 500;
+  display: flex;
+  gap: 6px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 2px 8px rgba(21, 27, 54, 0.15);
+}
+
+.pt-corredor-pontos button {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: #cbd2e1;
+  cursor: pointer;
+  transition: width var(--transicao), background-color var(--transicao);
+}
+
+.pt-corredor-pontos button[aria-current="true"] {
+  width: 20px;
+  background: var(--pt-laranja);
+}
+
+/* caminhão na última posição GPS */
+.pt-caminhao-pino {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 2.5px solid #fff;
+  border-radius: 50%;
+  background: var(--pt-navy);
+  color: #fff;
+  box-shadow: 0 3px 8px rgba(21, 27, 54, 0.35);
+  transform: translate(-50%, -50%); /* o centro do pino fica na posição GPS */
+  transition: transform var(--transicao);
+}
+
+.pt-caminhao-pino:hover {
+  transform: translate(-50%, -50%) scale(1.15);
+}
+
+.pt-caminhao-pino svg {
+  width: 15px;
+  height: 15px;
+  stroke-width: 2;
+}
+
+/* em alerta (ex.: lentidão): laranja */
+.pt-caminhao-alerta {
+  background: var(--pt-laranja);
+}
+
+/* nome do corredor inteiro numa linha: título um pouco menor e setas compactas
+   ("Corredor Centro-Oeste", o mais longo, cabe na coluna lateral) */
+.pt-corredor-topo {
+  gap: 8px;
+}
+
+.pt-corredor-topo h2 {
+  gap: 6px;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+}
+
+.pt-corredor-topo h2 > svg {
+  width: 18px;
+  height: 18px;
+}
+
+.pt-corredor-seta {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+}
+
+.pt-corredor-seta svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* =========================================================
+   FILTROS DO MONITORAMENTO (painel do botão ao lado da busca)
+   ========================================================= */
+.pt-filtros-caixa {
+  position: relative;
+}
+
+.pt-filtro {
+  position: relative;
+}
+
+.pt-filtro.ativo {
+  background: var(--pt-laranja);
+  color: #fff;
+}
+
+/* quantos filtros estão ativos */
+.pt-filtro-num {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  display: grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  background: var(--pt-navy);
+  font-size: 10px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.pt-filtro-num[hidden] {
+  display: none;
+}
+
+.pt-filtros {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 30;
+  width: min(360px, calc(100vw - 32px));
+  padding: 16px;
+  border: 1px solid var(--pt-borda);
+  border-radius: var(--pt-raio);
+  background: #fff;
+  box-shadow: 0 18px 40px rgba(21, 27, 54, 0.18);
+}
+
+.pt-filtros[hidden] {
+  display: none;
+}
+
+.pt-filtros-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.pt-filtros-topo strong {
+  font-size: 15px;
+}
+
+.pt-filtros-limpar {
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--pt-laranja-escuro);
+  cursor: pointer;
+}
+
+.pt-filtros-limpar:hover {
+  background: var(--pt-laranja-claro);
+}
+
+.pt-filtros-grupo {
+  margin: 0 0 14px;
+  padding: 0;
+  border: 0;
+}
+
+.pt-filtros-grupo legend,
+.pt-filtros-campo > span {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--pt-texto-suave);
+}
+
+.pt-filtros-opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* opção em formato de chip (checkbox escondido) */
+.pt-filtros-chip {
+  position: relative;
+  cursor: pointer;
+}
+
+.pt-filtros-chip input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pt-filtros-chip span {
+  display: inline-block;
+  padding: 6px 11px;
+  border: 1px solid var(--pt-borda);
+  border-radius: 999px;
+  background: var(--pt-lavanda);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--pt-texto);
+  transition:
+    background-color var(--transicao),
+    border-color var(--transicao),
+    color var(--transicao);
+}
+
+.pt-filtros-chip:hover span {
+  border-color: var(--pt-laranja-borda);
+}
+
+.pt-filtros-chip input:checked + span {
+  border-color: var(--pt-navy);
+  background: var(--pt-navy);
+  color: #fff;
+}
+
+.pt-filtros-chip input:focus-visible + span {
+  outline: 2px solid var(--pt-laranja);
+  outline-offset: 2px;
+}
+
+.pt-filtros-linha {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.pt-filtros-campo {
+  flex: 0 0 110px;
+}
+
+.pt-filtros-campo select {
+  width: 100%;
+  height: 36px;
+  padding: 0 8px;
+  border: 1px solid var(--pt-borda);
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  font-size: 13px;
+  color: var(--pt-texto);
+}
+
+.pt-filtros-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pt-filtros-check input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--pt-laranja);
+}
+
+.pt-filtros-rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--pt-borda);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--pt-texto-suave);
+}
+
+.pt-filtros-ok {
+  height: 36px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--pt-laranja);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+}
+
+.pt-filtros-ok:hover {
+  background: var(--pt-laranja-hover);
+}
+
+/* o cartão do monitoramento cortava o painel de filtros (overflow: hidden):
+   o painel precisa poder passar da borda do cartão */
+.pt-monitor {
+  overflow: visible;
+}
+
+/* o painel nunca passa da altura da tela: o conteúdo rola por dentro */
+.pt-filtros {
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+}

@@ -276,7 +276,7 @@
         mapa = L.map(caixa, {
           zoomControl: true,
           attributionControl: false,
-          scrollWheelZoom: false,
+          scrollWheelZoom: true, // zoom com a roda do mouse (igual à cotação)
         });
         L.control.attribution({ prefix: false, position: "bottomright" }).addTo(mapa);
         L.tileLayer(window.VelozLeaflet.TILES, {

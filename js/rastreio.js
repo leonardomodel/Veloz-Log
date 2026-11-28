@@ -35,6 +35,7 @@
     gestao: { trilha: "Manifestos & CTEs", url: "/portal-manifestos.html", texto: "Voltar à gestão de cargas" },
     telemetria: { trilha: "Telemetria de Rota", url: "/portal-telemetria.html", texto: "Voltar à telemetria" },
     faturas: { trilha: "Faturas & Canhotos", url: "/portal-faturas.html?aba=edi", texto: "Voltar à conciliação" },
+    coleta: { trilha: "Solicitar Coleta", url: "/portal-coleta.html#cl-historico", texto: "Voltar às coletas" },
   };
 
   const $ = (s) => document.querySelector(s);
@@ -192,7 +193,7 @@
   function naoEncontrado() {
     document.title = "Rastreio não encontrado | VelozLog";
     const texto = codigo
-      ? `Não encontramos nenhuma carga com o código <strong>${esc(codigo)}</strong>. Confira o código no seu CT-e ou no e-mail de despacho (formato VLZ-000000-UF) e tente de novo.`
+      ? `Não encontramos nenhuma carga com o código <strong>${esc(codigo)}</strong>. Confira o código no seu CT-e ou no e-mail de despacho (formato VLZ-000000-UF) ou o protocolo da coleta (COL-0000-0000) e tente de novo.`
       : "Nenhum código informado. Volte e digite o código de rastreio ou o número do CT-e.";
     const resumo = $(".rt-resumo");
     if (resumo)
@@ -247,6 +248,7 @@
     } else {
       // ocorrência em tratamento: mostra só a fase (Despacho, Nova tentativa de entrega…)
       if (m.emTratamento) definir("previsao-rotulo", "Situação da entrega");
+      if (m.rotuloPrevisao) definir("previsao-rotulo", m.rotuloPrevisao); // coleta
       definir("previsao", m.eta);
     }
     definir("previsao-nota", m.obs);
@@ -264,12 +266,15 @@
     // triângulo desenhado centralizado (do 2,5 ao 20,5 na altura) para assentar no meio do círculo
     const ALERTA =
       '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.6 3.6a1.6 1.6 0 0 1 2.8 0l8 14.2a1.6 1.6 0 0 1-1.4 2.4H4a1.6 1.6 0 0 1-1.4-2.4z" /><path d="M12 9v4.4M12 16.6h0" /></svg>';
-    const nomesEtapas = [
-      m.status === "coleta" ? "Aguardando coleta" : "Coleta realizada",
-      "No centro de distribuição",
-      ocorrencia ? "Ocorrência na entrega" : entregaHoje ? "Saiu para entrega" : "Em trânsito",
-      "Entregue",
-    ];
+    // coleta (protocolo COL-…): etapas próprias da coleta
+    const nomesEtapas = m.etapas
+      ? [...m.etapas]
+      : [
+          m.status === "coleta" ? "Aguardando coleta" : "Coleta realizada",
+          "No centro de distribuição",
+          ocorrencia ? "Ocorrência na entrega" : entregaHoje ? "Saiu para entrega" : "Em trânsito",
+          "Entregue",
+        ];
     // etapa marcada com alerta: a atual (ou a última, se já entregue) quando há ocorrência
     // registrada pelo cliente; senão, a atual quando a própria carga está em ocorrência
     const etapaAlerta = comOcorrenciaCliente
@@ -445,7 +450,8 @@
     if (eventos.length > LIMITE_SEM_ROLAGEM) ativarRolagem(listaHistorico);
 
     // informações do transporte
-    $('[data-rt="info"]').innerHTML = [
+    // coleta: veículo, motorista, volumes e ponto de coleta (m.info)
+    $('[data-rt="info"]').innerHTML = (m.info || [
       ["Modal", "Rodoviário"],
       ["Modalidade", m.mod],
       ["CT-e", `CTE-${m.cte}`],
@@ -453,7 +459,7 @@
       ["Origem", ORIGEM.nome],
       ["Destino", destino],
       ["Proteção da carga", "Seguro incluso"],
-    ]
+    ])
       .map(([dt, dd]) => `<div><dt>${esc(dt)}</dt><dd>${esc(dd)}</dd></div>`)
       .join("");
   }

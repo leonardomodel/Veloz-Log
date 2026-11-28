@@ -290,6 +290,8 @@
 
     if (linhaPrazo) {
       rotuloPrazo.hidden = entregue;
+      // coleta e ocorrência em tratamento mostram a situação, não um prazo
+      rotuloPrazo.textContent = (m && (m.rotuloCurto || (m.emTratamento ? "Situação: " : ""))) || "Prazo: ";
       linhaPrazo.classList.toggle("entregue", entregue);
       linhaPrazo.title = entregue ? `Entregue em ${valores.prazo}` : `Prazo: ${valores.prazo}`;
     }
@@ -317,7 +319,7 @@
 
   function avisarNaoEncontrado(codigo) {
     vazioTitulo.textContent = "Código não encontrado";
-    vazioTexto.innerHTML = `Não encontramos nenhuma carga com <strong>${escHtml(codigo)}</strong>. Confira o código no seu CT-e ou e-mail de despacho (formato VLZ-000000-UF) e tente de novo.`;
+    vazioTexto.innerHTML = `Não encontramos nenhuma carga com <strong>${escHtml(codigo)}</strong>. Confira o código no seu CT-e ou e-mail de despacho (formato VLZ-000000-UF) ou o protocolo da coleta (COL-0000-0000) e tente de novo.`;
     if (resultado.classList.contains("ativo")) mostrarEstado("vazio");
     sinalizarErro();
   }

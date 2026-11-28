@@ -181,7 +181,7 @@
                 <h2><span class="tl-mono" data-tl="placa">GHR-9102</span> <span class="tl-online">Online</span></h2>
                 <small data-tl="modelo">Scania R450 6x2 • Ano 2023</small>
               </div>
-              <button type="button" class="tl-mais" id="tl-mais" aria-label="Mais opções do veículo">
+              <button type="button" class="tl-mais" id="tl-mais" aria-label="Histórico do veículo" title="Histórico do veículo" aria-haspopup="dialog">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="12" cy="19" r="1" /></svg>
               </button>
             </header>
@@ -301,6 +301,59 @@
       </main>
     </div>
   </div>
+
+  <!-- ===================== JANELA: HISTÓRICO DO VEÍCULO (/js/telemetria.js) =====================
+       aberta pelos três pontinhos do painel do veículo -->
+  <dialog class="tl-hist" id="tl-hist" aria-labelledby="tl-hist-titulo">
+    <header class="tl-hist-topo">
+      <span class="tl-hist-icone" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M2 6h12v10H2z" /><path d="M14 9h4l3 3.5V16h-7" /><circle cx="6" cy="17.5" r="1.8" /><circle cx="17" cy="17.5" r="1.8" /></svg>
+      </span>
+      <div>
+        <h2 id="tl-hist-titulo">Histórico do veículo <span class="tl-mono" id="tl-hist-placa">GHR-9102</span></h2>
+        <p id="tl-hist-sub">Scania R450 6x2 • Ano 2023</p>
+      </div>
+      <button type="button" class="tl-hist-fechar" data-hist-fechar aria-label="Fechar">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+      </button>
+    </header>
+
+    <div class="tl-hist-corpo">
+      <ul class="tl-hist-resumo" id="tl-hist-resumo" aria-label="Resumo do veículo"></ul>
+
+      <section class="tl-hist-secao" aria-labelledby="tl-hist-viagens-titulo">
+        <h3 id="tl-hist-viagens-titulo">Viagens recentes</h3>
+        <div class="tl-hist-rolagem">
+          <table class="tl-hist-tabela">
+            <thead>
+              <tr><th>Data</th><th>CT-e</th><th>Rota</th><th class="tl-direita">Km</th><th>Situação</th></tr>
+            </thead>
+            <tbody id="tl-hist-viagens"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="tl-hist-duas">
+        <section class="tl-hist-secao" aria-labelledby="tl-hist-manut-titulo">
+          <h3 id="tl-hist-manut-titulo">Manutenção preventiva</h3>
+          <ul class="tl-hist-lista" id="tl-hist-manutencao"></ul>
+        </section>
+
+        <section class="tl-hist-secao" aria-labelledby="tl-hist-eventos-titulo">
+          <h3 id="tl-hist-eventos-titulo">Eventos de telemetria</h3>
+          <ul class="tl-hist-lista" id="tl-hist-eventos"></ul>
+        </section>
+      </div>
+    </div>
+
+    <footer class="tl-hist-rodape">
+      <button type="button" class="tl-btn tl-btn-claro" id="tl-hist-csv">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="M7 10l5 5 5-5M12 15V3" /></svg>
+        <span>Baixar histórico (CSV)</span>
+      </button>
+      <button type="button" class="tl-btn tl-btn-laranja" data-hist-fechar><span>Fechar</span></button>
+    </footer>
+  </dialog>
 
   <script src="/js/whatsapp.js"></script>
   <script src="/js/layout.js"></script>

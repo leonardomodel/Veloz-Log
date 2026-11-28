@@ -192,9 +192,46 @@
                 <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" /></svg>
                 <input type="search" id="pt-busca" placeholder="Filtrar Rastreio, CTe, NF-e ou Cidade..." aria-label="Filtrar por código de rastreio, CT-e, NF-e ou cidade">
               </label>
-              <button type="button" class="pt-filtro" data-em-breve="Filtros avançados" aria-label="Filtros avançados">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0" /><circle cx="16" cy="6" r="2" /><circle cx="10" cy="12" r="2" /><circle cx="18" cy="18" r="2" /></svg>
-              </button>
+              <!-- FILTROS (/js/portal.js): abre o painel logo abaixo do botão -->
+              <div class="pt-filtros-caixa">
+                <button type="button" class="pt-filtro" id="pt-filtro-botao" aria-label="Filtros" aria-haspopup="true" aria-expanded="false" aria-controls="pt-filtros">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0" /><circle cx="16" cy="6" r="2" /><circle cx="10" cy="12" r="2" /><circle cx="18" cy="18" r="2" /></svg>
+                  <b class="pt-filtro-num" id="pt-filtro-num" hidden>0</b>
+                </button>
+
+                <div class="pt-filtros" id="pt-filtros" role="dialog" aria-label="Filtrar remessas" hidden>
+                  <div class="pt-filtros-topo">
+                    <strong>Filtrar remessas</strong>
+                    <button type="button" class="pt-filtros-limpar" id="pt-filtros-limpar">Limpar</button>
+                  </div>
+
+                  <fieldset class="pt-filtros-grupo">
+                    <legend>Situação</legend>
+                    <div class="pt-filtros-opcoes" id="pt-filtro-situacao"></div>
+                  </fieldset>
+
+                  <fieldset class="pt-filtros-grupo">
+                    <legend>Modalidade</legend>
+                    <div class="pt-filtros-opcoes" id="pt-filtro-modalidade"></div>
+                  </fieldset>
+
+                  <div class="pt-filtros-linha">
+                    <label class="pt-filtros-campo">
+                      <span>UF de destino</span>
+                      <select id="pt-filtro-uf"><option value="">Todas</option></select>
+                    </label>
+                    <label class="pt-filtros-check">
+                      <input type="checkbox" id="pt-filtro-hoje">
+                      <span>Só previsão para hoje</span>
+                    </label>
+                  </div>
+
+                  <div class="pt-filtros-rodape">
+                    <span id="pt-filtros-resultado">23 remessas</span>
+                    <button type="button" class="pt-filtros-ok" id="pt-filtros-ok">Ver resultado</button>
+                  </div>
+                </div>
+              </div>
             </header>
 
             <div class="pt-tabela-rolagem">
@@ -227,62 +264,48 @@
           <div class="pt-coluna">
 
             <!-- corredor sul-sudeste -->
-            <section class="pt-cartao pt-corredor" aria-labelledby="pt-corredor-titulo">
+            <!-- CARROSSEL DE CORREDORES (/js/portal.js): troca sozinho a cada 8 s,
+                 para ao passar o mouse; setas e bolinhas trocam na hora -->
+            <section class="pt-cartao pt-corredor" aria-labelledby="pt-corredor-titulo" aria-roledescription="carrossel">
               <header class="pt-corredor-topo">
                 <h2 id="pt-corredor-titulo">
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2z" /><path d="M9 4v14M15 6v14" /></svg>
-                  Corredor Sul-Sudeste
+                  <span id="pt-corredor-nome">Corredor Sul-Sudeste</span>
                 </h2>
-                <span class="pt-tag pt-tag-lavanda">GPS Satélite</span>
+                <div class="pt-corredor-nav">
+                  <button type="button" class="pt-corredor-seta" id="pt-corredor-anterior" aria-label="Corredor anterior">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
+                  </button>
+                  <button type="button" class="pt-corredor-seta" id="pt-corredor-proximo" aria-label="Próximo corredor">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+                  </button>
+                </div>
               </header>
 
               <div class="pt-mapa">
-                <!-- mapa ilustrativo da rota (SVG) -->
-                <svg class="pt-mapa-svg" viewBox="0 0 280 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-                  <rect width="280" height="240" fill="#e9eef7" />
-                  <path d="M0 40 Q60 20 120 50 T280 30 V0 H0z" fill="#dfe8d9" />
-                  <path d="M0 200 Q70 170 150 210 T280 190 V240 H0z" fill="#dfe8d9" />
-                  <circle cx="210" cy="120" r="34" fill="#dfe8d9" />
-                  <g stroke="#fff" stroke-width="3" fill="none">
-                    <path d="M0 90 H280" />
-                    <path d="M0 150 Q140 130 280 160" />
-                    <path d="M70 0 V240" />
-                    <path d="M180 0 Q170 120 200 240" />
-                    <path d="M0 60 L280 210" />
-                  </g>
-                  <g stroke="#f4d58d" stroke-width="5" fill="none" stroke-linecap="round">
-                    <path d="M20 230 Q90 160 140 130 T270 20" />
-                  </g>
-                  <path class="pt-rota" d="M20 230 Q90 160 140 130 T270 20" stroke="#f26a1b" stroke-width="3" fill="none" stroke-dasharray="7 6" stroke-linecap="round" />
-                  <g font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="9" font-weight="700" fill="#5b6478">
-                    <text x="150" y="122">Curitiba</text>
-                    <text x="44" y="186">Garuva</text>
-                    <text x="200" y="64">BR-116</text>
-                  </g>
-                  <circle cx="140" cy="130" r="5" fill="#151b36" stroke="#fff" stroke-width="2" />
-                  <circle class="pt-caminhao" r="5" fill="#f26a1b" stroke="#fff" stroke-width="2">
-                    <animateMotion dur="9s" repeatCount="indefinite" path="M20 230 Q90 160 140 130 T270 20" />
-                  </circle>
-                  <circle class="pt-caminhao" r="5" fill="#f26a1b" stroke="#fff" stroke-width="2">
-                    <animateMotion dur="9s" begin="-4.5s" repeatCount="indefinite" path="M20 230 Q90 160 140 130 T270 20" />
-                  </circle>
-                </svg>
+                <!-- mapa real (Leaflet + OpenStreetMap, o mesmo da cotação) — montado pelo /js/portal.js -->
+                <div class="pt-mapa-leaflet" id="pt-mapa-leaflet" role="img" aria-label="Mapa do corredor com as carretas na última posição GPS"></div>
+                <p class="pt-mapa-aviso" id="pt-mapa-aviso" hidden>Mapa indisponível no momento.</p>
 
-                <span class="pt-mapa-chip pt-mapa-ativas"><i class="pt-ponto"></i> 9 Carretas Ativas em Rota</span>
-                <span class="pt-mapa-chip pt-mapa-br">BR-116 / BR-101</span>
-                <div class="pt-mapa-posto">
-                  <span>
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M8.5 12l2.5 2.5 4.5-5" /></svg>
-                    Posto Fiscal Garuva (SC): Liberado
-                  </span>
-                  <b>Sem Fila</b>
-                </div>
+                <span class="pt-mapa-chip pt-mapa-ativas"><i class="pt-ponto"></i> <span id="pt-corredor-carretas">4 carretas em rota</span></span>
+                <span class="pt-mapa-chip pt-mapa-br" id="pt-corredor-vias">BR-116 / BR-101</span>
+                <div class="pt-corredor-pontos" id="pt-corredor-pontos" role="group" aria-label="Escolher corredor"></div>
+              </div>
+
+              <!-- fora do mapa: antes cobria a rota e os créditos do OpenStreetMap -->
+              <div class="pt-mapa-posto">
+                <span>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M8.5 12l2.5 2.5 4.5-5" /></svg>
+                  <span id="pt-corredor-posto">Posto Fiscal Garuva (SC): Liberado</span>
+                </span>
+                <b id="pt-corredor-fila">Sem Fila</b>
               </div>
 
               <dl class="pt-corredor-dados">
-                <div><dt>Próxima chegada prevista:</dt><dd>Curitiba (CIC) às 15:45</dd></div>
-                <div><dt>Velocidade média na frota:</dt><dd>76 km/h <span>(Dentro da conformidade)</span></dd></div>
-                <div><dt>Status da malha rodoviária:</dt><dd class="pt-laranja">Tráfego Normal</dd></div>
+                <div><dt>Próxima chegada prevista:</dt><dd id="pt-corredor-chegada">Curitiba (CIC) às 15:45</dd></div>
+                <div><dt>Velocidade média na frota:</dt><dd><span id="pt-corredor-vel">76 km/h</span> <span>(Dentro da conformidade)</span></dd></div>
+                <div><dt>Status da malha rodoviária:</dt><dd class="pt-laranja" id="pt-corredor-malha">Tráfego Normal</dd></div>
+                <div><dt>Última posição GPS:</dt><dd id="pt-corredor-gps">há 1 min</dd></div>
               </dl>
             </section>
 
@@ -339,6 +362,7 @@
 
   <script src="/js/whatsapp.js"></script>
   <script src="/js/layout.js"></script>
+  <script src="/js/leaflet.js"></script>
   <script src="/js/manifestos.js"></script>
   <script src="/js/portal-base.js"></script>
   <script src="/js/portal.js"></script>

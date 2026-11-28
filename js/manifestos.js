@@ -41,11 +41,11 @@
   };
   const ORIGEM_PADRAO = { nome: "Campinas (Hub SP-01)", sub: "Ind. ABC • Campinas • SP", uf: "SP" };
 
-  const origem = (m) => HUBS[m.hub] || ORIGEM_PADRAO;
+  const origem = (m) => m.origemInfo || HUBS[m.hub] || ORIGEM_PADRAO; // coleta: a planta
 
   // código de rastreio do pedido: VLZ-{CT-e}-{UF}
   const codigo = (m) =>
-    `VLZ-${m.cte}-${UF_DO_CODIGO === "destino" ? m.uf : origem(m).uf}`;
+    m.codigoRastreio || `VLZ-${m.cte}-${UF_DO_CODIGO === "destino" ? m.uf : origem(m).uf}`; // coleta: COL-ANO-NNNN
 
   // situação por status: etiqueta, % do trajeto e etapa atual
   // (0 coleta · 1 hub · 2 trânsito · 3 entregue · 4 concluído) — home e rastreio
@@ -59,6 +59,7 @@
   };
   // m.tag: etiqueta própria (ex.: "Pendência solucionada", vinda do tratamento da ocorrência)
   const situacao = (m) => {
+    if (m.situacaoPropria) return m.situacaoPropria; // coleta: etapas próprias
     const s = SITUACOES[m.status] || SITUACOES.transito;
     return m.tag ? { ...s, tag: m.tag } : s;
   };
@@ -438,8 +439,173 @@
     }
   }
 
+  /* =========================================================
+     FROTA E CORREDORES (mapa da Visão Geral + Telemetria de Rota)
+     Última posição GPS de cada carreta: a Telemetria usa estas mesmas posições.
+     atualizado: minutos desde a última leitura do GPS.
+     ========================================================= */
+  const FROTA_MAPA = [
+    { placa: "GHR-9102", regiao: "sul", pos: [-24.78, -48.33], motorista: "Marcos Vinicius", de: "São Paulo (SP)", para: "Curitiba (PR)", vel: 78, alerta: true, atualizado: 2 },
+    { placa: "BRA-4E29", regiao: "sul", pos: [-25.98, -48.86], motorista: "Carlos Eduardo S.", de: "Curitiba (PR)", para: "Porto Alegre (RS)", vel: 82, atualizado: 1 },
+    { placa: "OLT-8812", regiao: "sul", pos: [-23.08, -46.6], motorista: "Roberto Alcantara", de: "Campinas (SP)", para: "Belo Horizonte (MG)", vel: 74, atualizado: 3 },
+    { placa: "KLD-5530", regiao: "sul", pos: [-23.86, -46.47], motorista: "Fernando Dias Prado", de: "Santos (SP)", para: "Paulínia (SP)", vel: 68, atualizado: 4 },
+    { placa: "MTX-4417", regiao: "centro", pos: [-17.35, -52.4], motorista: "Juliano Ferraz", de: "Rondonópolis (MT)", para: "Uberlândia (MG)", vel: 79, atualizado: 2 },
+    { placa: "GOB-2290", regiao: "centro", pos: [-16.12, -48.6], motorista: "Patrícia Moura", de: "Anápolis (GO)", para: "Brasília (DF)", vel: 76, atualizado: 5 },
+    { placa: "PRN-7730", regiao: "portos", pos: [-25.55, -48.82], motorista: "Diego Matsumoto", de: "Curitiba (PR)", para: "Paranaguá (PR)", vel: 71, atualizado: 1 },
+    { placa: "SNT-1184", regiao: "portos", pos: [-23.92, -46.38], motorista: "Wagner Lopes", de: "Paulínia (SP)", para: "Santos (SP)", vel: 64, atualizado: 3 },
+    { placa: "ITJ-6602", regiao: "portos", pos: [-26.72, -48.68], motorista: "Lucas Bernardi", de: "Joinville (SC)", para: "Itajaí (SC)", vel: 80, atualizado: 2 },
+  ];
+
+  // corredores do carrossel da Visão Geral (mesmas regiões da Telemetria)
+  const CORREDORES = [
+    {
+      regiao: "sul",
+      titulo: "Corredor Sul-Sudeste",
+      vias: "BR-116 / BR-101",
+      rotas: [
+        [[-22.9056, -47.0608], [-23.18, -46.89], [-23.5505, -46.6333], [-23.7, -46.85], [-24.05, -47.25], [-24.4917, -47.8437], [-24.8, -48.3], [-25.1, -48.9], [-25.4284, -49.2733], [-25.62, -49.05], [-26.0318, -48.8533], [-26.3045, -48.8487]],
+        [[-23.5505, -46.6333], [-23.12, -46.55], [-22.85, -46.32]],
+        [[-23.96, -46.33], [-23.86, -46.47], [-23.5505, -46.6333]],
+      ],
+      cidades: [["São Paulo", [-23.5505, -46.6333]], ["Curitiba (CIC)", [-25.4284, -49.2733]], ["Joinville", [-26.3045, -48.8487]]],
+      posto: { nome: "Posto Fiscal Garuva (SC)", situacao: "Liberado", fila: "Sem Fila", pos: [-26.0318, -48.8533] },
+      proxima: "Curitiba (CIC) às 15:45",
+      malha: "Lentidão em Registro (SP)",
+    },
+    {
+      regiao: "centro",
+      titulo: "Corredor Centro-Oeste",
+      vias: "BR-364 / BR-060",
+      rotas: [
+        [[-16.47, -54.64], [-17.2, -53.2], [-17.57, -52.55], [-17.88, -51.72], [-17.79, -50.92], [-18.42, -49.21], [-18.92, -48.28]],
+        [[-16.68, -49.25], [-16.33, -48.95], [-16.12, -48.6], [-15.79, -47.88]],
+      ],
+      cidades: [["Rondonópolis", [-16.47, -54.64]], ["Uberlândia", [-18.92, -48.28]], ["Brasília", [-15.79, -47.88]]],
+      posto: { nome: "Balança de Mineiros (GO)", situacao: "Operando", fila: "Fila 11 min", pos: [-17.57, -52.55] },
+      proxima: "CD Brasília (DF) em 55 min",
+      malha: "Tráfego Normal",
+    },
+    {
+      regiao: "portos",
+      titulo: "Corredor Portos",
+      vias: "Imigrantes / BR-277",
+      rotas: [
+        [[-22.76, -47.15], [-23.5505, -46.6333], [-23.92, -46.38], [-23.96, -46.33]],
+        [[-25.4284, -49.2733], [-25.55, -48.82], [-25.52, -48.51]],
+        [[-26.3045, -48.8487], [-26.72, -48.68], [-26.91, -48.66]],
+      ],
+      cidades: [["Porto de Santos", [-23.96, -46.33]], ["Paranaguá", [-25.52, -48.51]], ["Itajaí", [-26.91, -48.66]]],
+      posto: { nome: "Terminal Santos Brasil (SP)", situacao: "Janela confirmada", fila: "Triagem 18 min", pos: [-23.93, -46.31] },
+      proxima: "Terminal Santos Brasil em 25 min",
+      malha: "Fluxo intenso no porto",
+    },
+  ];
+
+  /* =========================================================
+     COLETAS (tela "Solicitar Coleta" + rastreio pelo protocolo COL-ANO-NNNN)
+     Base de demonstração + as coletas confirmadas pelo cliente neste navegador.
+     ========================================================= */
+  const ANO_ATUAL = HOJE.getFullYear();
+  const momento = (n, h, min) => {
+    const d = dia(n);
+    d.setHours(h, min, 0, 0);
+    return d.getTime();
+  };
+  const COLETAS_BASE = [
+    { protocolo: `COL-${ANO_ATUAL}-8841`, criada: momento(0, 10, 15), origem: "Planta Vinhedo - SP", doca: "Doca Central #03", veiculo: "VUC Sider (PL-9921)", motorista: "Edson Carvalho (Buonny OK)", vol: "6 Paletes", kg: 2100, status: "caminho" },
+    { protocolo: `COL-${ANO_ATUAL}-8790`, criada: momento(-1, 16, 40), origem: "Techno Park Campinas", doca: "Doca Externa #12", veiculo: "Truck 6x2 (EZ-4402)", motorista: "Claudio M. Bastos", vol: "14 Paletes", kg: 7800, status: "hub" },
+    { protocolo: `COL-${ANO_ATUAL}-8702`, criada: momento(-6, 9, 0), origem: "Planta Vinhedo - SP", doca: "Galpão A-4", veiculo: "Toco Baú (BR-1180)", motorista: "Rogério Antunes", vol: "4 Paletes", kg: 1250, status: "concluido" },
+  ];
+  // "Hoje, 10:15" · "Ontem, 16:40" · "21/11/2026"
+  function dataColeta(ms) {
+    const d = new Date(ms);
+    const hm = `${doisD(d.getHours())}:${doisD(d.getMinutes())}`;
+    const diff = Math.round((new Date(d).setHours(0, 0, 0, 0) - HOJE.getTime()) / 86400000);
+    if (diff === 0) return `Hoje, ${hm}`;
+    if (diff === -1) return `Ontem, ${hm}`;
+    return d.toLocaleDateString("pt-BR");
+  }
+  // todas as coletas: as confirmadas pelo cliente (mais recentes) + a base
+  function coletas() {
+    const salvas = coletasSolicitadas().map((c) => ({ ...c, criada: c.criada || Date.now() }));
+    return [...salvas, ...COLETAS_BASE].map((c) => ({ ...c, data: dataColeta(c.criada) }));
+  }
+
+  // coleta no formato que o rastreio e o card da home já sabem mostrar
+  const ETAPAS_COLETA = ["Solicitação registrada", "Veículo alocado", "Motorista a caminho", "Coletado no hub"];
+  const SITUACAO_COLETA = {
+    alocacao: { tag: "Aguardando alocação", progresso: 15, etapa: 0, status: "coleta" },
+    caminho: { tag: "Motorista a caminho", progresso: 60, etapa: 2, status: "transito" },
+    hub: { tag: "Coletado e no Hub SP-01", progresso: 100, etapa: 4, status: "hub" },
+    concluido: { tag: "Concluída com canhoto", progresso: 100, etapa: 4, status: "entregue" },
+  };
+  function coletaParaRastreio(c) {
+    const s = SITUACAO_COLETA[c.status] || SITUACAO_COLETA.alocacao;
+    const t0 = c.criada;
+    const hm = (ms) => {
+      const d = new Date(ms);
+      return `${doisD(d.getDate())}/${doisD(d.getMonth() + 1)} ${doisD(d.getHours())}:${doisD(d.getMinutes())}`;
+    };
+    const cidadePlanta = /vinhedo/i.test(c.origem) ? "Vinhedo" : /sumar/i.test(c.origem) ? "Sumaré" : /jundia/i.test(c.origem) ? "Jundiaí" : "Campinas";
+    // histórico da coleta (mais recente primeiro); horários a partir da solicitação
+    const passos = [
+      { titulo: "Solicitação de coleta registrada", local: `${c.origem} • ${c.doca}`, texto: `${c.vol} • ${Number(c.kg).toLocaleString("pt-BR")} kg. Protocolo ${c.protocolo}.`, quando: hm(t0) },
+    ];
+    if (s.etapa >= 1)
+      passos.unshift({ titulo: "Veículo alocado", local: "Torre de Controle VelozLog", texto: `${c.veiculo} • motorista ${c.motorista}.`, quando: hm(t0 + 25 * 60000) });
+    if (s.etapa >= 2)
+      passos.unshift({ titulo: "Motorista a caminho da planta", local: `A caminho de ${c.origem}`, texto: "Chegada prevista dentro da janela agendada.", quando: hm(t0 + 50 * 60000) });
+    if (s.etapa >= 4)
+      passos.unshift({ titulo: c.status === "concluido" ? "Coleta concluída com canhoto" : "Carga coletada e recebida no Hub SP-01", local: "Hub SP-01 • Campinas (SP)", texto: "Conferência de volumes e peso realizada no hub.", quando: hm(t0 + 4 * 3600000) });
+
+    return {
+      ehColeta: true,
+      cte: c.protocolo, // chave das ocorrências / busca
+      codigoRastreio: c.protocolo,
+      nf: "—",
+      cidade: "Campinas",
+      uf: "SP",
+      bairro: "Hub SP-01",
+      dest: "Hub SP-01 (triagem)",
+      mod: `Coleta • ${c.veiculo}`,
+      status: s.status,
+      tag: s.tag,
+      situacaoPropria: { tag: s.tag, progresso: s.progresso, etapa: s.etapa },
+      etapas: ETAPAS_COLETA,
+      rotulo: s.tag,
+      eta: s.etapa >= 4 ? (c.status === "concluido" ? "Coleta concluída" : "Coletada no hub") : c.status === "alocacao" ? "Alocando veículo" : "Chegada na janela agendada",
+      rotuloPrevisao: "Situação da coleta",
+      rotuloCurto: "Situação: ",
+      obs: "",
+      local: s.etapa >= 4 ? "Hub SP-01 • Campinas (SP)" : `${c.veiculo} • ${c.motorista}`,
+      origemInfo: { nome: c.origem, sub: `Ind. ABC • ${cidadePlanta} • SP`, uf: "SP" },
+      eventos: passos,
+      info: [
+        ["Serviço", "Coleta B2B"],
+        ["Protocolo", c.protocolo],
+        ["Veículo", c.veiculo],
+        ["Motorista", c.motorista],
+        ["Volumes e peso", `${c.vol} • ${Number(c.kg).toLocaleString("pt-BR")} kg`],
+        ["Ponto de coleta", `${c.origem} • ${c.doca}`],
+        ["Destino", "Hub SP-01 • Campinas (SP)"],
+      ],
+      dias: 0,
+    };
+  }
+  // "COL-2026-8841", "col 2026 8841" ou "COL20268841"
+  function buscarColeta(texto) {
+    const t = String(texto || "").toUpperCase().replace(/\s+/g, "");
+    if (!/^COL/.test(t)) return null;
+    const num = t.replace(/\D/g, "");
+    const c = coletas().find((x) => x.protocolo.replace(/\D/g, "") === num || x.protocolo.replace(/\D/g, "").endsWith(num));
+    return c ? coletaParaRastreio(c) : null;
+  }
+
   // aceita o código de rastreio "VLZ-894012-SP" e também "CTE-894012" ou só "894012"
+  // — e o protocolo de coleta "COL-2026-8841"
   function buscar(texto) {
+    const coleta = buscarColeta(texto);
+    if (coleta) return coleta;
     const numero = String(texto || "").replace(/\D/g, "");
     if (!numero) return null;
     // situação atual (com a ocorrência tratada aplicada)
@@ -453,6 +619,10 @@
     totais: totais(TODOS.map(efetivo)),
     calcularTotais: totais,
     coletasSolicitadas,
+    coletas,
+    frota: FROTA_MAPA,
+    corredores: CORREDORES,
+    buscarColeta,
     CHAVE_COLETAS,
     ocorrenciasCliente,
     salvarOcorrencia,
