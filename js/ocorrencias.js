@@ -1,6 +1,6 @@
 /* VelozLog — Ocorrências registradas pelo cliente (portal-manifestos.html)
-   • "Registrar Ocorrência" (cartão abaixo da tabela) ou o ícone de alerta na linha da carga
-     abrem a janela já com a carga escolhida
+   • "Registrar Ocorrência" (botão do cartão abaixo da tabela ou link do aviso no topo) abre a janela;
+     (no cartão do topo, a busca por uma coleta também oferece "Registrar ocorrência")
    • tipo, quando foi constatada, volumes afetados, descrição, contato e fotos (até 5)
    • gera o protocolo OCR-ANO-NNNN, guarda neste navegador (/js/manifestos.js) e:
        – lista no cartão "Ocorrências Registradas"
@@ -35,7 +35,13 @@
   const miniaturas = $("#gs-oc-miniaturas");
   let fotos = []; // { nome, url }
 
-  const cargaDe = (cte) => dados.todos.find((m) => m.cte === cte) || null;
+  // carga pelo que foi digitado: código de envio (VLZ-…), CT-e ou protocolo de coleta (COL-…).
+  // Volta a SITUAÇÃO ATUAL (com ocorrência tratada aplicada) ou null.
+  const cargaDe = (texto) => (String(texto || "").trim() ? dados.buscar(texto) : null);
+  // pedido finalizado (entregue / devolvido) ou coleta concluída: não recebe ocorrência
+  const finalizada = (m) => !!m && m.status === "entregue";
+  // volumes da carga (a coleta guarda "6 Paletes")
+  const volumesDe = (m) => (m ? Number(m.vols) || parseInt(m.vol, 10) || 0 : 0);
 
   // cor do status da ocorrência: aberta (vermelho) · andamento (âmbar) · resolvida (verde) · cancelada (azul)
   const CLASSE_FASE = {
@@ -45,15 +51,20 @@
     cancelada: "gs-status-coleta",
   };
 
-  /* ---------- lista de cargas do select ---------- */
-  campos.carga.innerHTML =
-    '<option value="">Selecione a carga…</option>' +
-    dados.todos
-      .map(
-        (m) =>
-          `<option value="${esc(m.cte)}">${esc(dados.codigo(m))} — ${esc(m.cidade)}/${esc(m.uf)} • ${esc(m.rotulo)}</option>`,
-      )
-      .join("");
+  /* ---------- sugestões do campo "Carga": envios e coletas ainda em andamento ---------- */
+  function montarSugestoes() {
+    const envios = dados.todos
+      .map(dados.efetivo)
+      .filter((m) => !finalizada(m))
+      .map((m) => `<option value="${esc(dados.codigo(m))}">CT-e ${esc(m.cte)} • ${esc(m.cidade)}/${esc(m.uf)} • ${esc(m.rotulo)}</option>`);
+    const coletas = (dados.coletas ? dados.coletas() : [])
+      .map((c) => dados.buscarColeta(c.protocolo))
+      .filter((m) => m && !finalizada(m))
+      .map((m) => `<option value="${esc(m.codigoRastreio)}">Coleta • ${esc(m.origemInfo.nome)} • ${esc(m.tag)}</option>`);
+    $("#gs-oc-cargas").innerHTML = [...coletas, ...envios].join("");
+  }
+  montarSugestoes();
+  document.addEventListener("vl:ocorrencias", montarSugestoes);
 
   /* ---------- data e hora padrão: agora (sem permitir o futuro) ---------- */
   const doisDig = (n) => String(n).padStart(2, "0");
@@ -62,7 +73,10 @@
 
   /* ---------- validação ---------- */
   const REGRAS = {
-    carga: () => !!cargaDe(campos.carga.value),
+    carga: () => {
+      const m = cargaDe(campos.carga.value);
+      return !!m && !finalizada(m);
+    },
     tipo: () => !!campos.tipo.value,
     quando: () => {
       const d = new Date(campos.quando.value);
@@ -71,8 +85,8 @@
     volumes: () => {
       if (!campos.volumes.value) return true; // opcional
       const v = Number(campos.volumes.value);
-      const m = cargaDe(campos.carga.value);
-      return Number.isInteger(v) && v >= 1 && (!m || !m.vols || v <= m.vols);
+      const total = volumesDe(cargaDe(campos.carga.value));
+      return Number.isInteger(v) && v >= 1 && (!total || v <= total);
     },
     contato: () => campos.contato.value.trim().length >= 8,
     descricao: () => campos.descricao.value.trim().length >= 10,
@@ -80,6 +94,16 @@
 
   function mostrarErro(nome, mostrar) {
     const caixa = campos[nome].closest(".gs-oc-campo");
+    // carga: diz o motivo (vazio, não encontrada ou já finalizada)
+    if (nome === "carga" && mostrar) {
+      const texto = campos.carga.value.trim();
+      const m = cargaDe(texto);
+      $("#gs-oc-carga-erro").textContent = !texto
+        ? "Informe o código da carga."
+        : !m
+          ? "Código não encontrado. Use o código de envio (VLZ-…), o CT-e ou o protocolo de coleta (COL-…)."
+          : "Esta carga já foi finalizada (entregue) e não aceita ocorrência.";
+    }
     caixa.classList.toggle("gs-oc-invalido", mostrar);
     $(".gs-oc-erro", caixa).hidden = !mostrar;
     campos[nome].setAttribute("aria-invalid", String(mostrar));
@@ -95,10 +119,10 @@
 
   // volumes afetados: no máximo o total da carga escolhida
   campos.carga.addEventListener("change", () => {
-    const m = cargaDe(campos.carga.value);
-    if (m && m.vols) {
-      campos.volumes.max = m.vols;
-      campos.volumes.placeholder = `De 1 a ${m.vols}`;
+    const total = volumesDe(cargaDe(campos.carga.value));
+    if (total) {
+      campos.volumes.max = total;
+      campos.volumes.placeholder = `De 1 a ${total}`;
     } else {
       campos.volumes.removeAttribute("max");
       campos.volumes.placeholder = "Ex.: 2";
@@ -151,7 +175,9 @@
     const agora = new Date();
     campos.quando.value = paraCampo(agora);
     campos.quando.max = paraCampo(agora);
-    campos.carga.value = cargaDe(cte) ? cte : "";
+    // vindo da linha da carga: já preenche o código de envio
+    const m = cargaDe(cte);
+    campos.carga.value = m && !finalizada(m) ? dados.codigo(m) : "";
     campos.carga.dispatchEvent(new Event("change"));
     if (typeof janela.showModal === "function") janela.showModal();
     else janela.setAttribute("open", "");
@@ -231,11 +257,10 @@
         const extras = [o.volumes ? `${o.volumes} vol.` : "", o.fotos ? `${o.fotos} foto${o.fotos > 1 ? "s" : ""}` : ""]
           .filter(Boolean)
           .join(" • ");
-        const whats = `Olá, Torre VelozLog! Quero acompanhar a ocorrência ${o.protocolo} (${o.tipo}) da carga ${o.codigo}.`;
         const fase = dados.ESTADOS_OC[o.estado].fase;
         const ultimo = o.historico.length ? o.historico[o.historico.length - 1] : null;
-        const encerrada = fase === "encerrada";
-        return `<tr class="${o.protocolo === destacar ? "gs-oc-nova" : ""}">
+        // sem botões na linha: clicar mostra a ocorrência no cartão do topo (Tratar, Rastrear, Acompanhar)
+        return `<tr class="gs-oc-linha${o.protocolo === destacar ? " gs-oc-nova" : ""}" data-oc-ver="${esc(o.protocolo)}" tabindex="0" title="Ver e tratar ${esc(o.protocolo)}">
           <td><strong class="gs-oc-protocolo">${esc(o.protocolo)}</strong><small>${esc(dataHora(o.criada))}</small></td>
           <td><strong>${esc(o.codigo)}</strong><small>${esc(o.cidade)} / ${esc(o.uf)}</small></td>
           <td><strong>${esc(o.tipo)}</strong>${extras ? `<small>${esc(extras)}</small>` : ""}</td>
@@ -244,19 +269,39 @@
             <span class="gs-status ${CLASSE_FASE[o.estado] || CLASSE_FASE[fase]}">${esc(o.status)}</span>
             ${ultimo ? `<small class="gs-oc-atualizado">Atualizada ${esc(dataHora(ultimo.ts))}</small>` : ""}
           </td>
-          <td>
-            <div class="gs-acoes">
-              <button type="button" class="gs-acao ${encerrada ? "" : "gs-acao-tratar"}" data-oc-tratar="${esc(o.protocolo)}">${encerrada ? "Ver andamento" : "Tratar"}</button>
-              <a class="gs-acao" href="/rastreio.html?codigo=${encodeURIComponent(o.codigo)}&de=gestao">Rastrear</a>
-              <a class="gs-acao" href="#" data-whatsapp="${esc(whats)}">Acompanhar</a>
-            </div>
-          </td>
         </tr>`;
       })
       .join("");
   }
 
   mostrarLista();
+
+  // clicar (ou Enter) numa ocorrência: põe o protocolo na busca → o cartão do topo
+  // mostra a ocorrência com os botões Tratar, Rastrear e Acompanhar (/js/gestao.js)
+  function verNoTopo(protocolo) {
+    const busca = $("#gs-busca");
+    if (!busca) return;
+    busca.value = protocolo;
+    busca.dispatchEvent(new Event("input", { bubbles: true }));
+    const cartao = $("#gs-coleta-resultado");
+    if (cartao) {
+      const topo = cartao.getBoundingClientRect().top + window.scrollY - 140;
+      window.scrollTo({ top: topo, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    }
+  }
+  $("#gs-oc-linhas").addEventListener("click", (e) => {
+    const tr = e.target.closest("[data-oc-ver]");
+    if (tr) verNoTopo(tr.dataset.ocVer);
+  });
+  $("#gs-oc-linhas").addEventListener("keydown", (e) => {
+    const tr = e.target.closest("[data-oc-ver]");
+    if (tr && (e.key === "Enter" || e.key === " ")) {
+      e.preventDefault();
+      verNoTopo(tr.dataset.ocVer);
+    }
+  });
+  // ocorrência tratada: a lista também atualiza (status e "Atualizada …")
+  document.addEventListener("vl:ocorrencias", (e) => mostrarLista(e.detail && e.detail.protocolo));
 
   /* =========================================================
      TRATAR OCORRÊNCIA

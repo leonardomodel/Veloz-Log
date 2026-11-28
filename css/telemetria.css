@@ -1935,3 +1935,56 @@
   width: 18px;
   height: 18px;
 }
+
+/* pedágios: uma linha só, mesma altura e cantos do botão "Expandir Radar" */
+.tl-pedagios {
+  min-height: 44px;
+  max-width: none;
+  padding: 0 14px;
+  border: 1px solid var(--pt-borda);
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.tl-pedagios b {
+  font-weight: 800;
+  color: #15803d;
+}
+
+/* =========================================================
+   MEIA JANELA E TABLET (até 1100px): tabela da frota sem corte nem rolagem lateral
+   ========================================================= */
+@media (max-width: 1100px) {
+  .tl-tabela {
+    min-width: 0;
+  }
+
+  /* somem "Motorista" (3ª, aparece no painel do veículo) e "Trava de Baú" (5ª) */
+  .tl-tabela th:nth-child(3),
+  .tl-tabela td:nth-child(3),
+  .tl-tabela th:nth-child(5),
+  .tl-tabela td:nth-child(5) {
+    display: none;
+  }
+
+  .tl-tabela th,
+  .tl-tabela td {
+    padding: 14px 10px;
+  }
+
+  .tl-tabela th {
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+
+  /* ações: botão mais compacto, coluna só com o necessário */
+  .tl-tabela th:last-child,
+  .tl-tabela td:last-child {
+    width: 1%;
+  }
+
+  .tl-ver {
+    min-height: 36px;
+    padding: 6px 12px;
+  }
+}

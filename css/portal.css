@@ -2123,3 +2123,476 @@ body.pt-corpo {
   max-height: calc(100vh - 140px);
   overflow-y: auto;
 }
+
+/* título da coluna do ícone de rastreio, centralizado sobre o botão */
+.pt-tabela th.pt-th-rastreio {
+  text-align: center;
+}
+
+.pt-tabela td:last-child {
+  text-align: center;
+}
+
+/* =========================================================
+   MEIA JANELA E TABLET (até 1100px): menu lateral recolhido só com ícones
+   Antes, abaixo de 960px, o menu virava uma barra horizontal com rolagem.
+   Agora fica uma coluna estreita de ícones; o nome aparece ao passar o mouse
+   (o texto continua no HTML para leitores de tela).
+   ========================================================= */
+@media (max-width: 1100px) {
+  .pt-app {
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+
+  .pt-lateral {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    height: 100vh;
+    padding: 20px 12px;
+    border-right: 1px solid var(--pt-borda);
+    border-bottom: 0;
+    overflow: visible; /* a dica com o nome passa para fora da coluna */
+  }
+
+  /* logo: só o símbolo */
+  .pt-marca {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .pt-marca > span {
+    display: none;
+  }
+
+  .pt-marca img {
+    width: 36px;
+  }
+
+  .pt-ambiente,
+  .pt-lateral-pe {
+    display: none;
+  }
+
+  .pt-menu {
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    margin-top: 28px;
+    overflow: visible;
+  }
+
+  /* cada item: botão quadrado com o ícone; o texto fica invisível (font-size 0) */
+  .pt-menu a {
+    position: relative;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    font-size: 0;
+    white-space: nowrap;
+  }
+
+  .pt-menu a svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .pt-menu .pt-menu-site {
+    margin-top: 18px;
+    margin-left: 0;
+  }
+
+  /* dica com o nome, à direita do ícone */
+  .pt-menu a::after {
+    content: attr(data-rotulo);
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 12px);
+    z-index: 50;
+    padding: 7px 12px;
+    border-radius: 8px;
+    background: var(--pt-navy);
+    box-shadow: 0 8px 20px rgba(21, 27, 54, 0.25);
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-4px, -50%);
+    transition:
+      opacity 0.15s ease,
+      transform 0.15s ease;
+  }
+
+  .pt-menu a:hover::after,
+  .pt-menu a:focus-visible::after {
+    opacity: 1;
+    transform: translate(0, -50%);
+  }
+
+  .pt-topo {
+    padding: 14px 24px;
+  }
+
+  .pt-conteudo {
+    padding: 22px 24px 32px;
+  }
+}
+
+/* meia janela / tablet: a tabela do monitoramento cabe sem rolar de lado —
+   some a coluna "Modalidade" (3ª) e as demais se ajustam à largura */
+@media (max-width: 1100px) {
+  .pt-tabela {
+    min-width: 0;
+  }
+
+  .pt-tabela th:nth-child(3),
+  .pt-tabela td:nth-child(3) {
+    display: none;
+  }
+
+  .pt-tabela th,
+  .pt-tabela td {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  /* código e status sem quebrar no meio */
+  .pt-tabela .pt-cte strong,
+  .pt-status {
+    white-space: nowrap;
+  }
+}
+
+/* meia janela / tablet: sem barra de rolagem lateral na tabela do monitoramento */
+@media (max-width: 1100px) {
+  .pt-tabela th {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+  }
+
+  .pt-tabela th,
+  .pt-tabela td {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  /* status e previsão podem quebrar linha (antes forçavam a largura) */
+  .pt-status {
+    white-space: normal;
+    line-height: 1.25;
+  }
+
+  .pt-eta strong,
+  .pt-eta small {
+    white-space: normal;
+  }
+
+  /* coluna do ícone de rastreio: só o necessário */
+  .pt-tabela th:last-child,
+  .pt-tabela td:last-child {
+    width: 1%;
+    white-space: nowrap;
+  }
+}
+
+/* menu recolhido: o texto invisível ainda ocupava o "gap" de 10px ao lado do ícone
+   e empurrava o ícone 5px para a esquerda — sem gap, o ícone fica no centro */
+@media (max-width: 1100px) {
+  .pt-menu a {
+    gap: 0;
+  }
+
+  .pt-menu a svg {
+    margin: 0;
+  }
+
+  .pt-marca {
+    width: 100%;
+  }
+}
+
+/* =========================================================
+   MEIA JANELA / TABLET (761px a 1100px): corredor e Torre um embaixo do outro,
+   cada um usando a largura toda com duas colunas por dentro
+   (antes ficavam lado a lado e sobrava espaço vazio embaixo da Torre)
+   ========================================================= */
+@media (max-width: 1100px) and (min-width: 761px) {
+  .pt-coluna {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* corredor: mapa à esquerda; posto e dados à direita */
+  .pt-corredor {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    grid-template-areas:
+      "topo  topo"
+      "mapa  posto"
+      "mapa  dados";
+    grid-template-rows: auto auto 1fr;
+    column-gap: 20px;
+    align-items: start;
+  }
+
+  .pt-corredor-topo { grid-area: topo; }
+  .pt-corredor .pt-mapa { grid-area: mapa; height: 300px; }
+  .pt-corredor .pt-mapa-posto { grid-area: posto; margin-top: 16px; }
+  .pt-corredor .pt-corredor-dados { grid-area: dados; margin-top: 12px; }
+
+  /* Torre: texto à esquerda; gestora e botões à direita */
+  .pt-torre {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "topo   topo"
+      "texto  gestora"
+      "texto  botoes";
+    column-gap: 20px;
+    align-items: start;
+  }
+
+  .pt-torre-topo { grid-area: topo; }
+  .pt-torre > p { grid-area: texto; margin-top: 16px; }
+  .pt-torre .pt-gestora { grid-area: gestora; }
+  .pt-torre .pt-torre-botoes { grid-area: botoes; }
+}
+
+/* =========================================================
+   CENTRAL DE NOTIFICAÇÕES (sino do topo — /js/portal-base.js)
+   ========================================================= */
+.pt-topo-direita {
+  position: relative; /* o painel abre logo abaixo do sino */
+}
+
+/* número de não lidas no sino */
+.pt-sino i {
+  top: -5px;
+  right: -5px;
+  display: grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  width: auto;
+  padding: 0 4px;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 1;
+  color: #fff;
+}
+
+.pt-sino i[hidden] {
+  display: none;
+}
+
+.pt-sino[aria-expanded="true"] {
+  background: var(--pt-laranja);
+  color: #fff;
+}
+
+.pt-not {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  width: min(400px, calc(100vw - 32px));
+  max-height: min(560px, calc(100vh - 110px));
+  border: 1px solid var(--pt-borda);
+  border-radius: var(--pt-raio);
+  background: #fff;
+  box-shadow: 0 20px 44px rgba(21, 27, 54, 0.2);
+  overflow: hidden;
+}
+
+.pt-not[hidden] {
+  display: none;
+}
+
+.pt-not-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 16px 16px 10px;
+}
+
+.pt-not-topo strong {
+  font-size: 15px;
+}
+
+.pt-not-qtd {
+  margin-left: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--pt-laranja-claro);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--pt-laranja-escuro);
+}
+
+.pt-not-qtd:empty {
+  display: none;
+}
+
+.pt-not-link {
+  padding: 4px 6px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--pt-laranja-escuro);
+  cursor: pointer;
+}
+
+.pt-not-link:hover {
+  background: var(--pt-laranja-claro);
+}
+
+.pt-not-filtros {
+  display: flex;
+  gap: 6px;
+  padding: 0 16px 12px;
+  border-bottom: 1px solid var(--pt-borda);
+}
+
+.pt-not-filtros button {
+  padding: 5px 12px;
+  border: 1px solid var(--pt-borda);
+  border-radius: 999px;
+  background: #fff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--pt-texto);
+  cursor: pointer;
+}
+
+.pt-not-filtros button[aria-pressed="true"] {
+  border-color: var(--pt-navy);
+  background: var(--pt-navy);
+  color: #fff;
+}
+
+.pt-not-lista {
+  flex: 1 1 auto;
+  margin: 0;
+  padding: 6px;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.pt-not-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 12px;
+  padding: 10px;
+  border-radius: 10px;
+  color: var(--pt-texto);
+  text-decoration: none;
+  transition: background-color var(--transicao);
+}
+
+.pt-not-item:hover,
+.pt-not-item:focus-visible {
+  background: var(--pt-lavanda);
+}
+
+/* não lida: fundo laranja bem claro e bolinha */
+.pt-not-nova {
+  background: #fff8f3;
+}
+
+.pt-not-nova::after {
+  content: "";
+  position: absolute;
+  top: 16px;
+  right: 12px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--pt-laranja);
+}
+
+.pt-not-icone {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--pt-lavanda-forte);
+  color: var(--pt-texto);
+}
+
+.pt-not-icone svg {
+  width: 17px;
+  height: 17px;
+}
+
+.pt-not-alerta .pt-not-icone { background: #fee2e2; color: #b91c1c; }
+.pt-not-entrega .pt-not-icone { background: var(--pt-laranja-claro); color: var(--pt-laranja-escuro); }
+.pt-not-ok .pt-not-icone { background: #dcfce7; color: #15803d; }
+.pt-not-andamento .pt-not-icone { background: #fef3c7; color: #a16207; }
+.pt-not-coleta .pt-not-icone,
+.pt-not-gps .pt-not-icone { background: var(--pt-azul-tag); color: var(--pt-azul-texto); }
+
+.pt-not-texto {
+  min-width: 0;
+  padding-right: 14px;
+}
+
+.pt-not-texto strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pt-not-texto small {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--pt-texto-suave);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.pt-not-texto em {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+  color: var(--pt-texto-suave);
+}
+
+.pt-not-vazio {
+  padding: 28px 16px;
+  font-size: 13px;
+  text-align: center;
+  color: var(--pt-texto-suave);
+}
+
+/* o topo (e o painel de notificações dentro dele) fica acima dos mapas
+   (o Leaflet usa camadas com z-index até 1000) */
+.pt-topo {
+  z-index: 1100;
+}

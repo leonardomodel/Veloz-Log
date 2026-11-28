@@ -1895,3 +1895,250 @@
 .gs-oc-rodape [hidden] {
   display: none;
 }
+
+/* =========================================================
+   BUSCA POR PROTOCOLO DE COLETA (COL-…): cartão no lugar da tabela
+   ========================================================= */
+.gs-tabela-cartao[hidden],
+.gs-coleta-cartao[hidden] {
+  display: none;
+}
+
+.gs-coleta-cartao {
+  padding: 20px 22px;
+}
+
+.gs-coleta-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--pt-borda);
+}
+
+.gs-coleta-topo small {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--pt-texto-suave);
+}
+
+.gs-coleta-topo strong {
+  display: block;
+  margin-top: 2px;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.gs-coleta-dados {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px 20px;
+  margin: 16px 0 0;
+}
+
+.gs-coleta-dados dt {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--pt-texto-suave);
+}
+
+.gs-coleta-dados dd {
+  margin: 3px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--pt-texto);
+  overflow-wrap: anywhere;
+}
+
+.gs-coleta-nota {
+  margin: 16px 0 14px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--pt-fundo);
+  font-size: 13px;
+  color: var(--pt-texto-suave);
+}
+
+.gs-coleta-cartao .gs-acoes .gs-acao {
+  text-decoration: none;
+}
+
+.gs-coleta-vazio {
+  margin: 0;
+  padding: 18px 4px;
+  font-size: 14px;
+  text-align: center;
+  color: var(--pt-texto-suave);
+}
+
+.gs-coleta-vazio a {
+  font-weight: 700;
+  color: var(--pt-laranja-escuro);
+}
+
+@media (max-width: 900px) {
+  .gs-coleta-dados {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .gs-coleta-dados {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* cartão do topo (coleta / ocorrência): campo que ocupa a linha toda e ações */
+.gs-coleta-dados .gs-coleta-largo {
+  grid-column: 1 / -1;
+}
+
+.gs-coleta-acoes {
+  flex-wrap: wrap;
+}
+
+/* separa as ações da coleta das ações da ocorrência */
+.gs-coleta-separador {
+  width: 1px;
+  height: 24px;
+  margin: 0 4px;
+  background: var(--pt-borda);
+}
+
+.gs-acao-oc-texto {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.gs-acao-oc-texto:hover {
+  background: #b91c1c;
+  color: #fff;
+}
+
+.gs-coleta-dados .gs-coleta-largo dd {
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* tabela de ocorrências: a linha inteira é clicável (abre no cartão do topo) */
+.gs-oc-tabela tr.gs-oc-linha {
+  cursor: pointer;
+}
+
+.gs-oc-tabela tr.gs-oc-linha:hover td,
+.gs-oc-tabela tr.gs-oc-linha:focus-visible td {
+  background: var(--pt-laranja-claro);
+}
+
+.gs-oc-tabela tr.gs-oc-linha:focus-visible {
+  outline: 2px solid var(--pt-laranja);
+  outline-offset: -2px;
+}
+
+/* =========================================================
+   CARTÃO DO TOPO (coleta / ocorrência): descrição e botões com respiro
+   ========================================================= */
+
+/* descrição: separada dos outros dados, num bloco suave e com linhas mais folgadas */
+.gs-coleta-dados .gs-coleta-largo {
+  margin-top: 4px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--pt-fundo);
+}
+
+.gs-coleta-dados .gs-coleta-largo dd {
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+/* botões: linha própria, com divisória acima e espaço entre eles */
+.gs-coleta-acoes {
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--pt-borda);
+}
+
+.gs-coleta-acoes .gs-acao {
+  padding: 9px 16px;
+  font-size: 13px;
+}
+
+/* na coleta, a nota já separa: o botão fica logo abaixo dela */
+.gs-coleta-nota + .gs-coleta-acoes {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* aviso "Clique aqui…" dentro da lista vazia de ocorrências */
+.gs-oc-vazio .gs-oc-aviso-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 700;
+  color: #b91c1c;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+/* =========================================================
+   MEIA JANELA E TABLET (até 1100px): tabelas sem corte nem rolagem lateral
+   ========================================================= */
+@media (max-width: 1100px) {
+  /* sem largura mínima fixa: as colunas se ajustam à tela */
+  .gs-tabela {
+    min-width: 0;
+  }
+
+  /* manifestos: some "Data Despacho" (3ª) e "Modalidade" (4ª) */
+  .gs-tabela:not(.gs-oc-tabela) th:nth-child(3),
+  .gs-tabela:not(.gs-oc-tabela) td:nth-child(3),
+  .gs-tabela:not(.gs-oc-tabela) th:nth-child(4),
+  .gs-tabela:not(.gs-oc-tabela) td:nth-child(4) {
+    display: none;
+  }
+
+  .gs-tabela th,
+  .gs-tabela td {
+    padding: 14px 12px;
+  }
+
+  .gs-tabela th {
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+
+  /* "CT-e … • NF-e: …" quebra linha em vez de passar por cima da coluna ao lado */
+  .gs-chave {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  /* status pode quebrar linha */
+  .gs-status {
+    white-space: normal;
+    line-height: 1.25;
+  }
+
+  /* coluna do botão de rastreio: só o necessário */
+  .gs-tabela:not(.gs-oc-tabela) th:last-child,
+  .gs-tabela:not(.gs-oc-tabela) td:last-child {
+    width: 1%;
+    white-space: nowrap;
+  }
+}

@@ -106,7 +106,6 @@
       <td>
         <div class="gs-acoes">
           ${acao}
-          <button type="button" class="gs-acao gs-acao-oc" data-ocorrencia="${m.cte}" aria-label="Registrar ocorrência em ${codigo}" title="Registrar ocorrência">${ICONES.ocorrencia}</button>
         </div>
       </td>
     </tr>`;
@@ -132,7 +131,132 @@
     filtrar();
   });
 
+  /* ---------- busca por protocolo de coleta (COL-…) ----------
+     Coleta ainda não tem CT-e, então não está na tabela de manifestos: a tabela
+     some e, no lugar dela, aparece o resumo da coleta com os atalhos. */
+  const cartaoTabela = $(".gs-tabela-cartao");
+  const cartaoColeta = $("#gs-coleta-resultado");
+
+  // data e hora curta: 28/11/2026 • 01:53
+  const dataHoraOc = (ms) => {
+    const d = new Date(ms);
+    return `${d.toLocaleDateString("pt-BR")} • ${d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`;
+  };
+  // cor da etiqueta da ocorrência: aberta (vermelho) · andamento (âmbar) · resolvida (verde) · cancelada (azul)
+  const classeOcorrencia = (o) =>
+    o.estado === "cancelada"
+      ? "coleta"
+      : { aberta: "ocorrencia", andamento: "transito", encerrada: "entregue" }[dados.ESTADOS_OC[o.estado].fase];
+
+  // botões da ocorrência (ficam no cartão do topo, não na tabela)
+  function botoesOcorrencia(o, rastrear = true) {
+    const encerrada = dados.ESTADOS_OC[o.estado].fase === "encerrada";
+    const whats = `Olá, Torre VelozLog! Quero acompanhar a ocorrência ${o.protocolo} (${o.tipo}) da carga ${o.codigo}.`;
+    return `
+      <button type="button" class="gs-acao ${encerrada ? "" : "gs-acao-tratar"}" data-oc-tratar="${esc(o.protocolo)}">${encerrada ? "Ver andamento" : "Tratar ocorrência"}</button>
+      ${rastrear ? `<a class="gs-acao" href="/rastreio.html?codigo=${encodeURIComponent(o.codigo)}&de=gestao">${ICONES.alvo}Rastrear carga</a>` : ""}
+      <a class="gs-acao" href="#" data-whatsapp="${esc(whats)}">Acompanhar</a>`;
+  }
+
+  const linhaDado = (dt, dd, largo = false) =>
+    `<div${largo ? ' class="gs-coleta-largo"' : ""}><dt>${esc(dt)}</dt><dd>${esc(dd)}</dd></div>`;
+
+  /* ---------- busca por protocolo: coleta (COL-…) ou ocorrência (OCR-…) ----------
+     Não estão na tabela de manifestos: a tabela some e, no lugar dela, aparece o
+     cartão com os dados e as ações (Rastrear, Tratar, Acompanhar…). */
+  function mostrarResultado(texto) {
+    const limpo = texto.replace(/\s+/g, "").toUpperCase();
+    const tipo = /^COL/.test(limpo) ? "coleta" : /^OCR/.test(limpo) ? "ocorrencia" : null;
+    cartaoTabela.hidden = !!tipo;
+    cartaoColeta.hidden = !tipo;
+    if (!tipo) return false;
+
+    const digitos = limpo.replace(/\D/g, "");
+    const vazio = (msg) => {
+      cartaoColeta.innerHTML = `<p class="gs-coleta-vazio">${msg}</p>`;
+      return true;
+    };
+
+    /* ----- ocorrência ----- */
+    if (tipo === "ocorrencia") {
+      const o = (dados.ocorrenciasCliente ? dados.ocorrenciasCliente() : []).find(
+        (x) => x.protocolo.replace(/\D/g, "") === digitos,
+      );
+      if (!o)
+        return vazio(
+          digitos.length < 8
+            ? "Continue digitando o protocolo da ocorrência (ex.: OCR-2026-1041)."
+            : `Nenhuma ocorrência encontrada com <b>${esc(texto)}</b>. Veja a lista em <a href="#gs-ocorrencias">Ocorrências Registradas</a>.`,
+        );
+      const extras = [o.volumes ? `${o.volumes} vol.` : "", o.fotos ? `${o.fotos} foto(s)` : ""].filter(Boolean).join(" • ") || "—";
+      cartaoColeta.innerHTML = `
+        <header class="gs-coleta-topo">
+          <div>
+            <small>Protocolo de ocorrência</small>
+            <strong>${esc(o.protocolo)}</strong>
+          </div>
+          <span class="gs-status gs-status-${classeOcorrencia(o)}">${esc(o.status)}</span>
+        </header>
+        <dl class="gs-coleta-dados">
+          ${linhaDado("Carga", `${o.codigo} • ${o.cidade}/${o.uf}`)}
+          ${linhaDado("Tipo", o.tipo)}
+          ${linhaDado("Registrada em", dataHoraOc(o.criada))}
+          ${linhaDado("Contato para retorno", o.contato)}
+          ${linhaDado("Volumes / fotos", extras)}
+          ${linhaDado("Última atualização", o.historico.length ? dataHoraOc(o.historico[o.historico.length - 1].ts) : "Aguardando a Torre")}
+          ${linhaDado("Descrição", o.descricao, true)}
+        </dl>
+        <div class="gs-acoes gs-coleta-acoes">${botoesOcorrencia(o)}</div>`;
+      return true;
+    }
+
+    /* ----- coleta ----- */
+    const c = dados.buscarColeta ? dados.buscarColeta(texto) : null;
+    if (!c)
+      return vazio(
+        digitos.length < 8
+          ? "Continue digitando o protocolo da coleta (ex.: COL-2026-8841)."
+          : `Nenhuma coleta encontrada com <b>${esc(texto)}</b>. Confira o protocolo em <a href="/portal-coleta.html#cl-historico">Solicitar Coleta</a>.`,
+      );
+    const info = Object.fromEntries(c.info);
+    const classe = { coleta: "coleta", transito: "transito", hub: "coleta", entregue: "entregue" }[c.status] || "coleta";
+    // ocorrência desta coleta (a mais recente): botões dela; sem ocorrência, "Registrar ocorrência"
+    const oc = (dados.ocorrenciasCliente ? dados.ocorrenciasCliente(c.cte) : [])[0];
+    const finalizada = c.status === "entregue";
+    const acoesOcorrencia = oc
+      ? botoesOcorrencia(oc, false)
+      : finalizada
+        ? ""
+        : `<button type="button" class="gs-acao gs-acao-oc-texto" data-ocorrencia="${esc(c.codigoRastreio)}">${ICONES.ocorrencia}Registrar ocorrência</button>`;
+    cartaoColeta.innerHTML = `
+      <header class="gs-coleta-topo">
+        <div>
+          <small>Protocolo de coleta</small>
+          <strong>${esc(c.codigoRastreio)}</strong>
+        </div>
+        <span class="gs-status gs-status-${classe}">${esc(c.tag)}</span>
+      </header>
+      <dl class="gs-coleta-dados">
+        ${linhaDado("Ponto de coleta", info["Ponto de coleta"])}
+        ${linhaDado("Destino", info["Destino"])}
+        ${linhaDado("Veículo", info["Veículo"])}
+        ${linhaDado("Motorista", info["Motorista"])}
+        ${linhaDado("Volumes e peso", info["Volumes e peso"])}
+        ${linhaDado("Situação", c.eta)}
+        ${oc ? linhaDado("Ocorrência", `${oc.protocolo} • ${oc.tipo} • ${oc.status}`, true) : ""}
+      </dl>
+      <p class="gs-coleta-nota">Coletas ainda não têm CT-e: os manifestos aparecem nesta tabela depois que a carga é recebida no hub.</p>
+      <div class="gs-acoes gs-coleta-acoes">
+        <a class="gs-acao gs-acao-tratar" href="/rastreio.html?codigo=${encodeURIComponent(c.codigoRastreio)}&de=gestao">${ICONES.alvo}Rastrear coleta</a>
+        <a class="gs-acao" href="/portal-coleta.html#cl-historico">Ver em Solicitar Coleta</a>
+        ${acoesOcorrencia ? `<span class="gs-coleta-separador" aria-hidden="true"></span>${acoesOcorrencia}` : ""}
+      </div>`;
+    return true;
+  }
+
   function filtrar() {
+    // protocolo de coleta: mostra a coleta no lugar da tabela
+    if (mostrarResultado(busca.value.trim())) return;
     const termo = norm(busca.value.trim());
     lista = doPeriodo().filter((m) => {
       if (filtro !== "todos" && dados.grupo(m) !== filtro) return false;
@@ -386,4 +510,12 @@
   // abrir direto um comprovante: portal-manifestos.html?pod=VLZ-0089241-SP (ou CTE-0089241)
   const podUrl = new URLSearchParams(location.search).get("pod");
   if (podUrl) abrirPod(podUrl.replace(/\D/g, ""));
+
+  // já abrir com a busca preenchida: portal-manifestos.html?busca=OCR-2026-1041
+  // (usado pela central de notificações: mostra a ocorrência/coleta no cartão do topo)
+  const buscaUrl = new URLSearchParams(location.search).get("busca");
+  if (buscaUrl) {
+    busca.value = buscaUrl;
+    filtrar();
+  }
 })();

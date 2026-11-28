@@ -1873,3 +1873,51 @@
     transition: none;
   }
 }
+
+/* =========================================================
+   MEIA JANELA E TABLET (até 1100px): tabelas sem corte nem rolagem lateral
+   ========================================================= */
+@media (max-width: 1100px) {
+  .fa-tabela,
+  .fa-tabela-edi {
+    min-width: 0;
+  }
+
+  /* faturas: somem "Período de Apuração" (2ª) e "CTes Vinculados" (3ª) */
+  .fa-tabela:not(.fa-tabela-edi) th:nth-child(2),
+  .fa-tabela:not(.fa-tabela-edi) td:nth-child(2),
+  .fa-tabela:not(.fa-tabela-edi) th:nth-child(3),
+  .fa-tabela:not(.fa-tabela-edi) td:nth-child(3) {
+    display: none;
+  }
+
+  /* conciliação EDI: somem "NF-e" (2ª) e "Destino" (3ª) */
+  .fa-tabela-edi th:nth-child(2),
+  .fa-tabela-edi td:nth-child(2),
+  .fa-tabela-edi th:nth-child(3),
+  .fa-tabela-edi td:nth-child(3) {
+    display: none;
+  }
+
+  .fa-tabela th,
+  .fa-tabela td {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .fa-tabela th {
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+
+  /* número do boleto pode quebrar; ações só com o necessário */
+  .fa-fatura small {
+    overflow-wrap: anywhere;
+  }
+
+  .fa-tabela th:last-child,
+  .fa-tabela td:last-child {
+    width: 1%;
+    white-space: nowrap;
+  }
+}

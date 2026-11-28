@@ -48,8 +48,9 @@
             <p class="gs-oc-aviso">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /><path d="M12 9v4M12 17h0" /></svg>
               <span>
-                Teve avaria, falta de volumes, atraso ou recusa? Registre uma ocorrência pelo ícone de alerta na linha da carga
-                ou <button type="button" class="gs-oc-aviso-link" data-oc-nova>clique aqui para registrar</button>.
+                Teve avaria, falta de volumes, atraso ou recusa?
+                <button type="button" class="gs-oc-aviso-link" data-oc-nova>Clique aqui para registrar uma ocorrência</button>
+                e informe o código da carga ou da coleta.
                 Acompanhe em <a href="#gs-ocorrencias">Ocorrências Registradas</a>.
               </span>
             </p>
@@ -79,7 +80,7 @@
         <section class="pt-cartao gs-filtros" aria-label="Filtros">
           <label class="gs-busca">
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" /></svg>
-            <input type="search" id="gs-busca" placeholder="Buscar por Rastreio, Chave NF-e, CTe, Destinatário ou Pedido" aria-label="Buscar por código de rastreio, chave NF-e, CT-e, destinatário ou pedido">
+            <input type="search" id="gs-busca" placeholder="Buscar por Rastreio, Chave NF-e, CTe, Destinatário, Pedido, Coleta (COL-…) ou Ocorrência (OCR-…)" aria-label="Buscar por código de rastreio, chave NF-e, CT-e, destinatário ou pedido">
           </label>
 
           <div class="gs-chips" role="group" aria-label="Filtrar por status" id="gs-chips">
@@ -117,7 +118,7 @@
                   <th>Modalidade</th>
                   <th>Status Operacional</th>
                   <th>Previsão / Entrega</th>
-                  <th>Rastreio &amp; Ocorrências</th>
+                  <th>Rastreio</th>
                 </tr>
               </thead>
               <!-- linhas montadas pelo /js/gestao.js -->
@@ -135,6 +136,10 @@
           </footer>
         </section>
 
+        <!-- ===== BUSCA POR PROTOCOLO DE COLETA (COL-…) =====
+             no lugar da tabela de manifestos: coleta ainda não tem CT-e (/js/gestao.js) -->
+        <section class="pt-cartao gs-coleta-cartao" id="gs-coleta-resultado" aria-live="polite" hidden></section>
+
         <!-- ===== OCORRÊNCIAS REGISTRADAS PELO CLIENTE (/js/ocorrencias.js) ===== -->
         <section class="pt-cartao gs-oc-cartao" id="gs-ocorrencias" aria-labelledby="gs-oc-titulo">
           <header class="gs-oc-topo">
@@ -143,12 +148,8 @@
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /><path d="M12 9v4M12 17h0" /></svg>
                 Ocorrências Registradas
               </h2>
-              <p>Avaria, falta de volumes, atraso ou recusa: registre aqui e a Torre de Controle responde em até 2 horas úteis.</p>
+              <p>A Torre de Controle responde em até 2 horas úteis. <b>Clique numa ocorrência</b> para tratar, rastrear ou acompanhar.</p>
             </div>
-            <button type="button" class="gs-exportar" data-oc-nova>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
-              Registrar Ocorrência
-            </button>
           </header>
           <div class="gs-rolagem">
             <table class="gs-tabela gs-oc-tabela">
@@ -159,14 +160,13 @@
                   <th>Tipo</th>
                   <th>Descrição</th>
                   <th>Status</th>
-                  <th><span class="pt-oculto">Ações</span></th>
                 </tr>
               </thead>
               <tbody id="gs-oc-linhas"></tbody>
             </table>
           </div>
           <p class="gs-oc-vazio" id="gs-oc-vazio">
-            Nenhuma ocorrência registrada. Use <b>Registrar Ocorrência</b> ou o ícone de alerta na linha da carga.
+            Nenhuma ocorrência registrada. <button type="button" class="gs-oc-aviso-link" data-oc-nova>Clique aqui para registrar uma ocorrência</button>.
           </p>
         </section>
 
@@ -252,9 +252,11 @@
 
       <div class="gs-oc-corpo">
         <div class="gs-oc-campo gs-oc-largo">
-          <label for="gs-oc-carga">Carga (código de rastreio)</label>
-          <select id="gs-oc-carga" required></select>
-          <small class="gs-oc-erro" hidden>Escolha a carga da ocorrência.</small>
+          <label for="gs-oc-carga">Carga <span>(código de envio, CT-e ou protocolo de coleta)</span></label>
+          <!-- busca com sugestões: digite parte do código (ex.: 894012, VLZ-0089304-SP ou COL-2026-8841) -->
+          <input type="text" id="gs-oc-carga" list="gs-oc-cargas" placeholder="Digite o código: VLZ-…, CT-e ou COL-…" autocomplete="off" spellcheck="false" required>
+          <datalist id="gs-oc-cargas"></datalist>
+          <small class="gs-oc-erro" id="gs-oc-carga-erro" hidden>Informe o código da carga.</small>
         </div>
 
         <div class="gs-oc-campo">

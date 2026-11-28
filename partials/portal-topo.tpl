@@ -5,7 +5,7 @@
   </span>
 
   <div class="pt-topo-direita">
-    <button type="button" class="pt-sino" data-em-breve="Central de notificações" aria-label="Notificações (3 novas)">
+    <button type="button" class="pt-sino" id="pt-sino" aria-label="Notificações" aria-haspopup="true" aria-expanded="false" aria-controls="pt-notificacoes">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0" /></svg>
       <i aria-hidden="true"></i>
     </button>

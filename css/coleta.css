@@ -1409,3 +1409,90 @@
 .cl-caixa input[type="number"].cl-curto {
   width: 7ch;
 }
+
+/* "hidden" precisa vencer o display: o protocolo só aparece depois de confirmar,
+   e o botão Confirmar / Rascunho somem depois de confirmar */
+.cl-protocolo[hidden],
+.cl-confirmar[hidden],
+.cl-rascunho[hidden] {
+  display: none;
+}
+
+/* =========================================================
+   MEIA JANELA (até 1280px, acima de 900px): resumo na largura toda,
+   em duas colunas por dentro; a ajuda vira uma faixa logo abaixo
+   (antes o resumo ficava numa coluna e sobrava espaço vazio ao lado)
+   ========================================================= */
+@media (max-width: 1280px) and (min-width: 901px) {
+  .cl-lateral {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cl-resumo {
+    grid-row: auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "topo        topo"
+      "trajeto     homologado"
+      "trajeto     confirmar"
+      "dados       rascunho"
+      "dados       cancelamento"
+      "dados       protocolo";
+    column-gap: 28px;
+    align-items: start;
+  }
+
+  .cl-resumo-topo { grid-area: topo; }
+  .cl-trajeto { grid-area: trajeto; }
+  .cl-dados { grid-area: dados; }
+  .cl-homologado { grid-area: homologado; }
+  .cl-confirmar { grid-area: confirmar; }
+  .cl-rascunho { grid-area: rascunho; }
+  .cl-cancelamento { grid-area: cancelamento; }
+  .cl-protocolo { grid-area: protocolo; }
+
+  /* a coluna da direita começa alinhada com o trajeto */
+  .cl-homologado {
+    margin-top: 18px;
+  }
+
+  .cl-confirmar {
+    margin-top: 14px;
+  }
+}
+
+/* =========================================================
+   MEIA JANELA E TABLET (até 1100px): histórico de coletas sem corte nem rolagem lateral
+   ========================================================= */
+@media (max-width: 1100px) {
+  .cl-tabela {
+    min-width: 0;
+  }
+
+  /* somem "Unidade de Origem" (2ª) e "Volume & Carga" (4ª) */
+  .cl-tabela th:nth-child(2),
+  .cl-tabela td:nth-child(2),
+  .cl-tabela th:nth-child(4),
+  .cl-tabela td:nth-child(4) {
+    display: none;
+  }
+
+  .cl-tabela th,
+  .cl-tabela td {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  /* protocolo inteiro numa linha (COL-2026-8841) */
+  .cl-tabela .cl-protocolo-cel {
+    white-space: nowrap;
+  }
+
+  /* coluna da ação: só o necessário, botão sem quebrar */
+  .cl-tabela th:last-child,
+  .cl-tabela td:last-child {
+    width: 1%;
+    white-space: nowrap;
+  }
+}
