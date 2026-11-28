@@ -1863,3 +1863,9 @@ body:has(dialog[open]) {
 .fr-pag:has(input[value="pix"]:focus-visible) {
   outline-color: rgba(22, 163, 74, 0.45);
 }
+
+/* condição de pagamento: 3 opções (frete não é parcelado no cartão);
+   "Faturamento 28D (CNPJ)" ocupa a linha toda, PIX e Boleto lado a lado */
+.fr-pag-largo {
+  grid-column: 1 / -1;
+}

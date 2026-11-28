@@ -252,7 +252,8 @@
           <div class="fr-pagamento">
             <h3>Condição de Pagamento / Faturamento</h3>
             <div class="fr-pag-grade" role="radiogroup" aria-label="Condição de pagamento">
-              <label class="fr-pag">
+              <!-- frete não é parcelado: faturamento, PIX ou boleto (a 1ª opção ocupa a linha toda) -->
+              <label class="fr-pag fr-pag-largo">
                 <input type="radio" name="pagamento" value="faturado" checked>
                 <span>Faturamento 28D <small>(CNPJ)</small></span>
               </label>
@@ -261,25 +262,9 @@
                 <span>PIX Instantâneo <small>(–1,5%)</small></span>
               </label>
               <label class="fr-pag">
-                <input type="radio" name="pagamento" value="cartao">
-                <span>Cartão em até 10x <small>(sem juros)</small></span>
-              </label>
-              <label class="fr-pag">
                 <input type="radio" name="pagamento" value="boleto">
                 <span>Boleto Bancário DDA</span>
               </label>
-            </div>
-
-            <!-- parcelamento: aparece só com "Cartão" marcado (opções montadas pelo frete.js) -->
-            <div class="fr-parcelas" id="bloco-parcelas" hidden>
-              <div class="fr-parcelas-topo">
-                <label for="parcelas">Parcelamento no cartão</label>
-                <span class="fr-parcelas-selo">Sem juros</span>
-              </div>
-              <div class="fr-input sem-icone">
-                <select id="parcelas"></select>
-              </div>
-              <small class="fr-parcelas-total" id="parcelas-total"></small>
             </div>
           </div>
 

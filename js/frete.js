@@ -15,7 +15,6 @@
     SEGURO_POR_MIL,
     DESCONTO_PERCENTUAL,
     DESCONTO_PIX_PERCENTUAL,
-    PARCELAS_SEM_JUROS,
     CUBAGEM_POR_VOLUME,
     KM_PADRAO,
     PEDAGIO_FRACAO,
@@ -332,46 +331,10 @@
         definir("#v-pix", `– ${brl(t.pix)}`, animar);
         definir("#v-final", brl(t.final), animar);
         definir(".fr-painel-topo .fr-selo", m.nome);
-        atualizarParcelas(t.final);
       }
     }
   }
-
-  /* ----- parcelamento no cartão (até PARCELAS_SEM_JUROS, sem juros) ----- */
-  const selectParcelas = $("#parcelas");
-  const valorParcela = (centavos, n) => Math.round(centavos / n);
-
-  function atualizarParcelas(finalCentavos) {
-    const bloco = $("#bloco-parcelas");
-    if (!bloco || !selectParcelas) return;
-    bloco.hidden = pagamentoAtual() !== "cartao";
-
-    // remonta as opções com o total atual, mantendo a escolha (padrão: o máximo)
-    const escolhida = Number(selectParcelas.value) || PARCELAS_SEM_JUROS;
-    selectParcelas.innerHTML = Array.from(
-      { length: PARCELAS_SEM_JUROS },
-      (_, i) => {
-        const n = i + 1;
-        const texto =
-          n === 1
-            ? `1x de ${brl(finalCentavos)} (à vista)`
-            : `${n}x de ${brl(valorParcela(finalCentavos, n))} sem juros`;
-        return `<option value="${n}">${texto}</option>`;
-      },
-    ).join("");
-    selectParcelas.value = String(escolhida);
-    selectParcelas.dataset.final = finalCentavos; // usado no texto da proposta
-    $("#parcelas-total").textContent = `Total no cartão: ${brl(finalCentavos)} — sem acréscimo`;
-  }
-
-  // texto da condição de pagamento usado na proposta, no PDF, no WhatsApp e no e-mail
-  function textoParcelamento() {
-    const n = Number(selectParcelas && selectParcelas.value) || PARCELAS_SEM_JUROS;
-    const final = Number(selectParcelas && selectParcelas.dataset.final) || 0;
-    return n === 1
-      ? "Cartão de crédito à vista"
-      : `Cartão de crédito em ${n}x${final ? ` de ${brl(valorParcela(final, n))}` : ""} sem juros`;
-  }
+  // (frete não é parcelado: a opção de cartão foi removida)
 
   /* ----- prazos de entrega conforme a distância ----- */
   const ehDiaUtil = (d) => d.getDay() !== 0 && d.getDay() !== 6;
@@ -568,13 +531,11 @@
     const pag = $('input[name="pagamento"]:checked');
     const pagamento = !pag
       ? "—"
-      : pag.value === "cartao"
-        ? textoParcelamento() // ex.: "Cartão de crédito em 10x de R$ 36,53 sem juros"
-        : pag
-            .closest(".fr-pag")
-            .querySelector("span")
-            .textContent.replace(/\s+/g, " ")
-            .trim();
+      : pag
+          .closest(".fr-pag")
+          .querySelector("span")
+          .textContent.replace(/\s+/g, " ")
+          .trim();
 
     const modalidades = Object.entries(MODALIDADES).map(([id, m]) => {
       const card = $(`input[name="modalidade"][value="${id}"]`).closest(

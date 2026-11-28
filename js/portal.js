@@ -317,16 +317,8 @@
     function desenharMapa(c, carretas) {
       if (!mapa) return;
       camadas.clearLayers();
-      // rotas: faixa branca por baixo + tracejado laranja por cima
-      c.rotas.forEach((r) => {
-        L.polyline(r, { color: "#fff", weight: 7, opacity: 0.9, interactive: false }).addTo(camadas);
-        L.polyline(r, { color: "#f26a1b", weight: 3.5, dashArray: "8 7", interactive: false }).addTo(camadas);
-      });
-      c.cidades.forEach(([nome, pos]) =>
-        L.circleMarker(pos, { radius: 4, color: "#fff", weight: 2, fillColor: "#151b36", fillOpacity: 1 })
-          .bindTooltip(nome, { direction: "right", offset: [6, 0] })
-          .addTo(camadas),
-      );
+      // sem traçado de rota: só os caminhões (e o posto do corredor).
+      // As rotas continuam servindo para enquadrar a região do corredor (ver fitBounds).
       L.circleMarker(c.posto.pos, { radius: 6, color: "#16a34a", weight: 3, fillColor: "#fff", fillOpacity: 1 })
         .bindTooltip(`${c.posto.nome}: ${c.posto.situacao} • ${c.posto.fila}`, { direction: "left", offset: [-8, 0] })
         .addTo(camadas);

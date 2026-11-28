@@ -10,7 +10,6 @@
   const SEGURO_POR_MIL = 3; // 0,3% do valor da NF
   const DESCONTO_PERCENTUAL = 5; // desconto corporativo
   const DESCONTO_PIX_PERCENTUAL = 1.5; // extra para pagamento via PIX (sobre o valor já com desconto corporativo)
-  const PARCELAS_SEM_JUROS = 10; // cartão de crédito: até 10x sem juros
   // true: cada volume paga pelo maior entre o SEU peso real e o SEU peso cubado (padrão de courier/expresso)
   // false: compara só os totais da carga (peso total x cubagem total)
   const CUBAGEM_POR_VOLUME = true;
@@ -130,7 +129,6 @@
     SEGURO_POR_MIL,
     DESCONTO_PERCENTUAL,
     DESCONTO_PIX_PERCENTUAL,
-    PARCELAS_SEM_JUROS,
     CUBAGEM_POR_VOLUME,
     KM_REFERENCIA,
     KM_PADRAO,
